@@ -1,0 +1,66 @@
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+yarn-error.log
+yarn-debug.log*
+.pnp.*
+.pnpm-debug.log*
+
+# Build / Output
+dist/
+build/
+out/
+coverage/
+coverage-final.json
+.nyc_output/
+.esbuild/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*~
+.history/
+
+# Temporary
+tmp/
+tmp-*/
+*.tmp
+*.temp
+
+# Misc
+*.tgz
+*.zip
+*.bak
+
+# Project scratch directories
+/scratch/
+
+# Ignore local dev certificates
+certs/
+
+# Ignore Mac resource forks
+Icon\r
+
+# Local execution log
+EXECUTION_LOG.md

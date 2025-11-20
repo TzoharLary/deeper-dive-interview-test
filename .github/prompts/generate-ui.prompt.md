@@ -1,9 +1,9 @@
 ---
 name: generate-ui
 description: "Prototyper prompt template to generate UI flow prompts (Base44)."
-agent: "agent"
+agent: "Base44Prototyper"
 tools:
-  - awesome_copilot
+  - awesome-copilot/*
 ---
 
 Inputs:
