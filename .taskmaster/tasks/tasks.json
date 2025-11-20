@@ -1,5 +1,4 @@
 {
-  "tasks": [],
   "master": {
     "tasks": [
       {
@@ -37,7 +36,41 @@
           2
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Playwright Script: Trigger Export & Manage Download",
+            "description": "Extend the existing Playwright automation to navigate to the Base44 export functionality, programmatically trigger the code download, and ensure the downloaded files are correctly captured and saved to a temporary location. This includes handling potential download prompts or dynamic filenames.",
+            "dependencies": [
+              2
+            ],
+            "details": "Integrate Playwright methods to click the export button, wait for download completion, and save the downloaded file(s) to a predefined temporary directory. Implement robust error handling for failed downloads or unexpected UI states. Consider using `page.on('download', ...)` for managing downloads.",
+            "status": "pending",
+            "testStrategy": "Run the Playwright script. Verify that the export button is clicked and the code archive/files are successfully downloaded to the specified temporary local directory. Check logs for any download-related errors."
+          },
+          {
+            "id": 2,
+            "title": "Process Downloaded Code and Prepare for Staging",
+            "description": "Develop script logic to process the downloaded Base44 code. This might involve unzipping archives, moving files to the correct local repository structure, and potentially cleaning up the temporary download directory.",
+            "dependencies": [
+              1
+            ],
+            "details": "After the download, identify if the output is a single file or a ZIP archive. If a ZIP, use Node.js `fs` module and a library like `adm-zip` to extract its contents. Move the extracted code to a designated subdirectory within the local Git repository where it will be staged. Ensure the directory structure is ready for the commit.",
+            "status": "pending",
+            "testStrategy": "Manually trigger the Playwright download (or simulate the presence of downloaded files). Verify that the files are correctly processed, extracted (if applicable), and moved to the target local repository directory, ready for staging."
+          },
+          {
+            "id": 3,
+            "title": "Git Automation: Commit Exported Code to Staging Branch",
+            "description": "Implement the necessary Git commands within the script to stage the processed Base44 code, create a commit with a descriptive message, and push it to the designated staging branch. This subtask must include comprehensive error handling for all Git operations.",
+            "dependencies": [
+              2
+            ],
+            "details": "Utilize a Node.js Git library (e.g., `simple-git`) or execute shell commands (`git add .`, `git commit -m \"Automated Base44 MVP export - [Date]\"`, `git push origin staging-branch`) to perform the commit. Ensure the script handles cases like no changes, merge conflicts (if applicable, though less likely for a fresh commit), and authentication failures. Configure the target staging branch name.",
+            "status": "pending",
+            "testStrategy": "After the code is prepared locally, run this part of the script. Verify that a new commit appears on the specified staging branch in the remote repository, containing the exported Base44 code. Check the commit message and ensure no errors occurred during the Git operations."
+          }
+        ]
       },
       {
         "id": 4,
@@ -54,16 +87,65 @@
       },
       {
         "id": 5,
-        "title": "Perform Hybrid Analysis of Sanitized Code",
-        "description": "Start the sanitized Base44 application, capture DOM/CSS screenshots using Playwright MCP, and summarize component/state logic via subagents, storing all outputs under `/scratch/base44-hybrid-insights/`.",
-        "details": "Set up a local server to run the sanitized application from `/scratch/base44-clean-mvp/`. Use Playwright MCP to programmatically navigate through the application and capture detailed DOM and CSS screenshots for key views. Integrate AI subagents to analyze the captured DOM/CSS, JavaScript files, and other relevant assets to summarize the component structure, state management logic, and data flow. Store all analysis outputs, screenshots, and summaries in the `/scratch/base44-hybrid-insights/` directory.",
-        "testStrategy": "Verify that the sanitized application starts successfully locally. Confirm that Playwright MCP correctly captures DOM/CSS screenshots for relevant application states. Review the outputs in `/scratch/base44-hybrid-insights/` to ensure that subagents have generated coherent summaries of component and state logic, and that these insights are comprehensive enough to inform architectural decisions.",
+        "title": "Phase 3 – Visual Rip & Hybrid Analysis",
+        "description": "Sanitize and mock the exported Base44 app, capture HTML/CSS fingerprints via Playwright, analyze the React store, and record the full blueprint under `/scratch/base44-hybrid-insights/` and `ARCHITECTURE.hybrid.md`.",
+        "details": "Phase 3 now follows the Visual Rip & Hybrid Analysis playbook. First, ensure the exported code from Task 4 is runnable: strip overlays, wire mock data, and verify `npm run dev` boots from `/scratch/base44-clean-mvp/`. Next, drive the UI with Playwright to capture computed `outerHTML` snapshots of the Sidebar, Publisher List, Config Editor sections, and validation messaging, saving them under `/scratch/ui_snapshots/`. Then use a `runSubagent` to analyze `PublisherStore.js` and `PublisherApi.js`, mapping React hooks/state to the future Vanilla TS store. Finally, synthesize these findings into `ARCHITECTURE.hybrid.md` so Phase 4 implementation has a pixel-perfect blueprint.",
+        "testStrategy": "Confirm the sanitized mock application runs locally without overlays. Validate that Playwright harvests the requested HTML snapshots and stores them under `/scratch/ui_snapshots/`. Review the subagent report to ensure it documents state transitions and data flows, and verify `ARCHITECTURE.hybrid.md` references the gathered artifacts and next-step requirements.",
         "priority": "medium",
         "dependencies": [
           4
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Sanitize & Mock Setup",
+            "description": "Create `/scratch/base44-clean/`, remove or bypass authentication blockers, install dependencies, and confirm `npm run dev` renders the UI with representative sample data.",
+            "details": "Copy or transform the exported Base44 code into `/scratch/base44-clean/` while removing trial overlays, auth guards, and backend gating. Add mock data fixtures and environment variables so the UI can render sample publishers without remote services. Run the dev server to ensure the cleaned app boots and displays a basic publisher list/config editor payload.",
+            "testStrategy": "Run `npm install` and `npm run dev` within `/scratch/base44-clean/` to verify startup success and sample data rendering. Document remaining React-only constructs that still need to be ported in later phases.",
+            "dependencies": [
+              4
+            ],
+            "status": "pending",
+            "priority": "high"
+          },
+          {
+            "id": 2,
+            "title": "The Visual Rip (Data Collection)",
+            "description": "Use Playwright to scrape the computed `outerHTML` of Sidebar, PublisherList, ConfigEditor (General/Pages/Advanced), and Validation UI, preserving the exact DOM/Tailwind structure.",
+            "details": "Drive the sanitized app with Playwright scripts, navigating to each major view and expanding relevant sections so the DOM is fully exposed. Capture the serialized `outerHTML` of the Sidebar, Publisher List rows, the general/page/advanced tabs in the Config Editor, and any validation messaging elements. Save these snapshots under `/scratch/ui_snapshots/` with descriptive filenames for later reference.",
+            "testStrategy": "Review the generated snapshot files to confirm they contain the requested sections and classes. Flag any dynamic placeholders that require later templating in the Vanilla TS port.",
+            "dependencies": [
+              "5.1"
+            ],
+            "status": "pending",
+            "priority": "high"
+          },
+          {
+            "id": 3,
+            "title": "Logic Extraction (Subagent Analysis)",
+            "description": "Launch a `runSubagent` to analyze `PublisherStore.js` and `PublisherApi.js`, mapping hooks/state to the future Vanilla Store pattern.",
+            "details": "Feed the sanitized React files into a `runSubagent` session that documents the store's state shape, CRUD actions, async flows, and integration points with API modules. The analysis should call out essential risk areas, validation touchpoints, and which state mutations correspond to UI controls so the Vanilla TS store can mirror the behavior precisely.",
+            "testStrategy": "Confirm the subagent report clearly outlines the store state, reducer logic, async flows, and API interactions. Ensure the summary is placed under `/scratch/base44-hybrid-insights/` for Phase 4 reference.",
+            "dependencies": [
+              "5.2"
+            ],
+            "status": "pending",
+            "priority": "high"
+          },
+          {
+            "id": 4,
+            "title": "Blueprint Definition",
+            "description": "Compile the snapshots and logic findings into `ARCHITECTURE.hybrid.md`, specifying the Vanilla TS modules, store shape, and validation requirements for Phase 4.",
+            "details": "Synthesize the DOM snapshots, subagent logic report, and sanitized setup notes into a single architecture spec. `ARCHITECTURE.hybrid.md` should tie each major UI slice back to the Vanilla TS module that will render it, describe the Mini-Zod validator entering each flow, and list the diff/validation flows Phase 5 must cover.",
+            "testStrategy": "Review `ARCHITECTURE.hybrid.md` to ensure it references the collected artifacts, disambiguates state transitions, and identifies files/components for each new module. Stakeholders should agree it captures the blueprint needed to start Phase 4.",
+            "dependencies": [
+              "5.3"
+            ],
+            "status": "pending",
+            "priority": "high"
+          }
+        ]
       },
       {
         "id": 6,

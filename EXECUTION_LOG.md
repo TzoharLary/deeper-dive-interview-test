@@ -45,3 +45,22 @@
   - Prototyper: Based on the `Professional Prompt Builder` prompt (`prompt-builder.prompt.md`) from Awesome Copilot.
   - Engineer: Based on the `Software Engineer Agent v1` chatmode (`software-engineer-agent-v1.chatmode.md`) from Awesome Copilot.
 - **Status:** COMPLETED
+## Phase 2: Base44 Export Attempt
+- **Action:** Ran `npx tsx scripts/run_base44_export.ts`, which navigated to Base44 but was redirected to `/login` so the `Github & code editing` menu never appeared; automation timed out waiting for that button.
+- **Tools Used:** `npx tsx`, `Playwright` (Chromium), `npx playwright install chromium`.
+- **Artifacts Captured:** `scratch/base44_debug.png` (login gate screenshot), `scratch/BASE44_SESSION.md` (supervisor log of the failed run).
+- **Status:** BLOCKED – need a logged-in Base44 session or credentials so the export menu can load.
+
+## 2025-11-20T09:31:04Z — Base44 ZIP imported
+- **Action:** Placed  into  and extracted.
+- **Artifacts:** 
+- **Status:** COMPLETED
+
+## 2025-11-20T09:31:50Z — Base44 ZIP imported (corrected)
+- **Action:** Moved  into  and extracted.
+- **Artifacts:**  (contains  and extracted files)
+- **Status:** COMPLETED
+
+## 2025-11-20T09:49:17Z — Archive removed
+- **Action:** Deleted scratch/base44_raw/base44-export.zip (extracted contents retained in scratch/base44_raw/).
+- **Status:** COMPLETED

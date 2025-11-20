@@ -4,6 +4,10 @@ description: "Prototyper prompt template to generate UI flow prompts (Base44)."
 agent: "Base44Prototyper"
 tools:
   - awesome-copilot/*
+  - runSubagent
+  - 'io.github.github/github-mcp-server/*'  
+  - 'playwright/*'
+---
 ---
 
 Inputs:
