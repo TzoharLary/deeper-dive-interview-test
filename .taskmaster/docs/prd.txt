@@ -1,0 +1,41 @@
+# DeeperDive Support Tool – Execution Plan
+
+## Phase 1 – Planning & Playbooks
+1.1 Initialize Task Master context for the repo using `task-master-ai`. Ensure MASTER_PLAN.md is treated as process authority and TASK.md as requirement input. (Owner: Architect)
+1.2 Discover relevant `awesome_copilot` playbooks for Vanilla TS refactors, Base44 prompt design, and support-tool UX. Document chosen collections. (Owner: Architect)
+1.3 Derive 2–3 concrete support workflows from TASK.md (find publisher, edit nested page selector, review diff) to drive Base44 prompts and later tests. (Owner: Architect)
+
+## Phase 2 – Base44 MVP (Automation Enabled)
+2.1 Automated MVP Generation (Owner: Prototyper)
+    - Use `microsoft/playwright-mcp` to log into Base44, navigate to the appropriate project, and input the user flows from Phase 1.
+    - Iterate on the Base44 preview automatically until the layout matches requirements (publisher list, config editor, diff panel, validation messaging).
+2.2 Automated Code Export (Owner: Prototyper)
+    - Using Playwright automation, export/download the generated Base44 code.
+    - Commit the export to a staging branch for subsequent phases.
+
+## Phase 3 – Sanitization & Hybrid Analysis (Depends on Task 2.2)
+3.1 Sanitize exported code to remove auth overlays and blockers. Store cleaned copy under `/scratch/base44-clean-mvp/`. (Owner: Engineer)
+3.2 Run Hybrid Analysis: start sanitized app, capture DOM/CSS screenshots with Playwright MCP, and summarize component/state logic via subagents. Store outputs under `/scratch/base44-hybrid-insights/`. (Owner: Architect + Engineer)
+
+## Phase 4 – Vanilla TS Conversion
+4.1 Produce `ARCHITECTURE.hybrid.md` describing Vanilla TS modules derived from hybrid insights. (Owner: Architect)
+4.2 Implement data access layer (`public/data/api.ts`, optional `src/server.ts` endpoints). (Owner: Engineer)
+4.3 Build state store, atomic renderers, array editors, and diff engine according to MASTER_PLAN Step 5. (Owner: Engineer)
+
+## Phase 5 – Validation & UI Completion
+5.1 Implement Mini-Zod validator and schemas. (Owner: Engineer)
+5.2 Build publisher list & selection UI. (Owner: Engineer)
+5.3 Complete config editor, diff panel, and messaging per Step 5 substeps. (Owner: Engineer)
+
+## Phase 6 – Save, Export, and Testing
+6.1 Wire save/export flows with friendly errors. (Owner: Engineer)
+6.2 Automate core flows with Playwright MCP to verify end-to-end behavior. (Owner: Engineer)
+
+## Phase 7 – Documentation & Demo
+7.1 Create DOCS.md plus DEMO_SCRIPT.md describing workflows, safety guarantees, and demo path. (Owner: Architect)
+7.2 Close out all Task Master items and prepare summary for interview. (Owner: Architect)
+
+## Dependencies
+- Phase 3 tasks must depend on completion of Task 2.2 (Automated Code Export).
+- Refactor/implementation tasks (Phases 4–6) depend on sanitized & analyzed output from Phase 3.
+- Documentation tasks depend on core functionality (Phases 4–6) being marked complete.
