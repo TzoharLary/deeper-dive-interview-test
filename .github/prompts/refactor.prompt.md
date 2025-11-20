@@ -1,10 +1,11 @@
 ---
 name: refactor
 description: "Engineer prompt template to request a refactor or code improvement."
-mode: agent
+agent: "agent"
 tools:
   - edit/editFiles
   - runSubagent
+---
 ---
 
 Inputs:

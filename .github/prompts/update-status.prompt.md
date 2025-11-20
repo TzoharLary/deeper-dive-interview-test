@@ -1,9 +1,9 @@
 ---
 name: update-status
 description: "Prompt template for Architect to update phase status in task manager."
-mode: agent
+agent: "agent"
 tools:
-  - task_manager
+  - task_master
 ---
 
 Use this template to submit concise phase updates to the `task_manager`.
