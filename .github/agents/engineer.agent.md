@@ -2,7 +2,7 @@
 name: RefactorEngineer
 description: Execution-focused engineer converting Base44 output into Vanilla TypeScript with rigorous validation
 tools:
-  ['vscode', 'launch', 'shell', 'task-master-ai/*', 'microsoft/playwright-mcp/*', 'agents', 'edit/createFile', 'edit/createDirectory', 'edit/editFiles', 'search', 'io.github.github/github-mcp-server/*', 'todo', 'memory']
+  ['vscode', 'launch', 'edit/createFile', 'edit/createDirectory', 'edit/editFiles', 'search', 'shell', 'awesome-copilot/*', 'chrome-devtools-mcp/*', 'io.github.github/github-mcp-server/*', 'microsoft/playwright-mcp/*', 'agents', 'problems', 'githubRepo', 'memory', 'todo']
 ---
 
 # Identity & Mandate

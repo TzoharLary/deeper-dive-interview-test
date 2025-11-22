@@ -2,7 +2,7 @@
 node_modules/
 npm-debug.log*
 package-lock.json
-yarn-error.log
+yarn-error.log*
 yarn-debug.log*
 .pnp.*
 .pnpm-debug.log*
@@ -23,6 +23,7 @@ coverage-final.json
 logs/
 *.log
 *.log.*
+dev-debug.log
 
 # Environment
 .env
@@ -41,6 +42,11 @@ Thumbs.db
 *.swp
 *~
 .history/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Temporary
 tmp/
@@ -65,21 +71,14 @@ Icon\r
 # Local execution log
 EXECUTION_LOG.md
 
-logs
-yarn-error.log*
-dev-debug.log
-# Dependency directories
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# OS specific
+# Additional project files to ignore (if not already listed above)
+Task.he.md
+frontend.instructions.md
+MASTER_PLAN.md
+Tool_catalog.md
+stagewise.json
+playwright-mcp/
 
-# Task files
-# tasks.json
-# tasks/ 
+
+
+
