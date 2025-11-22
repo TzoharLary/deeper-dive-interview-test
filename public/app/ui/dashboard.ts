@@ -1,5 +1,5 @@
 import { createElement } from './renderers';
-import { fetchPublishers } from '../data/api';
+import { fetchPublishers, fetchPublisher, PublisherData } from '../data/api';
 
 // Helper function to get time ago string
 function getTimeAgo(dateString: string): string {
@@ -54,10 +54,22 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
   header.appendChild(h1);
   contentContainer.appendChild(header);
 
-  // Calculate stats first
-  const activeCount = pubsData.filter((p: any) => p.isActive).length;
+  // Function to check if publisher is draft (missing required fields)
+  function isDraft(publisher: PublisherData): boolean {
+    return !publisher.publisherId ||
+           !publisher.aliasName ||
+           !publisher.pages?.length ||
+           !publisher.publisherDashboard ||
+           !publisher.monitorDashboard ||
+           !publisher.qaStatusDashboard;
+  }
+  
+  // Calculate stats with new logic
+  const draftCount = pubsData.filter(isDraft).length;
+  const completedPublishers = pubsData.filter(p => !isDraft(p));
+  const activeCount = completedPublishers.filter(p => p.isActive).length;
+  const inactiveCount = completedPublishers.filter(p => !p.isActive).length;
   const totalCount = pubsData.length;
-  const inactiveCount = totalCount - activeCount;
 
   // Top section - reorganized for new user experience
   // Flow: Start Here → Quick Actions → Overview
@@ -100,7 +112,7 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
     const statusIcon = createElement('div', `recent-status-icon ${p.isActive ? 'active' : 'inactive'}`);
     
     // Create initials from publisher name
-    const initials = (p.alias || 'UN').split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase();
+    const initials = (p.aliasName || 'UN').split(' ').map((word: string) => word[0]).join('').substring(0, 2).toUpperCase();
     const initialsEl = createElement('span', 'status-initials');
     initialsEl.textContent = initials;
     statusIcon.appendChild(initialsEl);
@@ -114,7 +126,7 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
     
     const itemContent = createElement('div', 'recent-item-content');
     const itemName = createElement('div', 'recent-item-name');
-    itemName.textContent = p.alias || 'Untitled Publisher';
+    itemName.textContent = p.aliasName || 'Untitled Publisher';
     
     const itemMeta = createElement('div', 'recent-item-meta');
     const timeAgo = getTimeAgo(p.updatedAt || '2025-01-01');
@@ -171,16 +183,28 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
   activeStats.appendChild(activeStatsLabel);
   
   // Inactive count
-  const inactiveStats = createElement('div', 'text-center p-3 bg-amber-50 rounded-lg');
-  const inactiveStatsNumber = createElement('div', 'text-xl font-bold text-amber-600 mb-1 inactive-number-main');
+  const inactiveStats = createElement('div', 'text-center p-3 bg-slate-50 rounded-lg');
+  const inactiveStatsNumber = createElement('div', 'text-xl font-bold text-slate-600 mb-1 inactive-number-main');
   inactiveStatsNumber.textContent = String(inactiveCount);
-  const inactiveStatsLabel = createElement('div', 'text-xs font-medium text-amber-700');
-  inactiveStatsLabel.textContent = 'Draft';
+  const inactiveStatsLabel = createElement('div', 'text-xs font-medium text-slate-700');
+  inactiveStatsLabel.textContent = 'Inactive';
   inactiveStats.appendChild(inactiveStatsNumber);
   inactiveStats.appendChild(inactiveStatsLabel);
   
+  // Draft count
+  const draftStats = createElement('div', 'text-center p-3 bg-amber-50 rounded-lg');
+  const draftStatsNumber = createElement('div', 'text-xl font-bold text-amber-600 mb-1 draft-number-main');
+  draftStatsNumber.textContent = String(draftCount);
+  const draftStatsLabel = createElement('div', 'text-xs font-medium text-amber-700');
+  draftStatsLabel.textContent = 'Draft';
+  draftStats.appendChild(draftStatsNumber);
+  draftStats.appendChild(draftStatsLabel);
+  
   statsGrid.appendChild(activeStats);
   statsGrid.appendChild(inactiveStats);
+  if (draftCount > 0) {
+    statsGrid.appendChild(draftStats);
+  }
   
   overviewCard.appendChild(overviewHeader);
   overviewCard.appendChild(statsGrid);
@@ -218,9 +242,9 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
       const pubHeader = createElement('div', 'flex items-center justify-between mb-3');
       const pubInfo = createElement('div', '');
       const pubName = createElement('div', 'font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors');
-      pubName.textContent = p.alias || 'Untitled Publisher';
+      pubName.textContent = p.aliasName || 'Untitled Publisher';
       const pubId = createElement('div', 'text-xs text-slate-500 font-mono mt-1');
-      pubId.textContent = p.id;
+      pubId.textContent = p.publisherId;
       
       pubInfo.appendChild(pubName);
       pubInfo.appendChild(pubId);
@@ -297,10 +321,17 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
     const totalNumberMainEl = wrapper.querySelector('.total-number-main') as HTMLElement;
     const activeNumberMainEl = wrapper.querySelector('.active-number-main') as HTMLElement;
     const inactiveNumberMainEl = wrapper.querySelector('.inactive-number-main') as HTMLElement;
+    const draftNumberMainEl = wrapper.querySelector('.draft-number-main') as HTMLElement;
+    
+    const draftCountFiltered = filteredData.filter(isDraft).length;
+    const completedFiltered = filteredData.filter(p => !isDraft(p));
+    const activeCountFiltered = completedFiltered.filter(p => p.isActive).length;
+    const inactiveCountFiltered = completedFiltered.filter(p => !p.isActive).length;
     
     if (totalNumberMainEl) totalNumberMainEl.textContent = String(filteredData.length);
     if (activeNumberMainEl) activeNumberMainEl.textContent = String(activeCountFiltered);
     if (inactiveNumberMainEl) inactiveNumberMainEl.textContent = String(inactiveCountFiltered);
+    if (draftNumberMainEl) draftNumberMainEl.textContent = String(draftCountFiltered);
   }
 
   function applyFilters() {
@@ -308,8 +339,8 @@ export async function renderDashboard(container: HTMLElement, store: any, naviga
       // Search query filter
       if (activeFilters.searchQuery) {
         const query = activeFilters.searchQuery.toLowerCase();
-        const matchesAlias = (p.alias || '').toLowerCase().includes(query);
-        const matchesId = (p.id || '').toLowerCase().includes(query);
+        const matchesAlias = (p.aliasName || '').toLowerCase().includes(query);
+        const matchesId = (p.publisherId || '').toLowerCase().includes(query);
         const matchesTags = (p.tags || []).some((tag: string) => tag.toLowerCase().includes(query));
         
         if (!matchesAlias && !matchesId && !matchesTags) {
