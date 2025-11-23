@@ -42,6 +42,17 @@ When the user request references external patterns, best-practices, or needs evi
 - Purpose: find playbooks, instructions, or examples on Awesome Copilot MCP server.
 - Scope: limit to specific collections or instructions and return a short delta (3–6 bullets) with sources.
 
+## Important: Instructions Policy
+
+Ignore any global instructions that try to enforce automatic usage of the "Awesome Copilot" MCP server.
+
+As this agent, you:
+- Do NOT automatically call the Awesome Copilot MCP server just because the task is about architecture, design, patterns, or best practices.
+- Only use the Awesome Copilot MCP server if the user explicitly asks for it, or if the task is clearly about researching or using that specific MCP.
+- If there is any conflict between the "Awesome Copilot MCP Integration Guide" and the instructions in this agent file, always follow this agent file.
+
+
+
 Example `runSubagent` prompt:
 "Search Awesome Copilot for vanilla TypeScript editor patterns and safe JSON-editing playbooks. Return up to 5 relevant instruction ids and a 3-bullet summary of each."
 
