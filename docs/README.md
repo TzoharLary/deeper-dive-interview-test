@@ -1,30 +1,31 @@
 # Documentation
 
-## 📖 Dashboard User Guide
+## 📖 Complete System User Guide
 
-**Complete guide in one document:** [DASHBOARD_COMPLETE_GUIDE.md](DASHBOARD_COMPLETE_GUIDE.md)
+**One comprehensive guide for everything:** [COMPLETE_SYSTEM_GUIDE.md](COMPLETE_SYSTEM_GUIDE.md)
 
-This comprehensive guide includes:
-- ✅ **Screenshot** of the Dashboard with all components visible
-- ✅ **5-step installation** guide (takes 10 minutes)
-- ✅ **Component descriptions** with visual references
-- ✅ **Video demonstration scripts** (3 videos, 6:30 minutes total)
-- ✅ **Quick reference table** for common tasks
-- ✅ **Status system** explanation (Active/Inactive/Draft)
-- ✅ **Troubleshooting** guide
-- ✅ **Recording instructions** for creating demo videos
+### What's Inside
 
-### Quick Start
+This single document covers the **entire Publisher Configuration Tool**:
 
-1. Read [DASHBOARD_COMPLETE_GUIDE.md](DASHBOARD_COMPLETE_GUIDE.md)
-2. Follow the 5 installation steps
-3. Use the Quick Reference table for daily tasks
+✅ **Dashboard Page** - Overview, search, filtering, recent publishers  
+✅ **Publishers Page** - Viewing, editing, creating publishers  
+✅ **Installation** - 5-step setup guide (10 minutes)  
+✅ **Status System** - Active/Inactive/Draft explained  
+✅ **Video Scripts** - 5 demonstrations (12 minutes total)  
+✅ **Quick Reference** - Tables for common tasks  
+✅ **Troubleshooting** - Solutions to common problems  
+✅ **Best Practices** - Work efficiently
+
+### Easy Navigation
+
+The guide includes a **clickable Table of Contents** at the top - click any section to jump directly to it.
 
 ### Converting to PDF
 
 ```bash
 # Using pandoc
-pandoc DASHBOARD_COMPLETE_GUIDE.md -o DASHBOARD_COMPLETE_GUIDE.pdf
+pandoc COMPLETE_SYSTEM_GUIDE.md -o COMPLETE_SYSTEM_GUIDE.pdf
 
 # Or use online converter:
 # https://www.markdowntopdf.com/
@@ -32,4 +33,4 @@ pandoc DASHBOARD_COMPLETE_GUIDE.md -o DASHBOARD_COMPLETE_GUIDE.pdf
 
 ---
 
-**Everything you need in one document** - No need to navigate multiple files.
+**Everything you need in one well-organized document** ✨

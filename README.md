@@ -4,17 +4,22 @@ Web-based tool for Taboola Support Engineers to manage publisher configurations.
 
 ---
 
-## 📖 Complete User Guide
+## 📖 Complete System Guide
 
-**Everything in one document:** [📱 Dashboard Complete Guide](docs/DASHBOARD_COMPLETE_GUIDE.md)
+**Everything in one document:** [📱 Complete System User Guide](docs/COMPLETE_SYSTEM_GUIDE.md)
 
-Includes:
-- Dashboard screenshot with all components
-- 5-step installation (10 minutes)
-- Visual component descriptions
-- Video demonstration scripts (3 videos, 6:30 min)
-- Quick reference for common tasks
+### Covers Both Pages:
+- ✅ **Dashboard** - Overview, search, filtering
+- ✅ **Publishers** - Create, view, edit configurations
+
+### Also Includes:
+- 5-step installation (10 min)
+- Video demonstration scripts (5 videos, 12 min)
+- Quick reference tables
 - Troubleshooting guide
+- Best practices
+
+**Easy navigation with clickable Table of Contents** - Jump to any section instantly.
 
 ---
 
@@ -38,20 +43,27 @@ npm run dev
 
 ---
 
-## 📱 Dashboard Screenshot
+## 📱 System Screenshot
 
-![Dashboard Overview](docs/user-guide/images/dashboard-overview.png)
+![Dashboard & Publishers Overview](docs/user-guide/images/dashboard-overview.png)
 
 ---
 
 ## ✨ Features
 
-- **Dashboard** - Overview of all publishers with search and filtering
-- **Real-time search** - Filter by name, ID, or tags instantly
-- **Status badges** - Color-coded Active/Inactive/Draft indicators
-- **Quick filters** - Show Active Only or Drafts Only
-- **Recent publishers** - Quick access to your 3 most recent
-- **Click to edit** - Click any publisher card to open for editing
+### Dashboard Page
+- Overview of all publishers
+- Real-time search and filtering
+- Status badges (Active/Inactive/Draft)
+- Recent publishers quick access
+- One-click navigation to edit
+
+### Publishers Page
+- Two-panel layout (list + details)
+- Full configuration editing
+- Create new publishers
+- Add/remove page configurations
+- Save/cancel changes
 
 ---
 
@@ -67,21 +79,21 @@ npm run lint     # Check code quality
 
 ## 📊 Sample Data
 
-Includes 4 pre-configured publishers:
-- Aurora Media (Active)
-- Borealis News (Inactive)
-- Cascade Daily (Active)
-- Summit Insights (Active)
+Includes 4 pre-configured publishers for testing:
+- Aurora Media (Active, 3 pages)
+- Borealis News (Inactive, 3 pages)
+- Cascade Daily (Active, 3 pages)
+- Summit Insights (Active, 3 pages)
 
 ---
 
 ## 📞 Support
 
-1. Check [Complete Guide](docs/DASHBOARD_COMPLETE_GUIDE.md)
-2. Review troubleshooting section
+1. Check [Complete System Guide](docs/COMPLETE_SYSTEM_GUIDE.md)
+2. Review Troubleshooting section
 3. Contact your team lead
 
 ---
 
-**Version:** 1.0 - Single Comprehensive Guide  
+**Version:** 1.0 - Complete System Documentation  
 **Last Updated:** November 23, 2025
