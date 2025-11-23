@@ -1,5 +1,6 @@
 import { createElement } from "./renderers.js";
 import { fetchPublishers, fetchPublisher, PublisherListItem, PublisherData } from "../data/api.js";
+import { getRecentPublishers, RecentPublisherEntry } from "../utils/recentPublishers.js";
 
 // Helper function to get time ago string
 function getTimeAgo(dateString: string): string {
@@ -41,6 +42,11 @@ export async function renderDashboard(
     const publishersList: PublisherListItem[] = await fetchPublishers();
     console.log("Dashboard loaded publishers list:", publishersList);
     
+    const openPublisherDetails = (publisherId?: string) => {
+      if (!publisherId) return;
+      navigate("publishers", { preselectPublisherId: publisherId });
+    };
+
     // Load full data for each publisher
     const pubsData: PublisherData[] = [];
     for (const item of publishersList) {
@@ -109,46 +115,46 @@ export async function renderDashboard(
     
     const recentList = createElement("div", "recent-list");
     
-    // Get recent publishers (sorted by updatedAt, limit to 3 for this card)
-    const getUpdatedAt = (p: PublisherData): string => {
-      const rawVal = (p as Partial<{ updatedAt: string }>).updatedAt;
-      return (typeof rawVal === "string" && rawVal.trim()) ? rawVal : "2025-01-01";
-    };
-    const recentPublishers = [...pubsData]
-      .sort((a, b) => new Date(getUpdatedAt(b)).getTime() - new Date(getUpdatedAt(a)).getTime())
-      .slice(0, 3);
+    const recentHistory = getRecentPublishers(3);
+    const recentPublishers = recentHistory
+      .map((entry) => {
+        const record = pubsData.find((p) => p.publisherId === entry.publisherId);
+        if (!record) return null;
+        return { record, meta: entry };
+      })
+      .filter((item): item is { record: PublisherData; meta: RecentPublisherEntry } => Boolean(item));
     
     if (recentPublishers.length > 0) {
-      recentPublishers.forEach((p: PublisherData) => {
+      recentPublishers.forEach(({ record, meta }) => {
         const recentItem = createElement("button", "recent-item");
-        recentItem.addEventListener("click", () => { 
-          navigate("publishers"); 
-          // Load specific publisher logic would go here
+        recentItem.addEventListener("click", () => {
+          openPublisherDetails(record.publisherId);
         });
         
         // Status indicator icon with avatar-style background
-        const statusIcon = createElement("div", `recent-status-icon ${p.isActive ? "active" : "inactive"}`);
+        const statusIcon = createElement("div", `recent-status-icon ${record.isActive ? "active" : "inactive"}`);
         
         // Create initials from publisher name
-        const initials = (p.aliasName || "UN").split(" ").map((word: string) => word[0]).join("").substring(0, 2).toUpperCase();
+        const displayAlias = record.aliasName || meta.aliasName || "Untitled Publisher";
+        const initials = displayAlias.split(" ").map((word: string) => word[0]).join("").substring(0, 2).toUpperCase();
         const initialsEl = createElement("span", "status-initials");
         initialsEl.textContent = initials;
         statusIcon.appendChild(initialsEl);
         
         // Status badge
-        const statusBadge = createElement("div", `status-badge ${p.isActive ? "active" : "inactive"}`);
-        statusBadge.innerHTML = p.isActive 
+        const statusBadge = createElement("div", `status-badge ${record.isActive ? "active" : "inactive"}`);
+        statusBadge.innerHTML = record.isActive 
           ? "<svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"><path d=\"M9 12l2 2 4-4\"></path></svg>"
           : "<svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"><circle cx=\"12\" cy=\"12\" r=\"3\"></circle></svg>";
         statusIcon.appendChild(statusBadge);
         
         const itemContent = createElement("div", "recent-item-content");
         const itemName = createElement("div", "recent-item-name");
-        itemName.textContent = p.aliasName || "Untitled Publisher";
+        itemName.textContent = displayAlias;
         
         const itemMeta = createElement("div", "recent-item-meta");
-        const timeAgo = getTimeAgo(getUpdatedAt(p));
-        itemMeta.innerHTML = `<span class="meta-time">${timeAgo}</span> • <span class="meta-pages">${p.pages?.length || 0} pages</span>`;
+        const timeAgo = getTimeAgo(new Date(meta.timestamp).toISOString());
+        itemMeta.innerHTML = `<span class="meta-time">${timeAgo}</span> • <span class="meta-pages">${record.pages?.length || 0} pages</span>`;
         
         itemContent.appendChild(itemName);
         itemContent.appendChild(itemMeta);
@@ -159,8 +165,8 @@ export async function renderDashboard(
       });
     }
     
-    // If no publishers, show empty state
-    if (pubsData.length === 0) {
+    // If no recent edits, show guided empty state
+    if (recentPublishers.length === 0) {
       const emptyState = createElement("div", "recent-empty-state");
       emptyState.innerHTML = `
         <div class="empty-icon">
@@ -169,8 +175,8 @@ export async function renderDashboard(
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
         </div>
-        <p class="empty-title">No publishers yet</p>
-        <p class="empty-subtitle">Create your first one to get started!</p>
+        <p class="empty-title">No recent edits yet</p>
+        <p class="empty-subtitle">Save a publisher to have it appear here.</p>
       `;
       recentList.appendChild(emptyState);
     }
@@ -250,9 +256,8 @@ export async function renderDashboard(
       
       filteredData.forEach((p: PublisherData) => {
         const pubCard = createElement("div", "bg-gradient-to-br from-slate-50 to-gray-50 rounded-lg border border-slate-200 p-4 hover:shadow-md transition-all cursor-pointer group");
-        pubCard.addEventListener("click", () => { 
-          navigate("publishers"); 
-          // Load specific publisher logic would go here
+        pubCard.addEventListener("click", () => {
+          openPublisherDetails(p.publisherId);
         });
         
         const pubHeader = createElement("div", "flex items-center justify-between");

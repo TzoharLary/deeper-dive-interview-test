@@ -92,6 +92,33 @@ You have access to:
     *   Entry removed from `data/publishers.json`.
     *   **CRITICAL:** The file `data/publisher-{id}.json` should be deleted from the disk. (Note: If the current implementation does not delete the file, report this as a bug/discrepancy).
 
+## G. Edge-case Validation
+*Goal: Verify the editor handles extreme and unusual input safely and prevents invalid JSON from being written.*
+1. **Action:** Select a publisher and enter edge-case values in multiple fields, for example:
+    - Strings with special characters (quotes, backslashes, newlines), emojis, and various Unicode codepoints.
+    - Empty strings and null values for required fields.
+    - Very large numbers, extremely long strings, or deeply nested structures.
+    - Invalid dates or malformed date strings in date-like fields.
+2. **Verify UI:** The editor shows inline validation errors for fields that break schema or would produce invalid JSON; the "Save" action is disabled or blocked until corrected.
+3. **Verify Data:** Attempting to bypass UI validation (e.g., via direct PUT) should still be rejected by the server (if server exists); after a successful save, read `data/publisher-{id}.json` and ensure the JSON is well-formed and the values are stored as expected (or normalized/rejected according to rules).
+
+## H. Change Diff / Review Mode
+*Goal: Provide a reliable preview of changes so Support can review edits before committing them to disk.*
+1. **Action:** Make a set of edits to a publisher (add/remove pages, change fields) but do not save.
+2. **Action:** Open the "Review" or "Diff" view (the UI path that shows the differences between the saved state and the local edits).
+3. **Verify UI:** The diff accurately shows added, removed and modified fields in a readable format (context lines, clear indicators for additions/removals, and stable ordering where possible).
+4. **Action:** From the review view, choose to accept (save) or discard changes.
+5. **Verify Data:** If accepted, the on-disk `data/publisher-{id}.json` reflects the changes exactly as shown in the diff. If discarded, no file changes are written and the editor reverts to the saved state.
+
+## I. Delete Behavior (Soft vs Hard Delete)
+*Goal: Verify deletion model and its effects on UI and file system are consistent with expectations.*
+1. **Action:** Trigger delete for a publisher and observe the deletion flow.
+2. **Verify UI:** Confirm the presence of a meaningful confirmation dialog (with undo option if soft-delete is implemented) and clear messaging about whether the deletion is reversible.
+3. **Verify Data & FS:** Depending on the configured behavior:
+    - Soft-delete: `data/publishers.json` should mark the entry as deleted (e.g., `deleted: true` or moved to `archived`), and the `data/publisher-{id}.json` file may remain on disk in an `archive/` folder or with a `.deleted` suffix. Verify archival path and content.
+    - Hard-delete: `data/publishers.json` should remove the entry and the `data/publisher-{id}.json` file should no longer exist on disk.
+4. **Edge Cases:** Check what happens when the file cannot be deleted (permission error) — the UI should show a clear error and not silently hide the entry.
+
 # Constraints
 - **No Flakiness:** Use `await expect(...).toBeVisible()` instead of hardcoded sleeps.
 - **Truth Source:** The file system (`data/`) is the ultimate source of truth. UI success messages are not enough.

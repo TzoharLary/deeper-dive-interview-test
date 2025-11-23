@@ -1,7 +1,13 @@
+import type {
+  AllowedPagePosition,
+  AllowedPageSelector,
+  AllowedPageType
+} from "../constants/pageRules.js";
+
 export interface Page {
-  pageType: "article" | "homepage" | "section" | "text" | "video" | "gallery" | "opinion" | "category";
-  selector: string;
-  position: number;
+  pageType: AllowedPageType;
+  selector: AllowedPageSelector;
+  position: AllowedPagePosition;
 }
 
 export interface Publisher {
@@ -46,7 +52,7 @@ export interface IStore {
   startCreate(_preset?: Partial<Publisher>): void;
   updateField(_path: string, _value: unknown): void;
   markTouched(_path: string): void;
-  addPage(_type: string): void;
+  addPage(_type?: Page["pageType"]): void;
   movePage(_from: number, _to: number): void;
   removePage(_index: number): void;
   save(_payload: Publisher): Promise<void>;
@@ -57,4 +63,7 @@ export interface IStore {
 /* eslint-enable no-unused-vars */
 
 // eslint-disable-next-line no-unused-vars
-export type Navigate = (_view: "dashboard" | "publishers" | "tools") => void;
+export type Navigate = (
+  _view: "dashboard" | "publishers" | "tools",
+  _options?: { preselectPublisherId?: string }
+) => void;

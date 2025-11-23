@@ -17,7 +17,7 @@ function run() {
     qaStatusDashboard: "qa-1",
     allowedDomains: ["example.com"],
     notes: "ok",
-    pages: [createPage({ selector: ".main" })]
+    pages: [createPage({ selector: ".main-content" })]
   });
 
   const res1 = validatePublisher(valid);
@@ -31,7 +31,7 @@ function run() {
   assert(errValues2.includes("publisherId") || errValues2.length > 0, "Expected error about publisherId");
 
   // invalid pages (wrong types)
-  const invalid2: Record<string, unknown> = { ...valid, pages: [{ pageType: 123, selector: ".main", position: 1 }] };
+  const invalid2: Record<string, unknown> = { ...valid, pages: [{ pageType: 123, selector: ".main-content", position: "invalid" }] };
   const res3 = validatePublisher(invalid2);
   assert(res3.isValid === false, "Publisher with invalid page types should be invalid");
 

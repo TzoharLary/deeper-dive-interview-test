@@ -10,7 +10,10 @@ async function bootstrap() {
   const store = createStore();
 
   // Simple client-side router
-  async function navigateTo(view: "dashboard" | "publishers" | "tools") {
+  async function navigateTo(
+    view: "dashboard" | "publishers" | "tools",
+    options?: { preselectPublisherId?: string }
+  ) {
     root.innerHTML = "";
     if (view === "dashboard") {
       // Render the actual dashboard
@@ -18,7 +21,7 @@ async function bootstrap() {
       setActiveNav("nav-dashboard");
     } else if (view === "publishers") {
       // New publishers page
-      renderPublishersPage(root);
+      await renderPublishersPage(root, { initialPublisherId: options?.preselectPublisherId });
       setActiveNav("nav-publishers");
     } else if (view === "tools") {
       root.innerHTML = "<div style=\"padding: 2rem; text-align: center; color: #64748b;\">Tools coming soon...</div>";
@@ -50,7 +53,7 @@ async function bootstrap() {
   if (navTools) navTools.addEventListener("click", (e) => { e.preventDefault(); navigateTo("tools"); });
 
   // Default route
-  await navigateTo("publishers");
+  await navigateTo("dashboard");
 }
 
 bootstrap().catch((err) => {

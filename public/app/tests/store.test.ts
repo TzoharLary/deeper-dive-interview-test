@@ -70,12 +70,12 @@ function run() {
   store.addPage("article");
   snap = store.getSnapshot();
   const beforeSelector = snap.currentData?.pages?.[0]?.selector;
-  store.updateField("pages[0].selector", "#updated");
+  store.updateField("pages[0].selector", ".main-content");
   snap = store.getSnapshot();
-  assert(snap.currentData?.pages?.[0]?.selector === "#updated", "Selector should update via bracket path");
-  store.updateField("pages[0].position", 10);
+  assert(snap.currentData?.pages?.[0]?.selector === ".main-content", "Selector should update via bracket path");
+  store.updateField("pages[0].position", "sidebar");
   snap = store.getSnapshot();
-  assert(snap.currentData?.pages?.[0]?.position === 10, "Position should update via bracket path");
+  assert(snap.currentData?.pages?.[0]?.position === "sidebar", "Position should update via bracket path");
   // restore selector to avoid polluting later checks
   if (beforeSelector) store.updateField("pages[0].selector", beforeSelector);
 

@@ -1,5 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { Publisher, Page } from "../types/index.js";
+import {
+  ALLOWED_PAGE_POSITIONS,
+  ALLOWED_PAGE_SELECTORS,
+  ALLOWED_PAGE_TYPES
+} from "../constants/pageRules.js";
 
 // Mini-Zod: Lightweight chainable runtime validator
 export type ValidationError = { path: string; message: string };
@@ -90,16 +95,25 @@ export class TypeSchema<T> {
   }
 }
 
-const allowedPageTypes = ["article", "homepage", "section"] as const;
 export const PageSchema = TypeSchema.object<Page>({
   pageType: new TypeSchema<Page["pageType"]>((v: unknown) => {
-    if (typeof v !== "string" || !(allowedPageTypes as readonly string[]).includes(v)) {
+    if (typeof v !== "string" || !(ALLOWED_PAGE_TYPES as readonly string[]).includes(v)) {
       throw new Error("Invalid page type");
     }
     return v as Page["pageType"];
   }),
-  selector: TypeSchema.string(),
-  position: TypeSchema.number()
+  selector: new TypeSchema<Page["selector"]>((v: unknown) => {
+    if (typeof v !== "string" || !(ALLOWED_PAGE_SELECTORS as readonly string[]).includes(v)) {
+      throw new Error("Invalid selector");
+    }
+    return v as Page["selector"];
+  }),
+  position: new TypeSchema<Page["position"]>((v: unknown) => {
+    if (typeof v !== "string" || !(ALLOWED_PAGE_POSITIONS as readonly string[]).includes(v)) {
+      throw new Error("Invalid position");
+    }
+    return v as Page["position"];
+  })
 });
 
 type ValidatedPublisher = Pick<Publisher, "publisherId" | "aliasName" | "isActive" | "tags" | "allowedDomains" | "pages">;

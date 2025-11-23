@@ -1,10 +1,11 @@
 import type { Publisher, Page } from "../types/index.js";
+import { DEFAULT_PAGE_POSITION, DEFAULT_PAGE_SELECTOR, DEFAULT_PAGE_TYPE } from "../constants/pageRules.js";
 
 export function createPage(overrides: Partial<Page> = {}): Page {
   return {
-    pageType: overrides.pageType || "article",
-    selector: overrides.selector || ".main",
-    position: overrides.position ?? 1
+    pageType: overrides.pageType || DEFAULT_PAGE_TYPE,
+    selector: overrides.selector || DEFAULT_PAGE_SELECTOR,
+    position: overrides.position || DEFAULT_PAGE_POSITION
   };
 }
 

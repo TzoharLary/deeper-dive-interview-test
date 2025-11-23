@@ -14,7 +14,12 @@ const store: IStore = createStore(null, "edit");
 let editorInstance: EnhancedEditor | null = null;
 type SidebarEntry = PublisherListItem | PublisherData;
 let publishersCache: SidebarEntry[] = [];
-export async function renderPublishersPage(container: HTMLElement) {
+
+interface PublishersPageOptions {
+  initialPublisherId?: string;
+}
+
+export async function renderPublishersPage(container: HTMLElement, options?: PublishersPageOptions) {
   container.innerHTML = "";
   container.className = "publishers-page";
 
@@ -42,7 +47,11 @@ export async function renderPublishersPage(container: HTMLElement) {
   // Render sidebar with current store (sidebar manages store.load on selection)
   await renderSidebar(sidebar, store);
 
-  // Mount initial empty editor state
+  if (options?.initialPublisherId) {
+    await preselectPublisherById(options.initialPublisherId);
+  }
+
+  // Mount initial editor state (will render populated data if store already loaded)
   mountEditor(details);
 
   // React to store changes to (re)mount editor
@@ -101,6 +110,23 @@ export async function loadPublisher(item: SidebarEntry) {
   } catch (e) {
     console.error("Failed to load publisher", e);
   }
+}
+
+async function preselectPublisherById(publisherId: string) {
+  const match = publishersCache.find((entry) => {
+    if (isPublisherListItem(entry)) {
+      return entry.id === publisherId;
+    }
+    return entry.publisherId === publisherId;
+  });
+
+  if (match) {
+    await loadPublisher(match);
+  }
+}
+
+function isPublisherListItem(entry: SidebarEntry): entry is PublisherListItem {
+  return Boolean((entry as PublisherListItem).file && (entry as PublisherListItem).id);
 }
 
 function emptyStateHtml() {

@@ -1,4 +1,9 @@
 // API functions for publisher management
+import type {
+  AllowedPagePosition,
+  AllowedPageSelector,
+  AllowedPageType
+} from "../constants/pageRules.js";
 
 export interface PublisherListItem {
   id: string;
@@ -10,9 +15,9 @@ export interface PublisherData {
   publisherId: string;
   aliasName?: string;
   pages?: Array<{
-    pageType: string;
-    selector: string;
-    position: string;
+    pageType: AllowedPageType;
+    selector: AllowedPageSelector;
+    position: AllowedPagePosition;
   }>;
   publisherDashboard?: string;
   monitorDashboard?: string;

@@ -1,5 +1,10 @@
 import { Component } from "../core/Component.js";
 import { IStore, StoreSnapshot, Page } from "../../types/index.js";
+import {
+  ALLOWED_PAGE_POSITIONS,
+  ALLOWED_PAGE_SELECTORS,
+  ALLOWED_PAGE_TYPES
+} from "../../constants/pageRules.js";
 
 interface PageListProps {
   store: IStore;
@@ -114,16 +119,15 @@ export class PageList extends Component<PageListProps, PageListState> {
       }
 
       // Update Selector
-      const selInput = row.querySelector(".page-selector-input") as HTMLInputElement;
-      if (selInput && selInput.value !== page.selector && document.activeElement !== selInput) {
-        selInput.value = page.selector;
+      const selectorSelect = row.querySelector(".page-selector-select") as HTMLSelectElement;
+      if (selectorSelect && selectorSelect.value !== page.selector) {
+        selectorSelect.value = page.selector;
       }
 
       // Update Position
-      const posInput = row.querySelector(".page-pos-input") as HTMLInputElement;
-      const posVal = String(page.position ?? idx + 1);
-      if (posInput && posInput.value !== posVal && document.activeElement !== posInput) {
-        posInput.value = posVal;
+      const positionSelect = row.querySelector(".page-pos-select") as HTMLSelectElement;
+      if (positionSelect && positionSelect.value !== page.position) {
+        positionSelect.value = page.position;
       }
       
       // Update Delete Button Index (closure capture in createRow is stale, but we rely on index in loop? 
@@ -169,9 +173,8 @@ export class PageList extends Component<PageListProps, PageListState> {
     typeLabel.textContent = "Type";
     
     const select = document.createElement("select");
-    select.className = "page-type-select"; // Added class
-    const pageTypes = ["article", "homepage", "section", "text", "video", "gallery", "opinion", "category"];
-    pageTypes.forEach(opt => {
+    select.className = "page-type-select";
+    ALLOWED_PAGE_TYPES.forEach(opt => {
       const o = document.createElement("option");
       o.value = opt;
       o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
@@ -195,16 +198,21 @@ export class PageList extends Component<PageListProps, PageListState> {
     const selLabel = document.createElement("label");
     selLabel.innerHTML = "Selector <span style='color:var(--color-error)'>*</span>";
 
-    const selInput = document.createElement("input");
-    selInput.className = "page-selector-input"; // Added class
-    selInput.placeholder = ".main-content";
-    selInput.value = page.selector;
-    selInput.addEventListener("input", (e) => {
-      const val = (e.target as HTMLInputElement).value;
-      this.updatePage(idx, draft => ({ ...draft, selector: val }));
+    const selectorSelect = document.createElement("select");
+    selectorSelect.className = "page-selector-select";
+    ALLOWED_PAGE_SELECTORS.forEach((selector) => {
+      const option = document.createElement("option");
+      option.value = selector;
+      option.textContent = selector;
+      selectorSelect.appendChild(option);
+    });
+    selectorSelect.value = page.selector;
+    selectorSelect.addEventListener("change", () => {
+      const next = selectorSelect.value as Page["selector"];
+      this.updatePage(idx, draft => ({ ...draft, selector: next }));
     });
     selWrap.appendChild(selLabel);
-    selWrap.appendChild(selInput);
+    selWrap.appendChild(selectorSelect);
     row.appendChild(selWrap);
 
     // Position Input
@@ -212,18 +220,21 @@ export class PageList extends Component<PageListProps, PageListState> {
     posWrap.className = "config-field position";
     const posLabel = document.createElement("label");
     posLabel.textContent = "Pos";
-    const posInput = document.createElement("input");
-    posInput.className = "page-pos-input"; // Added class
-    posInput.type = "number";
-    posInput.min = "1";
-    posInput.value = String(page.position ?? idx + 1);
-    posInput.addEventListener("change", () => {
-      const rawVal = parseInt(posInput.value, 10);
-      const normalized = Number.isFinite(rawVal) && rawVal > 0 ? rawVal : idx + 1;
-      this.updatePage(idx, draft => ({ ...draft, position: normalized }), true);
+    const posSelect = document.createElement("select");
+    posSelect.className = "page-pos-select";
+    ALLOWED_PAGE_POSITIONS.forEach((position) => {
+      const option = document.createElement("option");
+      option.value = position;
+      option.textContent = position;
+      posSelect.appendChild(option);
+    });
+    posSelect.value = page.position;
+    posSelect.addEventListener("change", () => {
+      const next = posSelect.value as Page["position"];
+      this.updatePage(idx, draft => ({ ...draft, position: next }));
     });
     posWrap.appendChild(posLabel);
-    posWrap.appendChild(posInput);
+    posWrap.appendChild(posSelect);
     row.appendChild(posWrap);
 
     // Delete
@@ -239,18 +250,10 @@ export class PageList extends Component<PageListProps, PageListState> {
   }
 
   // eslint-disable-next-line no-unused-vars
-  private updatePage(idx: number, updater: (page: Page) => Page, normalizePositions = false) {
+  private updatePage(idx: number, updater: (page: Page) => Page) {
     const pages = [...(this.state.snapshot.currentData?.pages || [])];
     if (!pages[idx]) return;
     pages[idx] = updater({ ...pages[idx] });
-    const next = normalizePositions ? this.normalizePositions(pages) : pages;
-    this.props.store.updateField("pages", next);
-  }
-
-  private normalizePositions(pages: Page[]) {
-    return pages
-      .map((page, order) => ({ ...page, position: typeof page.position === "number" ? page.position : order + 1 }))
-      .sort((a, b) => a.position - b.position)
-      .map((page, order) => ({ ...page, position: order + 1 }));
+    this.props.store.updateField("pages", pages);
   }
 }

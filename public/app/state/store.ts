@@ -3,6 +3,21 @@
 import { validatePublisher } from "../utils/validator.js";
 import { savePublisher, updatePublishersList, deletePublisher, PublisherData } from "../data/api.js";
 import type { Publisher, IStore, StoreSnapshot, Page } from "../types/index.js";
+import {
+  ALLOWED_PAGE_POSITIONS,
+  ALLOWED_PAGE_SELECTORS,
+  ALLOWED_PAGE_TYPES,
+  DEFAULT_PAGE_POSITION,
+  DEFAULT_PAGE_SELECTOR,
+  DEFAULT_PAGE_TYPE,
+  isAllowedPagePosition,
+  isAllowedPageSelector,
+  isAllowedPageType
+} from "../constants/pageRules.js";
+import {
+  recordRecentPublisher,
+  removeRecentPublisher
+} from "../utils/recentPublishers.js";
 
 // Param name underscored to avoid unused-vars lint noise in type signature
 type Listener = (_snap: StoreSnapshot) => void;
@@ -73,6 +88,7 @@ export class PublisherStore implements IStore {
 
     this.currentData = JSON.parse(JSON.stringify(known));
     this.originalData = JSON.parse(JSON.stringify(known));
+    this.enforcePageConstraints();
     this.unknownKeys = unknown;
     this.touchedFields = {};
     this.notify();
@@ -101,6 +117,7 @@ export class PublisherStore implements IStore {
     };
     this.currentData = JSON.parse(JSON.stringify(empty));
     this.originalData = JSON.parse(JSON.stringify(empty));
+    this.enforcePageConstraints();
     this.unknownKeys = {};
     this.touchedFields = {};
   }
@@ -131,6 +148,7 @@ export class PublisherStore implements IStore {
       (next as any)[path] = value;
     }
     this.currentData = next;
+    this.enforcePageConstraints();
     this.notify();
   }
 
@@ -139,10 +157,15 @@ export class PublisherStore implements IStore {
     this.notify();
   }
 
-  addPage(type: string = "article") {
+  addPage(type: Page["pageType"] = DEFAULT_PAGE_TYPE) {
     if (!this.currentData) return;
-    const selector = type === "article" ? ".main-content" : type === "homepage" ? "main" : "";
-    const newPage = { pageType: type, selector, position: (this.currentData.pages?.length || 0) + 1 };
+    const normalizedType = isAllowedPageType(type) ? type : DEFAULT_PAGE_TYPE;
+    const selector = normalizedType === "homepage" ? "#root main" : DEFAULT_PAGE_SELECTOR;
+    const newPage: Page = {
+      pageType: normalizedType,
+      selector: isAllowedPageSelector(selector) ? selector : DEFAULT_PAGE_SELECTOR,
+      position: DEFAULT_PAGE_POSITION
+    };
     const pages = [...(this.currentData.pages || []), newPage];
     this.updateField("pages", pages);
   }
@@ -152,15 +175,27 @@ export class PublisherStore implements IStore {
     const arr = this.currentData.pages.slice();
     const [item] = arr.splice(from, 1);
     arr.splice(to, 0, item);
-    const updated = arr.map((p, i) => ({ ...p, position: i + 1 }));
-    this.updateField("pages", updated);
+    this.updateField("pages", arr);
   }
 
   removePage(index: number) {
     if (!this.currentData?.pages) return;
     const arr = this.currentData.pages.slice();
     arr.splice(index, 1);
-    this.updateField("pages", arr.map((p, i) => ({ ...p, position: i + 1 })));
+    this.updateField("pages", arr);
+  }
+
+  private enforcePageConstraints() {
+    const sanitizeList = (pages?: Page[]) => {
+      if (!Array.isArray(pages)) return [] as Page[];
+      return pages.map((page) => sanitizePageEntry(page));
+    };
+    if (this.currentData) {
+      this.currentData.pages = sanitizeList(this.currentData.pages);
+    }
+    if (this.originalData) {
+      this.originalData.pages = sanitizeList(this.originalData.pages);
+    }
   }
 
   checkDirty() {
@@ -188,12 +223,16 @@ export class PublisherStore implements IStore {
 
         const filename = `publisher-${id}.json`;
 
+        const sanitizedPages = (payload.pages || []).map((page) => sanitizePageEntry(page));
         // Save the publisher file using shared API helpers
-        // Transform pages position (number -> string) to satisfy PublisherData shape
         const persistence: PublisherData = {
           publisherId: payload.publisherId,
           aliasName: payload.aliasName,
-          pages: (payload.pages || []).map(p => ({ pageType: p.pageType, selector: p.selector, position: String(p.position) })),
+          pages: sanitizedPages.map((p) => ({
+            pageType: p.pageType,
+            selector: p.selector,
+            position: p.position
+          })),
           publisherDashboard: payload.publisherDashboard,
           monitorDashboard: payload.monitorDashboard,
           qaStatusDashboard: payload.qaStatusDashboard,
@@ -209,6 +248,7 @@ export class PublisherStore implements IStore {
         try {
           const alias = payload.aliasName || id;
           await updatePublishersList(id, alias, filename);
+          recordRecentPublisher(id, alias);
         } catch (e) {
           // Non-fatal: publisher file was saved, but updating the list failed
           console.warn("Failed to update publishers list:", e);
@@ -235,6 +275,7 @@ export class PublisherStore implements IStore {
     
     try {
       await deletePublisher(id);
+      removeRecentPublisher(id);
       // Notify UI
       const ev = new CustomEvent("publisher:deleted", { detail: { id } });
       window.dispatchEvent(ev as Event);
@@ -271,15 +312,7 @@ export function normalizePublisherInput(input: Publisher | PublisherData | Recor
   if (!input) return null;
   const raw: Record<string, unknown> = input as Record<string, unknown>;
   const pagesRaw = Array.isArray(raw.pages) ? raw.pages : [];
-  const pages: Page[] = pagesRaw.map((p, i) => {
-    const obj = p as Record<string, unknown>;
-    const pageTypeVal = typeof obj.pageType === "string" ? obj.pageType : "article";
-    const selectorVal = typeof obj.selector === "string" ? obj.selector : "";
-    const rawPos = obj.position;
-    const positionVal = typeof rawPos === "number" ? rawPos :
-      (typeof rawPos === "string" ? (parseInt(rawPos, 10) || (i + 1)) : (i + 1));
-    return { pageType: pageTypeVal as Page["pageType"], selector: selectorVal, position: positionVal };
-  });
+  const pages: Page[] = pagesRaw.map((p) => sanitizePageEntry(p));
   return {
     id: (raw.id as string | undefined),
     publisherId: typeof raw.publisherId === "string" ? raw.publisherId : (typeof raw.id === "string" ? raw.id : ""),
@@ -298,4 +331,12 @@ export function normalizePublisherInput(input: Publisher | PublisherData | Recor
     created_by: typeof raw.created_by === "string" ? raw.created_by : undefined,
     updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined
   } as Publisher;
+}
+
+function sanitizePageEntry(candidate: unknown): Page {
+  const obj = (candidate && typeof candidate === "object") ? candidate as Record<string, unknown> : {};
+  const pageType = isAllowedPageType(obj.pageType) ? obj.pageType : DEFAULT_PAGE_TYPE;
+  const selector = isAllowedPageSelector(obj.selector) ? obj.selector : DEFAULT_PAGE_SELECTOR;
+  const position = isAllowedPagePosition(obj.position) ? obj.position : DEFAULT_PAGE_POSITION;
+  return { pageType, selector, position };
 }
