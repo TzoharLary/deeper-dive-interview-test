@@ -5,11 +5,21 @@ import { fetchPublisher, PublisherListItem, PublisherData } from "../data/api.js
 
 
 let currentStore: IStore | null = null;
+let currentUnsubscribe: (() => void) | null = null;
+// Simple in-memory cache for full publisher payloads to avoid re-fetching
+const _publisherCache: Map<string, any> = new Map();
 
 async function loadPublisherForEditing(publisherItem: PublisherListItem, detailsPanel: HTMLElement) {
   try {
-    const fullData = await fetchPublisher(publisherItem.file);
+    const key = publisherItem.file || publisherItem.publisherId || JSON.stringify(publisherItem);
+    let fullData = _publisherCache.get(key);
+    if (!fullData) {
+      fullData = await fetchPublisher(publisherItem.file);
+      if (fullData) _publisherCache.set(key, fullData);
+    }
+
     const store = createStore(fullData, 'edit');
+    currentStore = store;
     renderPublisherEditor(detailsPanel, store);
   } catch (error) {
     console.error("Error loading publisher for editing:", error);
@@ -65,6 +75,8 @@ export async function renderPublishersPage(container: HTMLElement) {
         const data: any = await fetchPublishers();
         if (Array.isArray(data)) publishers = data as any;
         else publishers = (data && (data.publishers || [])) as any;
+      // Clear cached full payloads so updated publishers are re-fetched
+      _publisherCache.clear();
       renderSidebar(sidebar, publishers, detailsPanel);
     } catch (err) {
       console.error("Failed to refresh publishers after save:", err);
@@ -205,18 +217,28 @@ function renderSidebar(sidebar: HTMLElement, publishers: PublisherData[], detail
       item.appendChild(info);
       item.appendChild(status);
       
-      item.addEventListener("click", () => {
+      item.addEventListener("click", async () => {
         // Remove selected class from all items
         publishersList.querySelectorAll(".publisher-item").forEach(el => {
           el.classList.remove("selected");
         });
-        
+
         // Add selected class to clicked item
         item.classList.add("selected");
-        
-        // Load publisher in store and render editor
-        currentStore = createStore(publisher, "edit");
-        renderPublisherEditor(detailsPanel, currentStore as IStore);
+
+        // Try to load full publisher before opening editor.
+        // If the publisher entry includes a `file` (summary list), fetch the full file.
+        try {
+          if ((publisher as any).file) {
+            await loadPublisherForEditing(publisher as PublisherListItem, detailsPanel);
+          } else {
+            // Fallback: the publisher object already includes full data
+            currentStore = createStore(publisher, "edit");
+            renderPublisherEditor(detailsPanel, currentStore as IStore);
+          }
+        } catch (err) {
+          console.error('Failed to load publisher for editing', err);
+        }
       });
       
       publishersList.appendChild(item);
@@ -226,11 +248,16 @@ function renderSidebar(sidebar: HTMLElement, publishers: PublisherData[], detail
   // Search functionality
   searchInput.addEventListener("input", (e) => {
     const query = (e.target as HTMLInputElement).value.toLowerCase();
-    filteredPublishers = publishers.filter(pub => 
-      (pub.aliasName || "").toLowerCase().includes(query) ||
-      (pub.publisherId || "").toLowerCase().includes(query) ||
-      (pub.tags || []).some((tag: string) => tag.toLowerCase().includes(query))
-    );
+    filteredPublishers = publishers.filter(pub => {
+      const searchableName = (pub.alias || pub.aliasName || pub.id || pub.publisherId || "").toLowerCase();
+      const searchableId = (pub.id || pub.publisherId || "").toLowerCase();
+      const matchesTags = (pub.tags || []).some((tag: string) => tag.toLowerCase().includes(query));
+      return (
+        searchableName.includes(query) ||
+        searchableId.includes(query) ||
+        matchesTags
+      );
+    });
     renderPublishersList();
   });
   
@@ -244,6 +271,10 @@ function renderSidebar(sidebar: HTMLElement, publishers: PublisherData[], detail
 }
 
 function renderPublisherEditor(detailsPanel: HTMLElement, store: IStore) {
+  if (currentUnsubscribe) {
+    currentUnsubscribe();
+    currentUnsubscribe = null;
+  }
   detailsPanel.innerHTML = "";
   
   const content = document.createElement("div");
@@ -368,7 +399,7 @@ function renderPublisherEditor(detailsPanel: HTMLElement, store: IStore) {
   detailsPanel.appendChild(saveBar);
   
   // Subscribe to store updates
-  const _unsubscribe = store.subscribe((snapshot: any) => {
+  currentUnsubscribe = store.subscribe((snapshot: any) => {
     updateFormFromStore(content, snapshot);
     updateSaveBar(saveBar, snapshot);
   });
@@ -651,6 +682,9 @@ function createSaveBar(store: IStore) {
   const text = document.createElement("div");
   text.className = "save-bar-text";
   text.textContent = "Ready";
+  const setStatus = (message: string) => {
+    text.textContent = message;
+  };
   
   const actions = document.createElement("div");
   actions.className = "save-bar-actions";
@@ -663,11 +697,23 @@ function createSaveBar(store: IStore) {
   saveBtn.className = "save-btn";
   saveBtn.textContent = "Save Changes";
   saveBtn.addEventListener("click", async () => {
+    if (saveBtn.dataset.saving === "true") return;
+
+    saveBtn.dataset.saving = "true";
+    saveBtn.disabled = true;
+    setStatus("Saving...");
     try {
       const payload = store.prepareForSave();
       await store.save(payload);
+      setStatus("All changes saved");
     } catch (error) {
       console.error("Save failed:", error);
+      setStatus(
+        error instanceof Error && error.message ? `Save failed: ${error.message}` : "Save failed"
+      );
+    } finally {
+      delete saveBtn.dataset.saving;
+      updateSaveBar(saveBar, store.getSnapshot());
     }
   });
   
@@ -823,6 +869,11 @@ function createPageConfigRow(page: any, index: number, store: IStore | null) {
 function updateSaveBar(saveBar: HTMLElement, snapshot: any) {
   const saveBtn = saveBar.querySelector(".save-btn") as HTMLButtonElement;
   const text = saveBar.querySelector(".save-bar-text") as HTMLElement;
+  if (saveBtn.dataset.saving === "true") {
+    text.textContent = "Saving...";
+    saveBtn.disabled = true;
+    return;
+  }
   
   const isDirty = snapshot.isDirty;
   const hasErrors = Object.keys(snapshot.validation.errors).length > 0;
@@ -842,6 +893,11 @@ function updateSaveBar(saveBar: HTMLElement, snapshot: any) {
 }
 
 function showEmptyState(detailsPanel: HTMLElement) {
+  if (currentUnsubscribe) {
+    currentUnsubscribe();
+    currentUnsubscribe = null;
+  }
+  currentStore = null;
   detailsPanel.innerHTML = `
     <div class="details-content">
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 400px; color: #64748b; text-align: center;">

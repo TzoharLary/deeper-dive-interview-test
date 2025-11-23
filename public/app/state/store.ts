@@ -1,4 +1,5 @@
 import { validatePublisher } from "../utils/validator.js";
+import { savePublisher, updatePublishersList } from "../data/api.js";
 import type { Publisher, IStore, StoreSnapshot, Page } from "../types/index.js";
 
 type Listener = (snapshot: StoreSnapshot) => void;
@@ -165,31 +166,13 @@ export class PublisherStore implements IStore {
 
         const filename = `publisher-${id}.json`;
 
-        // Save the publisher file
-        await fetch(`/api/publisher/${filename}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload, null, 2)
-        });
+        // Save the publisher file using shared API helpers
+        await savePublisher(filename, payload as any);
 
         // Update the publishers list (publishers.json) to include this publisher
         try {
-          const listResp = await fetch("/api/publishers");
-          if (listResp.ok) {
-            const listData = await listResp.json();
-            const publishers: any[] = Array.isArray(listData.publishers) ? listData.publishers.slice() : [];
-            const existingIndex = publishers.findIndex((p: any) => p.id === id);
-            const alias = (payload as any).aliasName || id;
-            const entry = { id, alias, file: filename };
-            if (existingIndex !== -1) publishers[existingIndex] = entry;
-            else publishers.push(entry);
-
-            await fetch("/api/publisher/publishers.json", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ publishers }, null, 2)
-            });
-          }
+          const alias = (payload as any).aliasName || id;
+          await updatePublishersList(id, alias, filename);
         } catch (e) {
           // Non-fatal: publisher file was saved, but updating the list failed
           console.warn("Failed to update publishers list:", e);
