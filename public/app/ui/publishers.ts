@@ -43,9 +43,9 @@ export async function renderPublishersPage(container: HTMLElement) {
   container.appendChild(layout);
 
   // Load publishers data
-  let publishers: Publisher[] = [];
+  let publishers: any[] = [];
   try {
-      const data = await fetchPublishers();
+      const data: any = await fetchPublishers();
       // `fetchPublishers()` returns an array of publisher list items.
       // Some callers expected an object { publishers: [...] } — handle both shapes.
       if (Array.isArray(data)) publishers = data as any;
@@ -62,7 +62,7 @@ export async function renderPublishersPage(container: HTMLElement) {
   // publisher is created or an existing one is updated.
   const onSaved = async () => {
     try {
-        const data = await fetchPublishers();
+        const data: any = await fetchPublishers();
         if (Array.isArray(data)) publishers = data as any;
         else publishers = (data && (data.publishers || [])) as any;
       renderSidebar(sidebar, publishers, detailsPanel);

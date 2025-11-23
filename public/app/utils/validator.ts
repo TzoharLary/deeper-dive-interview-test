@@ -1,4 +1,4 @@
-import { Publisher, Page } from "../../types";
+import { Publisher, Page } from "../types";
 
 // Mini-Zod: Lightweight chainable runtime validator
 export type ValidationError = { path: string; message: string };

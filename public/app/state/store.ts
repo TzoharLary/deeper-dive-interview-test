@@ -1,5 +1,5 @@
 import { validatePublisher } from "../utils/validator";
-import type { Publisher, IStore, StoreSnapshot } from "../../types";
+import type { Publisher, IStore, StoreSnapshot, Page } from "../types";
 
 type Listener = (snapshot: StoreSnapshot) => void;
 
@@ -221,8 +221,37 @@ export class PublisherStore implements IStore {
   }
 }
 
-export function createStore(initial?: Publisher | null, mode: "create" | "edit" = "edit") {
-  return new PublisherStore(initial, mode);
+export function createStore(initial?: any, mode: "create" | "edit" = "edit") {
+  // Normalize incoming data (PublisherData shape from API may differ)
+  const normalize = (input: any): Publisher | null => {
+    if (!input) return null;
+    const pagesInput = Array.isArray(input.pages) ? input.pages : [];
+    const pages: Page[] = pagesInput.map((p: any, i: number) => ({
+      pageType: (p.pageType as any) || "article",
+      selector: p.selector || "",
+      position: p.position != null ? (typeof p.position === "string" ? parseInt(p.position, 10) || (i + 1) : p.position) : (i + 1)
+    }));
+    return {
+      id: input.id,
+      publisherId: input.publisherId || input.id || "",
+      aliasName: input.aliasName || input.alias || "",
+      isActive: input.isActive != null ? Boolean(input.isActive) : true,
+      tags: input.tags || [],
+      publisherDashboard: input.publisherDashboard,
+      monitorDashboard: input.monitorDashboard,
+      qaStatusDashboard: input.qaStatusDashboard,
+      allowedDomains: input.allowedDomains || [],
+      customCss: input.customCss,
+      notes: input.notes,
+      pages,
+      created_date: input.created_date,
+      updated_date: input.updated_date,
+      created_by: input.created_by,
+      updatedAt: input.updatedAt
+    } as Publisher;
+  };
+
+  return new PublisherStore(normalize(initial), mode);
 }
 
 export default PublisherStore;
