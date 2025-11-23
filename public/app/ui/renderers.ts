@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // Lightweight DOM helpers for Vanilla rendering (no framework)
 export function createElement<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -61,3 +62,52 @@ export function renderList<T>(
     else container.insertBefore(node, current || null);
   });
 }
+
+export function renderChipsInput(
+  container: HTMLElement,
+  values: string[],
+  onChange: (newValues: string[]) => void,
+  placeholder: string = "Type and press Enter..."
+) {
+  container.innerHTML = "";
+  container.className = "tags-input-wrapper";
+
+  const tagsContainer = createElement("div", "tags-container");
+  
+  values.forEach((val, idx) => {
+    const tag = createElement("span", "tag");
+    tag.textContent = val;
+    
+    const close = createElement("span", "tag-close");
+    close.innerHTML = "&times;";
+    close.addEventListener("click", () => {
+      const next = [...values];
+      next.splice(idx, 1);
+      onChange(next);
+    });
+    
+    tag.appendChild(close);
+    tagsContainer.appendChild(tag);
+  });
+
+  const input = createElement("input");
+  input.placeholder = placeholder;
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (val && !values.includes(val)) {
+        onChange([...values, val]);
+        input.value = "";
+      }
+    } else if (e.key === "Backspace" && input.value === "" && values.length > 0) {
+      const next = [...values];
+      next.pop();
+      onChange(next);
+    }
+  });
+
+  container.appendChild(tagsContainer);
+  container.appendChild(input);
+}
+/* eslint-enable no-unused-vars */

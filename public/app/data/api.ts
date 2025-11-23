@@ -22,7 +22,7 @@ export interface PublisherData {
   tags?: string[];
   allowedDomains?: string[];
   notes?: string;
-  [key: string]: any; // For extended data
+  [key: string]: unknown; // Extended/unknown fields preserved without unsafe any
 }
 
 // Get list of all publishers
@@ -123,21 +123,11 @@ export async function updatePublishersList(id: string, alias: string, filename: 
 // Delete publisher
 export async function deletePublisher(id: string): Promise<void> {
   try {
-    // Remove from publishers list
-    const publishers = await fetchPublishers();
-    const filteredPublishers = publishers.filter(p => p.id !== id);
-    
-    await fetch("/api/publisher/publishers.json", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ publishers: filteredPublishers }, null, 2)
-    });
-    
-    // Note: We're not deleting the actual file to prevent data loss
-    // The file will remain in the data folder but won't be listed
-    
+    const filename = `publisher-${id}.json`;
+    const deleteResponse = await fetch(`/api/publisher/${filename}`, { method: "DELETE" });
+    if (!deleteResponse.ok && deleteResponse.status !== 404) {
+      throw new Error(`Failed to delete publisher file: ${deleteResponse.status}`);
+    }
   } catch (error) {
     console.error("Error deleting publisher:", error);
     throw error;

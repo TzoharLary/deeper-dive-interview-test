@@ -2,6 +2,8 @@
  * Base class for stateful UI components.
  * Implements a simplified React-like lifecycle: mount -> render -> update -> unmount.
  */
+/* eslint-disable @typescript-eslint/ban-types */
+// Using {} defaults here intentionally to allow heterogeneous prop objects without forcing index signatures.
 export abstract class Component<P = {}, S = {}> {
   protected props: P;
   protected state: S;

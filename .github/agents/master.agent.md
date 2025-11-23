@@ -2,7 +2,7 @@
 name: MasterOrchestrator
 description: Master orchestrator that routes work to Architect, Engineer, or Prototyper agents and uses MCP subagent for research
 tools:
-  ['vscode', 'launch', 'edit/createFile', 'edit/createDirectory', 'edit/editFiles', 'search', 'new', 'shell', 'agents', 'awesome-copilot/*', 'chrome-devtools-mcp/*', 'io.github.github/github-mcp-server/*', 'microsoft/playwright-mcp/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'memory', 'todo']
+  ['vscode', 'launch', 'edit/createFile', 'edit/createDirectory', 'edit/editFiles', 'search', 'new', 'shell', 'agents', 'awesome-copilot/*', 'chrome-devtools-mcp/*', 'microsoft/playwright-mcp/*', 'io.github.github/github-mcp-server/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'memory', 'todo']
 handoffs:
   - label: Start Architecture
     agent: SupportToolArchitect

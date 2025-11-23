@@ -1,4 +1,5 @@
 import PublisherStore from "../state/store.js";
+import { createPublisher } from "./factories.js";
 
 function assert(cond: boolean, msg: string) {
   if (!cond) throw new Error(msg);
@@ -7,21 +8,13 @@ function assert(cond: boolean, msg: string) {
 function run() {
   console.log("Running store tests...");
 
-  const initial = {
-    id: "1",
+  const initial = { ...createPublisher({
     publisherId: "pub-1",
     aliasName: "Initial",
-    isActive: true,
     tags: ["t1"],
-    publisherDashboard: "",
-    monitorDashboard: "",
-    qaStatusDashboard: "",
     allowedDomains: ["example.com"],
-    customCss: "",
-    notes: "",
-    pages: [],
-    extraKey: "extra-value"
-  } as any;
+    pages: []
+  }), extraKey: "extra-value" } as Record<string, unknown>;
 
   const store = new PublisherStore(initial, "edit");
 
@@ -41,7 +34,8 @@ function run() {
 
   // unknown keys preserved in prepareForSave
   const prepared = store.prepareForSave();
-  assert((prepared as any).extraKey === "extra-value", "Unknown keys should be included in prepareForSave");
+  const preparedRecord = prepared as unknown as Record<string, unknown>;
+  assert(preparedRecord.extraKey === "extra-value", "Unknown keys should be included in prepareForSave");
 
   // validation prevents saving (no publisherId)
   store.updateField("publisherId", "");
@@ -72,13 +66,27 @@ function run() {
   const removeLenAfter = snap.currentData?.pages?.length || 0;
   assert(removeLenAfter === removeLenBefore - 1, "removePage should remove a page");
 
+  // nested path updates via bracket notation
+  store.addPage("article");
+  snap = store.getSnapshot();
+  const beforeSelector = snap.currentData?.pages?.[0]?.selector;
+  store.updateField("pages[0].selector", "#updated");
+  snap = store.getSnapshot();
+  assert(snap.currentData?.pages?.[0]?.selector === "#updated", "Selector should update via bracket path");
+  store.updateField("pages[0].position", 10);
+  snap = store.getSnapshot();
+  assert(snap.currentData?.pages?.[0]?.position === 10, "Position should update via bracket path");
+  // restore selector to avoid polluting later checks
+  if (beforeSelector) store.updateField("pages[0].selector", beforeSelector);
+
   console.log("store tests passed");
 }
 
 try {
   run();
   process.exit(0);
-} catch (e: any) {
-  console.error("Test failed:", e.message || e);
+} catch (e: unknown) {
+  const msg = e instanceof Error ? e.message : String(e);
+  console.error("Test failed:", msg);
   process.exit(1);
 }

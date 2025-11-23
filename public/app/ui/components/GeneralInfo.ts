@@ -1,5 +1,6 @@
 import { Component } from "../core/Component.js";
 import { IStore, StoreSnapshot } from "../../types/index.js";
+import { renderChipsInput } from "../renderers.js";
 
 interface GeneralInfoProps {
   store: IStore;
@@ -12,6 +13,8 @@ interface GeneralInfoState {
 export class GeneralInfo extends Component<GeneralInfoProps, GeneralInfoState> {
   private unsubscribe: (() => void) | null = null;
   private inputs: Record<string, HTMLInputElement> = {};
+  private tagsContainer: HTMLElement | null = null;
+  private publisherIdIcon: HTMLElement | null = null;
 
   protected getInitialState(): GeneralInfoState {
     return { snapshot: this.props.store.getSnapshot() };
@@ -33,30 +36,64 @@ export class GeneralInfo extends Component<GeneralInfoProps, GeneralInfoState> {
   // Only called once on mount
   render() {
     this.container.innerHTML = "";
-    this.container.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-6 transition-shadow hover:shadow-md";
+    this.container.className = "section-fieldset";
 
-    const header = document.createElement("div");
-    header.className = "flex items-center gap-3 mb-6 pb-4 border-b border-slate-100";
-    
-    const icon = document.createElement("div");
-    icon.className = "p-2 bg-indigo-50 text-indigo-600 rounded-lg";
-    icon.innerHTML = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"></path><circle cx=\"12\" cy=\"7\" r=\"4\"></circle></svg>";
-    
-    const title = document.createElement("h3");
-    title.className = "text-lg font-bold text-slate-800";
-    title.textContent = "General Information";
-    
-    header.appendChild(icon);
-    header.appendChild(title);
-    this.container.appendChild(header);
+    const legend = document.createElement("legend");
+    legend.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        General Information
+      </div>
+    `;
+    this.container.appendChild(legend);
 
-    const grid = document.createElement("div");
-    grid.className = "grid grid-cols-1 gap-6";
-    this.container.appendChild(grid);
+    const content = document.createElement("div");
+    this.container.appendChild(content);
 
-    this.createField(grid, "Publisher ID", "publisherId", "Unique identifier for the publisher");
-    this.createField(grid, "Alias Name", "aliasName", "Display name shown in dashboards");
-    this.createField(grid, "Tags", "tags", "Comma separated tags for filtering");
+    this.publisherIdIcon = null;
+    this.createPublisherIdField(content);
+    
+    this.createField(content, "Alias Name", "aliasName", "Display name shown in dashboards");
+    
+    // Active Status Toggle
+    const activeGroup = document.createElement("div");
+    activeGroup.className = "form-group";
+    const activeLabel = document.createElement("label");
+    activeLabel.textContent = "Active Status";
+    activeGroup.appendChild(activeLabel);
+    
+    const toggleLabel = document.createElement("label");
+    toggleLabel.className = "toggle-switch";
+    const toggleInput = document.createElement("input");
+    toggleInput.type = "checkbox";
+    toggleInput.addEventListener("change", (e) => {
+      this.props.store.updateField("isActive", (e.target as HTMLInputElement).checked);
+    });
+    this.inputs["isActive"] = toggleInput;
+    
+    const slider = document.createElement("div");
+    slider.className = "toggle-slider";
+    
+    const toggleText = document.createElement("span");
+    toggleText.className = "toggle-text";
+    toggleText.textContent = "Enable/Disable publisher";
+    
+    toggleLabel.appendChild(toggleInput);
+    toggleLabel.appendChild(slider);
+    toggleLabel.appendChild(toggleText);
+    activeGroup.appendChild(toggleLabel);
+    content.appendChild(activeGroup);
+
+    // Tags Chips
+    const tagsGroup = document.createElement("div");
+    tagsGroup.className = "form-group";
+    const tagsLabel = document.createElement("label");
+    tagsLabel.textContent = "Tags";
+    tagsGroup.appendChild(tagsLabel);
+    
+    this.tagsContainer = document.createElement("div");
+    tagsGroup.appendChild(this.tagsContainer);
+    content.appendChild(tagsGroup);
 
     // Initial sync
     this.update();
@@ -64,38 +101,51 @@ export class GeneralInfo extends Component<GeneralInfoProps, GeneralInfoState> {
 
   // Called on state change
   protected update() {
-    const { currentData, validation, touchedFields } = this.state.snapshot;
-    const data = currentData || { publisherId: "", aliasName: "", tags: [] };
+    const { currentData, validation, touchedFields, mode } = this.state.snapshot;
+    const data = currentData || { publisherId: "", aliasName: "", tags: [], isActive: true };
 
     this.syncField("publisherId", data.publisherId, validation.errors["publisherId"], touchedFields["publisherId"]);
     this.syncField("aliasName", data.aliasName, validation.errors["aliasName"], touchedFields["aliasName"]);
-    this.syncField("tags", (data.tags || []).join(","), validation.errors["tags"], touchedFields["tags"]);
+    
+    // Sync Toggle
+    if (this.inputs["isActive"]) {
+      this.inputs["isActive"].checked = !!data.isActive;
+    }
+
+    // Sync Tags
+    if (this.tagsContainer) {
+      renderChipsInput(
+        this.tagsContainer, 
+        data.tags || [], 
+        (newTags) => this.props.store.updateField("tags", newTags),
+        "enterprise, active, priority..."
+      );
+    }
+
+    this.applyPublisherIdModeState(mode, data.publisherId || "");
   }
 
   private createField(parent: HTMLElement, label: string, field: string, helpText?: string) {
-    const wrap = document.createElement("div");
-    wrap.className = "group";
+    const group = document.createElement("div");
+    group.className = "form-group";
 
     const labelEl = document.createElement("label");
-    labelEl.className = "block text-sm font-medium text-slate-700 mb-1.5 ml-1";
     labelEl.textContent = label;
-    wrap.appendChild(labelEl);
+    if (field === "aliasName") {
+      labelEl.innerHTML += " <span style='color:var(--color-error)'>*</span>";
+    }
+    group.appendChild(labelEl);
 
     const inputWrap = document.createElement("div");
-    inputWrap.className = "relative";
+    inputWrap.className = "input-wrapper";
 
     const input = document.createElement("input");
-    input.className = "block w-full rounded-lg border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400";
     input.placeholder = `Enter ${label.toLowerCase()}...`;
     
     input.addEventListener("input", (e) => {
       const val = (e.target as HTMLInputElement).value;
       this.props.store.markTouched(field);
-      if (field === "tags") {
-        this.props.store.updateField(field, val.split(",").map(s => s.trim()).filter(Boolean));
-      } else {
-        this.props.store.updateField(field, val);
-      }
+      this.props.store.updateField(field, val);
     });
 
     this.inputs[field] = input;
@@ -103,66 +153,179 @@ export class GeneralInfo extends Component<GeneralInfoProps, GeneralInfoState> {
 
     // Validation Icon Wrapper
     const iconWrap = document.createElement("div");
-    iconWrap.className = "absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-opacity opacity-0";
+    iconWrap.className = "input-icon";
+    iconWrap.style.opacity = "0"; // Hidden by default
     iconWrap.setAttribute("data-icon-for", field);
     inputWrap.appendChild(iconWrap);
 
-    wrap.appendChild(inputWrap);
+    group.appendChild(inputWrap);
 
     // Error container
     const err = document.createElement("div");
-    err.className = "text-xs text-red-500 mt-1.5 ml-1 font-medium hidden flex items-center gap-1";
+    err.className = "error-message";
     err.setAttribute("data-error-for", field);
-    wrap.appendChild(err);
+    group.appendChild(err);
 
     if (helpText) {
       const help = document.createElement("div");
-      help.className = "text-xs text-slate-400 mt-1.5 ml-1";
+      help.style.fontSize = "12px";
+      help.style.color = "var(--color-text-muted)";
+      help.style.marginTop = "4px";
       help.textContent = helpText;
-      wrap.appendChild(help);
+      group.appendChild(help);
     }
 
-    parent.appendChild(wrap);
+    parent.appendChild(group);
+  }
+
+  private createPublisherIdField(parent: HTMLElement) {
+    const group = document.createElement("div");
+    group.className = "form-group";
+
+    const labelEl = document.createElement("label");
+    labelEl.innerHTML = "Publisher ID <span style='color:var(--color-error)'>*</span>";
+    group.appendChild(labelEl);
+
+    const inputWrap = document.createElement("div");
+    inputWrap.className = "input-wrapper";
+
+    const input = document.createElement("input");
+    input.placeholder = "Enter publisher id...";
+    input.autocomplete = "off";
+    input.addEventListener("input", (e) => {
+      const val = (e.target as HTMLInputElement).value;
+      this.props.store.markTouched("publisherId");
+      this.props.store.updateField("publisherId", val);
+    });
+    this.inputs["publisherId"] = input;
+    inputWrap.appendChild(input);
+
+    const iconWrap = document.createElement("div");
+    iconWrap.className = "input-icon";
+    iconWrap.style.opacity = "0";
+    iconWrap.setAttribute("data-icon-for", "publisherId");
+    inputWrap.appendChild(iconWrap);
+    this.publisherIdIcon = iconWrap;
+
+    group.appendChild(inputWrap);
+
+    const err = document.createElement("div");
+    err.className = "error-message";
+    err.setAttribute("data-error-for", "publisherId");
+    group.appendChild(err);
+
+    const help = document.createElement("div");
+    help.style.fontSize = "12px";
+    help.style.color = "var(--color-text-muted)";
+    help.style.marginTop = "4px";
+    help.textContent = "Unique identifier for the publisher";
+    group.appendChild(help);
+
+    parent.appendChild(group);
+
+    if (this.state.snapshot.mode === "create") {
+      input.readOnly = false;
+      input.addEventListener("blur", () => {
+        if (!input.value.trim()) return;
+        this.lockPublisherIdInput();
+      });
+    } else {
+      this.lockPublisherIdInput();
+    }
+  }
+
+  private lockPublisherIdInput() {
+    const input = this.inputs["publisherId"];
+    if (!input) return;
+    input.readOnly = true;
+    input.dataset.locked = "true";
+    if (this.publisherIdIcon) {
+      this.publisherIdIcon.style.opacity = "1";
+      this.publisherIdIcon.dataset.lockIcon = "true";
+      this.publisherIdIcon.innerHTML = this.lockIconSvg;
+    }
+  }
+
+  private unlockPublisherIdInput() {
+    const input = this.inputs["publisherId"];
+    if (!input) return;
+    input.readOnly = false;
+    delete input.dataset.locked;
+    if (this.publisherIdIcon) {
+      this.publisherIdIcon.style.opacity = "0";
+      this.publisherIdIcon.innerHTML = "";
+      this.publisherIdIcon.removeAttribute("data-lock-icon");
+    }
+  }
+
+  private applyPublisherIdModeState(mode: "create" | "edit", value: string) {
+    if (mode !== "create") {
+      this.lockPublisherIdInput();
+      return;
+    }
+
+    const input = this.inputs["publisherId"];
+    if (!input) return;
+
+    if (!value && input.dataset.locked === "true") {
+      this.unlockPublisherIdInput();
+    }
+  }
+
+  private get lockIconSvg() {
+    return "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path></svg>";
   }
 
   private syncField(field: string, value: string, error: string | undefined, touched: boolean) {
     const input = this.inputs[field];
     if (!input) return;
 
-    if (input.value !== value) {
-      input.value = value;
+    const nextValue = value ?? "";
+    if (input.value !== nextValue) {
+      input.value = nextValue;
     }
 
     // Reset styles
-    input.classList.remove("border-red-300", "bg-red-50", "focus:border-red-500", "focus:ring-red-500/20");
-    input.classList.remove("border-emerald-300", "bg-emerald-50", "focus:border-emerald-500", "focus:ring-emerald-500/20");
+    input.classList.remove("error");
     
     const errEl = this.container.querySelector(`[data-error-for="${field}"]`) as HTMLElement;
     const iconWrap = this.container.querySelector(`[data-icon-for="${field}"]`) as HTMLElement;
+    const mode = this.state.snapshot.mode || "edit";
+
+    if (field === "publisherId") {
+      if (mode !== "create" || input.dataset.locked === "true") {
+        this.lockPublisherIdInput();
+        if (errEl) errEl.style.display = "none";
+        return;
+      }
+      if (iconWrap) {
+        iconWrap.style.opacity = touched ? "1" : "0";
+        iconWrap.removeAttribute("data-lock-icon");
+      }
+    }
     
-    if (touched) {
-      iconWrap.classList.remove("opacity-0");
+    if (touched && iconWrap) {
+      iconWrap.style.opacity = "1";
       if (error) {
         // Error State
-        input.classList.add("border-red-300", "bg-red-50", "focus:border-red-500", "focus:ring-red-500/20");
-        iconWrap.innerHTML = "<svg class=\"text-red-500\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><line x1=\"12\" y1=\"8\" x2=\"12\" y2=\"12\"></line><line x1=\"12\" y1=\"16\" x2=\"12.01\" y2=\"16\"></line></svg>";
+        input.classList.add("error");
+        iconWrap.innerHTML = "<svg class=\"text-red-500\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--color-error)\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><line x1=\"12\" y1=\"8\" x2=\"12\" y2=\"12\"></line><line x1=\"12\" y1=\"16\" x2=\"12.01\" y2=\"16\"></line></svg>";
         if (errEl) {
           errEl.textContent = error;
-          errEl.classList.remove("hidden");
+          errEl.style.display = "block";
         }
       } else if (value) {
         // Success State
-        input.classList.add("border-emerald-300", "bg-emerald-50", "focus:border-emerald-500", "focus:ring-emerald-500/20");
-        iconWrap.innerHTML = "<svg class=\"text-emerald-500\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 11.08V12a10 10 0 1 1-5.93-9.14\"></path><polyline points=\"22 4 12 14.01 9 11.01\"></polyline></svg>";
-        if (errEl) errEl.classList.add("hidden");
+        iconWrap.innerHTML = "<svg class=\"text-emerald-500\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--color-success)\"><path d=\"M22 11.08V12a10 10 0 1 1-5.93-9.14\"></path><polyline points=\"22 4 12 14.01 9 11.01\"></polyline></svg>";
+        if (errEl) errEl.style.display = "none";
       } else {
         // Empty but touched (neutral)
-        iconWrap.classList.add("opacity-0");
-        if (errEl) errEl.classList.add("hidden");
+        iconWrap.style.opacity = "0";
+        if (errEl) errEl.style.display = "none";
       }
     } else {
-      iconWrap.classList.add("opacity-0");
-      if (errEl) errEl.classList.add("hidden");
+      if (iconWrap) iconWrap.style.opacity = "0";
+      if (errEl) errEl.style.display = "none";
     }
   }
 }

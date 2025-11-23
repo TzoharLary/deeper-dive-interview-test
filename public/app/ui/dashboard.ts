@@ -110,8 +110,12 @@ export async function renderDashboard(
     const recentList = createElement("div", "recent-list");
     
     // Get recent publishers (sorted by updatedAt, limit to 3 for this card)
+    const getUpdatedAt = (p: PublisherData): string => {
+      const rawVal = (p as Partial<{ updatedAt: string }>).updatedAt;
+      return (typeof rawVal === "string" && rawVal.trim()) ? rawVal : "2025-01-01";
+    };
     const recentPublishers = [...pubsData]
-      .sort((a, b) => new Date(b.updatedAt || "2025-01-01").getTime() - new Date(a.updatedAt || "2025-01-01").getTime())
+      .sort((a, b) => new Date(getUpdatedAt(b)).getTime() - new Date(getUpdatedAt(a)).getTime())
       .slice(0, 3);
     
     if (recentPublishers.length > 0) {
@@ -143,7 +147,7 @@ export async function renderDashboard(
         itemName.textContent = p.aliasName || "Untitled Publisher";
         
         const itemMeta = createElement("div", "recent-item-meta");
-        const timeAgo = getTimeAgo(p.updatedAt || "2025-01-01");
+        const timeAgo = getTimeAgo(getUpdatedAt(p));
         itemMeta.innerHTML = `<span class="meta-time">${timeAgo}</span> • <span class="meta-pages">${p.pages?.length || 0} pages</span>`;
         
         itemContent.appendChild(itemName);

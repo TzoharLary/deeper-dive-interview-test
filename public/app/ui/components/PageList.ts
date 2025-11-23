@@ -32,36 +32,39 @@ export class PageList extends Component<PageListProps, PageListState> {
 
   render() {
     this.container.innerHTML = "";
-    this.container.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-6 transition-shadow hover:shadow-md";
+    this.container.className = "section-fieldset";
 
-    const header = document.createElement("div");
-    header.className = "flex justify-between items-center mb-6 pb-4 border-b border-slate-100";
+    const legend = document.createElement("legend");
+    legend.style.display = "flex";
+    legend.style.justifyContent = "space-between";
+    legend.style.alignItems = "center";
+    legend.style.width = "100%";
     
-    const titleWrap = document.createElement("div");
-    titleWrap.className = "flex items-center gap-3";
-    const icon = document.createElement("div");
-    icon.className = "p-2 bg-indigo-50 text-indigo-600 rounded-lg";
-    icon.innerHTML = "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line></svg>";
-    const title = document.createElement("h3");
-    title.className = "text-lg font-bold text-slate-800";
-    title.textContent = "Page Configurations";
-    titleWrap.appendChild(icon);
-    titleWrap.appendChild(title);
-    header.appendChild(titleWrap);
+    const title = document.createElement("div");
+    title.style.display = "flex";
+    title.style.alignItems = "center";
+    title.style.gap = "8px";
+    title.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      Page Configurations
+    `;
+    legend.appendChild(title);
 
-    const btnGroup = document.createElement("div");
-    btnGroup.className = "flex gap-3";
+    const actions = document.createElement("div");
+    actions.className = "header-actions";
     
-    const addArticle = this.createBtn("Add Article", "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300", () => this.props.store.addPage("article"));
-    const addHome = this.createBtn("Add Home", "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300", () => this.props.store.addPage("homepage"));
+    const addArticle = this.createBtn("+ Add Article Page", "add-btn", () => this.props.store.addPage("article"));
+    const addHome = this.createBtn("+ Add Home Page", "add-btn", () => this.props.store.addPage("homepage"));
     
-    btnGroup.appendChild(addArticle);
-    btnGroup.appendChild(addHome);
-    header.appendChild(btnGroup);
-    this.container.appendChild(header);
+    actions.appendChild(addArticle);
+    actions.appendChild(addHome);
+    legend.appendChild(actions);
+    
+    this.container.appendChild(legend);
 
     this.listContainer = document.createElement("div");
-    this.listContainer.className = "space-y-4";
+    this.listContainer.className = "page-configs";
+    this.listContainer.style.border = "none"; // Remove border from container as cards have borders
     this.container.appendChild(this.listContainer);
 
     this.update();
@@ -72,70 +75,103 @@ export class PageList extends Component<PageListProps, PageListState> {
     const { currentData } = this.state.snapshot;
     const pages = currentData?.pages || [];
 
-    const children = Array.from(this.listContainer.children) as HTMLElement[];
-    
-    // Remove excess
-    while (children.length > pages.length) {
-      this.listContainer.lastChild?.remove();
-      children.pop();
-    }
-
-    // Update or Create
-    pages.forEach((page, idx) => {
-      let row = children[idx];
-      if (!row) {
-        row = this.createRow(page, idx);
-        this.listContainer!.appendChild(row);
-      } else {
-        this.updateRow(row, page, idx);
-      }
-    });
-
-    if (pages.length === 0 && children.length === 0) {
-      this.listContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/50">
-          <div class="p-4 bg-white rounded-full shadow-sm mb-4">
-            <svg class="text-slate-300" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+    // If empty, show empty state
+    if (pages.length === 0) {
+      if (this.listContainer.children.length !== 1 || !this.listContainer.querySelector(".empty-state")) {
+        this.listContainer.innerHTML = `
+          <div class="empty-state">
+            <div style="margin-bottom:8px">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            </div>
+            <h4 style="margin:0;font-size:14px;font-weight:600;color:var(--color-text-primary)">No pages configured</h4>
+            <p style="margin:4px 0 0;font-size:13px;color:var(--color-text-secondary)">Add a page configuration to start tracking content on specific URLs.</p>
           </div>
-          <h4 class="text-sm font-semibold text-slate-900">No pages configured</h4>
-          <p class="text-sm text-slate-500 mt-1 max-w-xs">Add a page configuration to start tracking content on specific URLs.</p>
-        </div>
-      `;
-    } else if (pages.length > 0) {
-      const emptyMsg = this.listContainer.querySelector(".border-dashed");
-      if (emptyMsg) emptyMsg.remove();
+        `;
+      }
+      return;
     }
+
+    // If row count changed, full rebuild (simplest way to handle add/remove)
+    // We check if the first child is empty-state, if so we need rebuild too
+    const existingRows = this.listContainer.querySelectorAll(".page-card");
+    if (existingRows.length !== pages.length) {
+      this.listContainer.innerHTML = "";
+      pages.forEach((page, idx) => {
+        this.listContainer?.appendChild(this.createRow(page, idx));
+      });
+      return;
+    }
+
+    // Smart update: sync values
+    pages.forEach((page, idx) => {
+      const row = existingRows[idx] as HTMLElement;
+      if (!row) return;
+
+      // Update Type
+      const typeSelect = row.querySelector(".page-type-select") as HTMLSelectElement;
+      if (typeSelect && typeSelect.value !== page.pageType) {
+        typeSelect.value = page.pageType;
+      }
+
+      // Update Selector
+      const selInput = row.querySelector(".page-selector-input") as HTMLInputElement;
+      if (selInput && selInput.value !== page.selector && document.activeElement !== selInput) {
+        selInput.value = page.selector;
+      }
+
+      // Update Position
+      const posInput = row.querySelector(".page-pos-input") as HTMLInputElement;
+      const posVal = String(page.position ?? idx + 1);
+      if (posInput && posInput.value !== posVal && document.activeElement !== posInput) {
+        posInput.value = posVal;
+      }
+      
+      // Update Delete Button Index (closure capture in createRow is stale, but we rely on index in loop? 
+      // Actually createRow uses closure 'idx'. If we don't rebuild, the click handler uses OLD idx.
+      // This is a problem if we reorder. But here we only update values.
+      // If we reorder, the array changes order, but length might be same.
+      // If we swap items, 'pages' order changes.
+      // If we rely on closure 'idx', we MUST rebuild if order changes?
+      // Or we can update the click handler?
+      // For now, let's assume simple edits. If we implement drag/drop reorder later, we need full rebuild or better logic.
+      // But wait, if I delete item 0, length changes -> rebuild. Correct.
+      // If I just type in item 0, length same -> update. Correct.
+      // So closure 'idx' is fine because it matches the row index which doesn't change for *that row element* unless we move it.
+      // Actually, if we swap, row 0 becomes row 1's data. The closure 'idx' 0 still refers to index 0.
+      // So clicking delete on row 0 (now showing data B) will delete index 0 (Data B). Correct.
+    });
   }
 
   private createBtn(text: string, classes: string, onClick: () => void) {
     const btn = document.createElement("button");
-    btn.className = `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium shadow-sm transition-all active:scale-95 ${classes}`;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> ${text}`;
+    btn.className = classes;
+    btn.textContent = text;
     btn.addEventListener("click", onClick);
     return btn;
   }
 
   private createRow(page: Page, idx: number) {
     const row = document.createElement("div");
-    row.className = "group relative flex items-start gap-4 p-4 bg-white rounded-lg border border-slate-200 shadow-sm transition-all hover:shadow-md hover:border-indigo-200";
+    row.className = "config-row page-card"; 
     row.setAttribute("data-index", String(idx));
-
+    
     // Drag Handle
     const handle = document.createElement("div");
-    handle.className = "mt-2 text-slate-300 cursor-grab active:cursor-grabbing hover:text-slate-500";
+    handle.className = "drag-handle";
     handle.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9\" cy=\"12\" r=\"1\"></circle><circle cx=\"9\" cy=\"5\" r=\"1\"></circle><circle cx=\"9\" cy=\"19\" r=\"1\"></circle><circle cx=\"15\" cy=\"12\" r=\"1\"></circle><circle cx=\"15\" cy=\"5\" r=\"1\"></circle><circle cx=\"15\" cy=\"19\" r=\"1\"></circle></svg>";
     row.appendChild(handle);
 
     // Type Select
     const typeWrap = document.createElement("div");
-    typeWrap.className = "w-40";
+    typeWrap.className = "config-field";
+    typeWrap.style.flex = "0 0 140px";
     const typeLabel = document.createElement("label");
-    typeLabel.className = "block text-xs font-medium text-slate-500 mb-1";
-    typeLabel.textContent = "Page Type";
+    typeLabel.textContent = "Type";
     
     const select = document.createElement("select");
-    select.className = "w-full h-9 rounded-md border-slate-200 bg-slate-50 text-sm focus:border-indigo-500 focus:ring-indigo-500/20";
-    ["article", "homepage", "section"].forEach(opt => {
+    select.className = "page-type-select"; // Added class
+    const pageTypes = ["article", "homepage", "section", "text", "video", "gallery", "opinion", "category"];
+    pageTypes.forEach(opt => {
       const o = document.createElement("option");
       o.value = opt;
       o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
@@ -143,9 +179,10 @@ export class PageList extends Component<PageListProps, PageListState> {
     });
     select.value = page.pageType;
     select.addEventListener("change", () => {
-      const newPages = [...(this.state.snapshot.currentData?.pages || [])];
-      newPages[idx] = { ...newPages[idx], pageType: select.value as any };
-      this.props.store.updateField("pages", newPages);
+      const rawType = select.value;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const nextType = rawType as any; 
+      this.updatePage(idx, draft => ({ ...draft, pageType: nextType }));
     });
     typeWrap.appendChild(typeLabel);
     typeWrap.appendChild(select);
@@ -153,64 +190,67 @@ export class PageList extends Component<PageListProps, PageListState> {
 
     // Selector Input
     const selWrap = document.createElement("div");
-    selWrap.className = "flex-1";
+    selWrap.className = "config-field";
+    selWrap.style.flex = "1"; 
     const selLabel = document.createElement("label");
-    selLabel.className = "block text-xs font-medium text-slate-500 mb-1";
-    selLabel.textContent = "CSS Selector";
+    selLabel.innerHTML = "Selector <span style='color:var(--color-error)'>*</span>";
 
     const selInput = document.createElement("input");
-    selInput.className = "w-full h-9 px-3 rounded-md border-slate-200 bg-slate-50 text-sm font-mono text-slate-700 focus:border-indigo-500 focus:ring-indigo-500/20 placeholder:text-slate-400";
-    selInput.placeholder = ".main-content, #article-body";
+    selInput.className = "page-selector-input"; // Added class
+    selInput.placeholder = ".main-content";
     selInput.value = page.selector;
     selInput.addEventListener("input", (e) => {
       const val = (e.target as HTMLInputElement).value;
-      const newPages = [...(this.state.snapshot.currentData?.pages || [])];
-      newPages[idx] = { ...newPages[idx], selector: val };
-      this.props.store.updateField("pages", newPages);
+      this.updatePage(idx, draft => ({ ...draft, selector: val }));
     });
     selWrap.appendChild(selLabel);
     selWrap.appendChild(selInput);
     row.appendChild(selWrap);
 
+    // Position Input
+    const posWrap = document.createElement("div");
+    posWrap.className = "config-field position";
+    const posLabel = document.createElement("label");
+    posLabel.textContent = "Pos";
+    const posInput = document.createElement("input");
+    posInput.className = "page-pos-input"; // Added class
+    posInput.type = "number";
+    posInput.min = "1";
+    posInput.value = String(page.position ?? idx + 1);
+    posInput.addEventListener("change", () => {
+      const rawVal = parseInt(posInput.value, 10);
+      const normalized = Number.isFinite(rawVal) && rawVal > 0 ? rawVal : idx + 1;
+      this.updatePage(idx, draft => ({ ...draft, position: normalized }), true);
+    });
+    posWrap.appendChild(posLabel);
+    posWrap.appendChild(posInput);
+    row.appendChild(posWrap);
+
     // Delete
     const delBtn = document.createElement("button");
-    delBtn.className = "mt-6 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100";
+    delBtn.className = "delete-btn";
     delBtn.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 6h18\"></path><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"></path><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"></path></svg>";
     delBtn.title = "Remove Page";
+    delBtn.style.marginTop = "20px"; 
     delBtn.addEventListener("click", () => this.props.store.removePage(idx));
     row.appendChild(delBtn);
 
     return row;
   }
 
-  private updateRow(row: HTMLElement, page: Page, _idx: number) {
-    // Update Select
-    const select = row.querySelector("select") as HTMLSelectElement;
-    if (select && select.value !== page.pageType) {
-      select.value = page.pageType;
-    }
+  // eslint-disable-next-line no-unused-vars
+  private updatePage(idx: number, updater: (page: Page) => Page, normalizePositions = false) {
+    const pages = [...(this.state.snapshot.currentData?.pages || [])];
+    if (!pages[idx]) return;
+    pages[idx] = updater({ ...pages[idx] });
+    const next = normalizePositions ? this.normalizePositions(pages) : pages;
+    this.props.store.updateField("pages", next);
+  }
 
-    // Update Input
-    const input = row.querySelector("input") as HTMLInputElement;
-    if (input && input.value !== page.selector) {
-      // Only update if not focused to avoid cursor jumping? 
-      // Actually, if we are typing, the value in store matches input value, so no jump.
-      // If update comes from elsewhere, we update.
-      if (document.activeElement !== input) {
-        input.value = page.selector;
-      }
-    }
-
-    // Update Delete Handler (closure captures idx, so we might need to recreate button or rely on data-index)
-    // Since we rebuild the list on add/remove (length change), indices are stable for in-place updates.
-    // But if we swap items, we might have issues. 
-    // For now, let's assume simple updates.
-    
-    // Re-attaching delete listener is hard without recreating button.
-    // Let's just update the data-index attribute and use event delegation if we wanted to be perfect.
-    // But here, the closure `() => this.props.store.removePage(idx)` is stale if idx changes!
-    // CRITICAL: If we insert/delete, we rebuild the list anyway because length changes.
-    // So `updateRow` is only called when length is same.
-    // If length is same, indices are same. So closure is fine.
+  private normalizePositions(pages: Page[]) {
+    return pages
+      .map((page, order) => ({ ...page, position: typeof page.position === "number" ? page.position : order + 1 }))
+      .sort((a, b) => a.position - b.position)
+      .map((page, order) => ({ ...page, position: order + 1 }));
   }
 }

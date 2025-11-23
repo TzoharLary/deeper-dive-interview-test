@@ -1,5 +1,5 @@
 export interface Page {
-  pageType: "article" | "homepage" | "section";
+  pageType: "article" | "homepage" | "section" | "text" | "video" | "gallery" | "opinion" | "category";
   selector: string;
   position: number;
 }
@@ -32,23 +32,29 @@ export interface StoreSnapshot {
   currentData: Publisher | null;
   originalData: Publisher | null;
   touchedFields: Record<string, boolean>;
-  unknownKeys: Record<string, any>;
+  unknownKeys: Record<string, unknown>;
   validation: ValidationResult;
   isDirty: boolean;
+  mode: "create" | "edit";
 }
 
+/* eslint-disable no-unused-vars */
 export interface IStore {
-  subscribe(fn: (snap: StoreSnapshot) => void): () => void;
+  subscribe(_fn: (_snap: StoreSnapshot) => void): () => void;
   getSnapshot(): StoreSnapshot;
-  load(data: Publisher | null): void;
-  updateField(path: string, value: any): void;
-  markTouched(path: string): void;
-  addPage(type: string): void;
-  movePage(from: number, to: number): void;
-  removePage(index: number): void;
-  save(payload: Publisher): Promise<void>;
+  load(_data: Publisher | null): void;
+  startCreate(_preset?: Partial<Publisher>): void;
+  updateField(_path: string, _value: unknown): void;
+  markTouched(_path: string): void;
+  addPage(_type: string): void;
+  movePage(_from: number, _to: number): void;
+  removePage(_index: number): void;
+  save(_payload: Publisher): Promise<void>;
+  delete(): Promise<void>;
   prepareForSave(): Publisher;
-  isFieldModified(path: string): boolean;
+  isFieldModified(_path: string): boolean;
 }
+/* eslint-enable no-unused-vars */
 
-export type Navigate = (view: "dashboard" | "publishers" | "tools") => void;
+// eslint-disable-next-line no-unused-vars
+export type Navigate = (_view: "dashboard" | "publishers" | "tools") => void;

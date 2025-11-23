@@ -1,20 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import { validatePublisher } from "../utils/validator.js";
-import { savePublisher, updatePublishersList } from "../data/api.js";
+import { savePublisher, updatePublishersList, deletePublisher, PublisherData } from "../data/api.js";
 import type { Publisher, IStore, StoreSnapshot, Page } from "../types/index.js";
 
-type Listener = (snapshot: StoreSnapshot) => void;
+// Param name underscored to avoid unused-vars lint noise in type signature
+type Listener = (_snap: StoreSnapshot) => void;
 
 export class PublisherStore implements IStore {
   private currentData: Publisher | null = null;
   private originalData: Publisher | null = null;
   private touchedFields: Record<string, boolean> = {};
-  private unknownKeys: Record<string, any> = {};
+  private unknownKeys: Record<string, unknown> = {};
   private listeners = new Set<Listener>();
   private mode: "create" | "edit" = "edit";
 
-  constructor(initial?: Publisher | null, mode: "create" | "edit" = "edit") {
+  constructor(initial?: Publisher | PublisherData | Record<string, unknown> | null, mode: "create" | "edit" = "edit") {
     this.mode = mode;
-    if (initial) this.load(initial);
+    const normalized = normalizePublisherInput(initial ?? null);
+    if (normalized) this.load(normalized);
     else if (mode === "create") this.initializeEmpty();
   }
 
@@ -43,6 +47,8 @@ export class PublisherStore implements IStore {
       return;
     }
 
+    this.mode = "edit";
+
     const knownKeys = [
       "id","created_date","updated_date","created_by",
       "publisherId","aliasName","isActive","tags",
@@ -50,12 +56,16 @@ export class PublisherStore implements IStore {
       "allowedDomains","customCss","notes","pages"
     ];
 
-    const known: any = {};
-    const unknown: any = {};
-    Object.keys(data).forEach(k => {
-      if (knownKeys.includes(k)) known[k] = (data as any)[k];
-      else unknown[k] = (data as any)[k];
-    });
+    const known: Record<string, unknown> = {};
+    const unknown: Record<string, unknown> = {};
+    for (const k of Object.keys(data)) {
+      const value = (data as any)[k];
+      if (knownKeys.includes(k)) {
+        known[k] = value;
+      } else {
+        unknown[k] = value;
+      }
+    }
 
     known.tags = known.tags || [];
     known.pages = known.pages || [];
@@ -68,11 +78,26 @@ export class PublisherStore implements IStore {
     this.notify();
   }
 
-  initializeEmpty() {
+  // Local dynamic path reader (localized 'any' usage acceptable internally)
+  private dynamicGet(obj: Publisher | null, path: string): unknown {
+    if (!obj) return undefined;
+    if (!path.includes(".")) return (obj as any)[path];
+        const parts = path.split(/[.[\]]/).filter(Boolean);
+    let cur: any = obj;
+    for (const segment of parts) {
+      const key = segment.match(/^\d+$/) ? parseInt(segment, 10) : segment;
+      cur = cur?.[key];
+      if (cur == null) return cur;
+    }
+    return cur;
+  }
+
+  initializeEmpty(overrides: Partial<Publisher> = {}) {
     const empty: Publisher = {
       publisherId: "", aliasName: "", isActive: true, tags: [],
       publisherDashboard: "", monitorDashboard: "", qaStatusDashboard: "",
-      allowedDomains: [], customCss: "", notes: "", pages: []
+      allowedDomains: [], customCss: "", notes: "", pages: [],
+      ...overrides
     };
     this.currentData = JSON.parse(JSON.stringify(empty));
     this.originalData = JSON.parse(JSON.stringify(empty));
@@ -80,20 +105,28 @@ export class PublisherStore implements IStore {
     this.touchedFields = {};
   }
 
-  updateField(path: string, value: any) {
+  startCreate(overrides?: Partial<Publisher>) {
+    this.mode = "create";
+    this.initializeEmpty(overrides);
+    this.notify();
+  }
+
+  updateField(path: string, value: unknown) {
     if (!this.currentData) return;
-    const next: any = { ...this.currentData };
+    const next = JSON.parse(JSON.stringify(this.currentData)) as Publisher;
     if (path.includes(".")) {
-      const parts = path.split(/[.\[\]]/).filter(Boolean);
+      // Preserve original dynamic path behavior with localized 'any' for deep mutation
+          const parts = path.split(/[.[\]]/).filter(Boolean);
       let cur: any = next;
       for (let i = 0; i < parts.length - 1; i++) {
-        const key = parts[i].match(/^\d+$/) ? parseInt(parts[i]) : parts[i];
-        if (cur[key] == null) cur[key] = typeof parts[i+1] === "number" ? [] : {};
+        const raw = parts[i];
+        const key = raw.match(/^\d+$/) ? parseInt(raw, 10) : raw;
+        if (cur[key] == null) cur[key] = parts[i + 1]?.match(/^\d+$/) ? [] : {};
         cur = cur[key];
       }
-      const last = parts[parts.length - 1];
-      const lk = last.match(/^\d+$/) ? parseInt(last) : last;
-      cur[lk] = value;
+      const lastRaw = parts[parts.length - 1];
+      const lastKey = lastRaw.match(/^\d+$/) ? parseInt(lastRaw, 10) : lastRaw;
+      cur[lastKey] = value;
     } else {
       (next as any)[path] = value;
     }
@@ -136,19 +169,8 @@ export class PublisherStore implements IStore {
 
   isFieldModified(path: string) {
     if (!this.originalData || !this.currentData) return false;
-    const getVal = (obj: any, p: string) => {
-      if (p.includes(".")) {
-        const parts = p.split(/[.\[\]]/).filter(Boolean);
-        let curr: any = obj;
-        for (const k of parts) {
-          curr = curr?.[k.match(/^\d+$/) ? parseInt(k) : k];
-        }
-        return curr;
-      }
-      return obj[p];
-    };
-    const a = getVal(this.originalData, path);
-    const b = getVal(this.currentData, path);
+    const a = this.dynamicGet(this.originalData, path);
+    const b = this.dynamicGet(this.currentData, path);
     return JSON.stringify(a) !== JSON.stringify(b);
   }
 
@@ -159,7 +181,7 @@ export class PublisherStore implements IStore {
   async save(payload: Publisher) {
       // Persist publisher file to server under data/publisher-<id>.json
       try {
-        const id = (payload as any).publisherId || (payload as any).id;
+        const id = payload.publisherId || payload.id;
         if (!id || typeof id !== "string" || !id.trim()) {
           throw new Error("Cannot save publisher without a publisherId");
         }
@@ -167,11 +189,25 @@ export class PublisherStore implements IStore {
         const filename = `publisher-${id}.json`;
 
         // Save the publisher file using shared API helpers
-        await savePublisher(filename, payload as any);
+        // Transform pages position (number -> string) to satisfy PublisherData shape
+        const persistence: PublisherData = {
+          publisherId: payload.publisherId,
+          aliasName: payload.aliasName,
+          pages: (payload.pages || []).map(p => ({ pageType: p.pageType, selector: p.selector, position: String(p.position) })),
+          publisherDashboard: payload.publisherDashboard,
+          monitorDashboard: payload.monitorDashboard,
+          qaStatusDashboard: payload.qaStatusDashboard,
+          isActive: payload.isActive,
+          customCss: payload.customCss,
+          tags: payload.tags,
+          allowedDomains: payload.allowedDomains,
+          notes: payload.notes
+        };
+        await savePublisher(filename, persistence);
 
         // Update the publishers list (publishers.json) to include this publisher
         try {
-          const alias = (payload as any).aliasName || id;
+          const alias = payload.aliasName || id;
           await updatePublishersList(id, alias, filename);
         } catch (e) {
           // Non-fatal: publisher file was saved, but updating the list failed
@@ -192,6 +228,22 @@ export class PublisherStore implements IStore {
       }
   }
 
+  async delete() {
+    if (!this.currentData) return;
+    const id = this.currentData.publisherId || this.currentData.id;
+    if (!id) return;
+    
+    try {
+      await deletePublisher(id);
+      // Notify UI
+      const ev = new CustomEvent("publisher:deleted", { detail: { id } });
+      window.dispatchEvent(ev as Event);
+    } catch (e) {
+      console.error("Failed to delete publisher:", e);
+      throw e;
+    }
+  }
+
   getSnapshot(): StoreSnapshot {
     return {
       currentData: this.currentData,
@@ -199,42 +251,51 @@ export class PublisherStore implements IStore {
       touchedFields: this.touchedFields,
       unknownKeys: this.unknownKeys,
       validation: validatePublisher(this.currentData || {}),
-      isDirty: this.checkDirty()
+      isDirty: this.checkDirty(),
+      mode: this.mode
     };
   }
 }
 
-export function createStore(initial?: any, mode: "create" | "edit" = "edit") {
-  // Normalize incoming data (PublisherData shape from API may differ)
-  const normalize = (input: any): Publisher | null => {
-    if (!input) return null;
-    const pagesInput = Array.isArray(input.pages) ? input.pages : [];
-    const pages: Page[] = pagesInput.map((p: any, i: number) => ({
-      pageType: (p.pageType as any) || "article",
-      selector: p.selector || "",
-      position: p.position != null ? (typeof p.position === "string" ? parseInt(p.position, 10) || (i + 1) : p.position) : (i + 1)
-    }));
-    return {
-      id: input.id,
-      publisherId: input.publisherId || input.id || "",
-      aliasName: input.aliasName || input.alias || "",
-      isActive: input.isActive != null ? Boolean(input.isActive) : true,
-      tags: input.tags || [],
-      publisherDashboard: input.publisherDashboard,
-      monitorDashboard: input.monitorDashboard,
-      qaStatusDashboard: input.qaStatusDashboard,
-      allowedDomains: input.allowedDomains || [],
-      customCss: input.customCss,
-      notes: input.notes,
-      pages,
-      created_date: input.created_date,
-      updated_date: input.updated_date,
-      created_by: input.created_by,
-      updatedAt: input.updatedAt
-    } as Publisher;
-  };
-
-  return new PublisherStore(normalize(initial), mode);
+export function createStore(initial?: Publisher | PublisherData | Record<string, unknown> | null, mode: "create" | "edit" = "edit") {
+  const normalized = normalizePublisherInput(initial ?? null);
+  return new PublisherStore(normalized, mode);
 }
 
+// Local helper for dynamic path reads (kept private, small scoped 'any' acceptable here)
 export default PublisherStore;
+/* eslint-enable no-unused-vars */
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export function normalizePublisherInput(input: Publisher | PublisherData | Record<string, unknown> | null): Publisher | null {
+  if (!input) return null;
+  const raw: Record<string, unknown> = input as Record<string, unknown>;
+  const pagesRaw = Array.isArray(raw.pages) ? raw.pages : [];
+  const pages: Page[] = pagesRaw.map((p, i) => {
+    const obj = p as Record<string, unknown>;
+    const pageTypeVal = typeof obj.pageType === "string" ? obj.pageType : "article";
+    const selectorVal = typeof obj.selector === "string" ? obj.selector : "";
+    const rawPos = obj.position;
+    const positionVal = typeof rawPos === "number" ? rawPos :
+      (typeof rawPos === "string" ? (parseInt(rawPos, 10) || (i + 1)) : (i + 1));
+    return { pageType: pageTypeVal as Page["pageType"], selector: selectorVal, position: positionVal };
+  });
+  return {
+    id: (raw.id as string | undefined),
+    publisherId: typeof raw.publisherId === "string" ? raw.publisherId : (typeof raw.id === "string" ? raw.id : ""),
+    aliasName: typeof raw.aliasName === "string" ? raw.aliasName : (typeof raw.alias === "string" ? raw.alias : ""),
+    isActive: raw.isActive != null ? Boolean(raw.isActive) : true,
+    tags: Array.isArray(raw.tags) ? raw.tags as string[] : [],
+    publisherDashboard: typeof raw.publisherDashboard === "string" ? raw.publisherDashboard : undefined,
+    monitorDashboard: typeof raw.monitorDashboard === "string" ? raw.monitorDashboard : undefined,
+    qaStatusDashboard: typeof raw.qaStatusDashboard === "string" ? raw.qaStatusDashboard : undefined,
+    allowedDomains: Array.isArray(raw.allowedDomains) ? raw.allowedDomains as string[] : [],
+    customCss: typeof raw.customCss === "string" ? raw.customCss : undefined,
+    notes: typeof raw.notes === "string" ? raw.notes : undefined,
+    pages,
+    created_date: typeof raw.created_date === "string" ? raw.created_date : undefined,
+    updated_date: typeof raw.updated_date === "string" ? raw.updated_date : undefined,
+    created_by: typeof raw.created_by === "string" ? raw.created_by : undefined,
+    updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined
+  } as Publisher;
+}

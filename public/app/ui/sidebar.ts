@@ -1,8 +1,30 @@
 import { createElement, renderList } from "./renderers.js";
-import type { Publisher } from "../types/index.js";
-import { fetchPublisher, fetchPublishers } from "../data/api.js";
+import type { Publisher, IStore, StoreSnapshot } from "../types/index.js";
+import { fetchPublisher, fetchPublishers, PublisherListItem, PublisherData } from "../data/api.js";
+import { normalizePublisherInput } from "../state/store.js";
 
-export async function renderSidebar(container: HTMLElement, store: any) {
+type SidebarItem = PublisherListItem | PublisherData;
+
+function isListItem(item: SidebarItem): item is PublisherListItem {
+  return (item as PublisherListItem).file !== undefined && (item as PublisherListItem).id !== undefined && (item as PublisherListItem).alias !== undefined;
+}
+
+const publisherDetailCache = new Map<string, Publisher>();
+let saveListenerRegistered = false;
+
+function cacheKeyFromFile(file?: string) {
+  return file ? `file:${file}` : null;
+}
+
+function cacheKeyFromPublisherId(id?: string) {
+  return id ? `publisher:${id}` : null;
+}
+
+function clonePublisher(data: Publisher) {
+  return JSON.parse(JSON.stringify(data));
+}
+
+export async function renderSidebar(container: HTMLElement, store: IStore) {
   // Clear container
   container.innerHTML = "";
   container.className = "publisher-sidebar";
@@ -18,21 +40,7 @@ export async function renderSidebar(container: HTMLElement, store: any) {
     <span>New</span>
   `;
   createBtn.addEventListener("click", () => {
-    // create a new empty publisher and load into store
-    const newPub: Publisher = {
-      publisherId: `new-${Date.now()}`,
-      aliasName: "",
-      isActive: true,
-      tags: [],
-      publisherDashboard: "",
-      monitorDashboard: "",
-      qaStatusDashboard: "",
-      allowedDomains: [],
-      customCss: "",
-      notes: "",
-      pages: []
-    };
-    store.load(newPub);
+    store.startCreate();
   });
   header.appendChild(createBtn);
   container.appendChild(header);
@@ -54,15 +62,15 @@ export async function renderSidebar(container: HTMLElement, store: any) {
   container.appendChild(listWrap);
 
   // load publishers and render
-  const pubs: any[] = await fetchPublishers();
+  const pubs: SidebarItem[] = await fetchPublishers();
 
-  function renderItems(publishers: any[]) {
-    return renderList<any>(listWrap, publishers, (p) => p.publisherId || p.id, (p, existing) => {
+  function renderItems(publishers: SidebarItem[]) {
+    return renderList<SidebarItem>(listWrap, publishers, (p) => (isListItem(p) ? p.id : (p.publisherId)), (p, existing) => {
       if (existing) {
         const alias = existing.querySelector("[data-alias]") as HTMLElement;
         const idEl = existing.querySelector("[data-id]") as HTMLElement;
-        if (alias) alias.textContent = (p.aliasName || p.alias || p.publisherId || p.id) || "Untitled Publisher";
-        if (idEl) idEl.textContent = (p.publisherId || p.id) || "";
+        if (alias) alias.textContent = (isListItem(p) ? p.alias : (p.aliasName || p.publisherId)) || "Untitled Publisher";
+        if (idEl) idEl.textContent = (isListItem(p) ? p.id : (p.publisherId || ""));
         return existing;
       }
 
@@ -71,26 +79,54 @@ export async function renderSidebar(container: HTMLElement, store: any) {
       const left = createElement("div", "publisher-info");
       const aliasEl = createElement("div", "publisher-alias");
       aliasEl.setAttribute("data-alias", "true");
-      aliasEl.textContent = (p.aliasName || p.alias || p.publisherId || p.id) || "Untitled Publisher";
+      aliasEl.textContent = (isListItem(p) ? p.alias : (p.aliasName || p.publisherId)) || "Untitled Publisher";
 
       const idLine = createElement("div", "publisher-id");
       idLine.setAttribute("data-id", "true");
-      idLine.textContent = (p.publisherId || p.id) || "";
+      idLine.textContent = (isListItem(p) ? p.id : (p.publisherId || ""));
 
       left.appendChild(aliasEl);
       left.appendChild(idLine);
       btn.appendChild(left);
 
-      const dot = createElement("div", `status-dot ${p.isActive ? "active" : "inactive"}`);
+      const active = !isListItem(p) && !!p.isActive;
+      const dot = createElement("div", `status-dot ${active ? "active" : "inactive"}`);
       btn.appendChild(dot);
 
       btn.addEventListener("click", async () => {
+        const fileKey = isListItem(p) ? cacheKeyFromFile(p.file) : null;
+        const publisherKey = !isListItem(p) ? cacheKeyFromPublisherId((p as PublisherData).publisherId) : null;
         try {
-          const file = (p as any).file || `publisher-${(p as any).publisherId || (p as any).id}.json`;
-          const data = await fetchPublisher(file);
-          if (data) store.load(data);
+          const cachedKey = fileKey || publisherKey;
+          if (cachedKey) {
+            const cached = publisherDetailCache.get(cachedKey);
+            if (cached) {
+              store.load(clonePublisher(cached));
+              return;
+            }
+          }
+
+          if (isListItem(p)) {
+            const file = p.file;
+            const data = await fetchPublisher(file);
+            if (data) {
+              const normalized = normalizePublisherInput(data);
+              if (normalized) {
+                store.load(normalized);
+                const keys = [cacheKeyFromFile(file), cacheKeyFromPublisherId(data.publisherId)];
+                keys.forEach(key => { if (key) publisherDetailCache.set(key, clonePublisher(normalized)); });
+              }
+            }
+          } else {
+            const normalized = normalizePublisherInput(p);
+            if (normalized) {
+              store.load(normalized);
+              const key = cacheKeyFromPublisherId(p.publisherId);
+              if (key) publisherDetailCache.set(key, clonePublisher(normalized));
+            }
+          }
         } catch (e) {
-          console.error('Failed to load publisher:', e);
+          console.error("Failed to load publisher:", e);
         }
       });
 
@@ -98,16 +134,23 @@ export async function renderSidebar(container: HTMLElement, store: any) {
     });
   }
 
+  // Initial render
+  renderItems(pubs);
 
   // basic search filter
   input.addEventListener("input", (e) => {
     const v = (e.target as HTMLInputElement).value.toLowerCase();
-    const filtered = pubs.filter(p => ((p.aliasName || p.alias || "").toLowerCase().includes(v) || (p.publisherId || p.id || "").toLowerCase().includes(v) || (p.tags || []).some((t: string) => t.toLowerCase().includes(v))));
+    const filtered = pubs.filter(p => {
+      const name = isListItem(p) ? p.alias : (p.aliasName || p.publisherId || "");
+      const pid = isListItem(p) ? p.id : (p.publisherId || "");
+      const tags = !isListItem(p) ? (p.tags || []) : [];
+      return name.toLowerCase().includes(v) || pid.toLowerCase().includes(v) || tags.some(t => t.toLowerCase().includes(v));
+    });
     renderItems(filtered);
   });
 
   // Subscribe to store to show dirty indicator next to active publisher
-  store.subscribe((snap: any) => {
+  store.subscribe((snap: StoreSnapshot) => {
     const currentId = snap.currentData?.publisherId;
     const isDirty = snap.isDirty;
     Array.from(listWrap.children).forEach((child) => {
@@ -139,4 +182,14 @@ export async function renderSidebar(container: HTMLElement, store: any) {
       }
     });
   });
+
+  if (!saveListenerRegistered) {
+    window.addEventListener("publisher:saved", () => {
+      const latest = store.getSnapshot().currentData;
+      if (!latest) return;
+      const keys = [cacheKeyFromPublisherId(latest.publisherId)];
+      keys.forEach((key) => { if (key) publisherDetailCache.set(key, clonePublisher(latest)); });
+    });
+    saveListenerRegistered = true;
+  }
 }
