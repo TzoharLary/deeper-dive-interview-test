@@ -1,6 +1,6 @@
-import { renderDashboard } from "./app/ui/dashboard.js";
-import { renderPublishersPage } from "./app/ui/publishers.js";
-import { createStore } from "./app/state/store.js";
+import { renderDashboard } from "./ui/dashboard.js";
+import { renderPublishersPage } from "./ui/publishers.js";
+import { createStore } from "./state/store.js";
 
 async function bootstrap() {
   const root = document.getElementById("app") as HTMLElement;
