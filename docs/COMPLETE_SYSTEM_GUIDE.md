@@ -7,7 +7,12 @@
 
 > **📝 Note about videos:** This guide contains VIDEO SCRIPTS for demonstrations - these are narration scripts to help create actual video recordings. To create the actual videos, follow the recording instructions at the end of each video script section.
 
-> **📸 Note about screenshots:** This guide references the main screenshot. In a complete version, each component would have its own annotated screenshot with arrows and highlights pointing to the specific elements being discussed.
+> **📸 Screenshots included:** This guide now includes 5 actual screenshots:
+> - Dashboard overview (main view)
+> - Publishers page empty state (sidebar + no selection)
+> - Publishers details panel (editing Aurora Media)
+> - Publishers page configurations (showing page config section)
+> - Publishers create new (empty form for creating new publisher)
 
 ---
 
@@ -478,9 +483,18 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 ## Publishers Page Overview
 
-> **📸 Note:** Publishers page has a different layout than Dashboard. It uses a two-panel design. In a complete version, this section would have its own screenshots showing the sidebar and details panel.
-
 **What is it?** The editing workspace where you view and modify publisher configurations.
+
+### Screenshot: Publishers Page Empty State
+
+![Publishers Empty State](user-guide/images/publishers-empty-state.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/0876b9bc-6e68-4664-9acc-a582995a7728
+
+**What you see in this screenshot:**
+- **Left Panel (Sidebar):** "Publishers" heading, two buttons (Upload, Create New), search box, and list of 4 publishers
+- **Right Panel (Empty State):** Book icon, "Select a Publisher" heading, instructional text
+- **Publishers List:** Aurora Media, Borealis News, Cascade Daily, Summit Insights (each with colored dot and ID)
 
 **When to use:**
 - 📝 Creating a new publisher
@@ -516,7 +530,13 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 ## Publishers Sidebar
 
-**📸 Location in Publishers page:** Left side panel (narrow column)
+### Screenshot Reference
+
+![Publishers Sidebar](user-guide/images/publishers-empty-state.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/0876b9bc-6e68-4664-9acc-a582995a7728
+
+**📸 Look for:** Left side of the screen - narrow column with "Publishers" heading at top
 
 **Location:** Left panel, takes ~25% of screen width
 
@@ -561,10 +581,14 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 ### View 1: Empty State
 
-**📸 What you'd see:**
-- Large book icon centered
-- "Select a Publisher" heading
-- "Choose a publisher from the list to view and edit its configuration." text
+![Empty State](user-guide/images/publishers-empty-state.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/0876b9bc-6e68-4664-9acc-a582995a7728
+
+**📸 Look for:** Right side panel (large area) showing:
+- Large gray book icon in center
+- "Select a Publisher" heading below icon
+- Gray instructional text: "Choose a publisher from the list to view and edit its configuration."
 
 **When:** No publisher selected yet
 
@@ -574,14 +598,18 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 ### View 2: Edit Mode
 
-**📸 What you'd see:**
-- Top: "Aurora Media" heading, "pub-aurora" subheading, green "Active" badge
-- Buttons: Purple "Save Changes" and gray "Cancel"
-- Form sections scrollable:
-  - General Information (ID input, Name input, Active checkbox)
-  - Dashboard URLs (3 URL inputs)
-  - Page Configurations (list with Add Page button)
-  - Optional Fields (textareas for CSS, tags, notes)
+![Edit Mode - Publisher Details](user-guide/images/publishers-details-panel.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/d05bdae3-6c23-462d-b863-4f1f8ee25ee5
+
+**📸 Look for:** Right panel showing:
+- **Top:** "Publisher Configuration" heading with purple "Editing" badge on right
+- **Three sections side-by-side:**
+  - **General Info** (left): Publisher ID "pub-aurora", Alias Name "Aurora Media", Tags field, Enable/Disable toggle
+  - **Links & Resources** (center): Three URL fields (Publisher Dashboard, Monitor Dashboard, QA Status Dashboard)
+  - **Missing Fields** (right): Empty section
+- **Bottom:** "Page Configurations" section with "Add Article Page" and "Add Home Page" buttons
+- **Very Bottom:** "All changes saved" text, Cancel button, grayed-out "Save Changes" button
 
 **When:** Publisher selected from sidebar
 
@@ -621,18 +649,25 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 ### View 3: Create Mode
 
-**📸 What you'd see:**
-- Top: "New Publisher" heading
-- Purple "Create" button and gray "Cancel"
-- All same form fields as Edit mode but empty
-- Required fields marked with red asterisk (*)
+![Create Mode - New Publisher](user-guide/images/publishers-create-new.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/e702d8a8-32c2-428d-93ab-67b334bec4e4
+
+**📸 Look for:** Right panel showing:
+- **Top:** "Publisher Configuration" heading with purple "Editing" badge
+- **Three sections with EMPTY fields:**
+  - **General Info** (left): Empty Publisher ID field, empty Alias Name field, empty Tags field, Enable/Disable toggle
+  - **Links & Resources** (center): Three empty URL fields
+  - **Missing Fields** (right): Empty section
+- **Bottom:** "Page Configurations" section with "Add Article Page" and "Add Home Page" buttons (no pages yet)
+- **Very Bottom:** "All changes saved" text, Cancel button, grayed-out "Save Changes" button
 
 **When:** "Create New Publisher" clicked
 
 **Displays:**
-- "New Publisher" heading
-- All same form fields (empty)
-- **Create** button instead of "Save Changes"
+- Same layout as Edit mode
+- All form fields empty
+- Ready for data entry
 
 ---
 
@@ -642,14 +677,18 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 **Step 1: Open Create Form**
 
-**📸 What happens:**
-- If from Dashboard: Clicking "Create New Publisher" redirects to Publishers page
-- If from Publishers sidebar: Form appears in right panel
-- Result: Empty form with "New Publisher" heading visible
+![Create New Publisher Form](user-guide/images/publishers-create-new.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/e702d8a8-32c2-428d-93ab-67b334bec4e4
+
+**📸 What you see:**
+- Left sidebar: "Create New Publisher" button is highlighted/active (darker background)
+- Right panel: Empty form with "Publisher Configuration" heading
+- All fields empty and ready for input
 
 **Two methods:**
 - **From Dashboard:** Click "Create New Publisher" button (large purple)
-- **From Publishers:** Click "Create New Publisher" in sidebar
+- **From Publishers:** Click "Create New Publisher" in sidebar (shown in screenshot)
 
 ---
 
@@ -678,13 +717,17 @@ NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows o
 
 **Step 3: Add Page Configurations**
 
-**📸 What you'd see:**
-- "Page Configurations" section heading
-- Purple "+ Add Page" button
-- After clicking: New row appears with 3 fields (Type dropdown, Selector input, Position dropdown)
+![Page Configurations Section](user-guide/images/publishers-page-configs.png)
+
+**📸 Screenshot URL:** https://github.com/user-attachments/assets/25628b3f-6b8d-4972-99cd-682b106f0e7b
+
+**📸 What you see:**
+- "Page Configurations" section at bottom of form
+- Two purple buttons: "+ Add Article Page" and "+ Add Home Page"
+- Below that: Table headers "Position", "Type", "Selector" (ready for page entries)
 
 1. Scroll to "Page Configurations" section
-2. Click **"+ Add Page"** button
+2. Click **"+ Add Article Page"** or **"+ Add Home Page"** button
 3. Fill each page:
    - **Page Type** - Select from dropdown (homepage, text, video)
    - **Selector** - Type CSS selector (e.g., "main", ".content")
