@@ -13,12 +13,12 @@ Web-based tool for Taboola Support Engineers to manage publisher configurations.
 - ✅ **Publishers** - Create, view, edit configurations
 
 ### Also Includes:
-- 5-step installation (10 min)
-- **5 actual screenshots** showing all UI states
-- Video demonstration scripts (5 videos, 12 min)
-- Quick reference tables
-- Troubleshooting guide
-- Best practices
+- 5-step installation guide (10 minutes)
+- **5 embedded screenshots** showing all UI states
+- Component-by-component visual explanations
+- Quick reference tables for common tasks
+- Comprehensive troubleshooting guide
+- Best practices for efficient workflow
 
 **Easy navigation with clickable Table of Contents** - Jump to any section instantly.
 

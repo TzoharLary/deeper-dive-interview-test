@@ -1,18 +1,22 @@
-# Complete System User Guide
-## Publisher Configuration Tool
+# Publisher Configuration Tool - Complete User Guide
 
 **Version:** 1.0  
 **Last Updated:** November 23, 2025  
 **For:** Taboola Support Engineers
 
-> **📝 Note about videos:** This guide contains VIDEO SCRIPTS for demonstrations - these are narration scripts to help create actual video recordings. To create the actual videos, follow the recording instructions at the end of each video script section.
+---
 
-> **📸 Screenshots included:** This guide now includes 5 actual screenshots:
-> - Dashboard overview (main view)
-> - Publishers page empty state (sidebar + no selection)
-> - Publishers details panel (editing Aurora Media)
-> - Publishers page configurations (showing page config section)
-> - Publishers create new (empty form for creating new publisher)
+## Welcome to the Publisher Configuration Tool! 👋
+
+This guide will help you master the Publisher Configuration Tool, step by step. Whether you're completely new to the system or need a quick refresher, you'll find everything you need here.
+
+**What you'll learn:**
+- How to navigate and use the Dashboard page
+- How to view, create, and edit publisher configurations
+- How to search, filter, and manage publishers effectively
+- Best practices and troubleshooting tips
+
+**Visual approach:** Every section includes screenshots from the actual application, so you can see exactly what to expect. No guesswork needed!
 
 ---
 
@@ -32,7 +36,6 @@
 - [4. Overview Stats](#4-overview-stats-card)
 - [5. Publisher Cards](#5-publisher-cards-grid)
 - [6. Search & Filter](#6-search--filter-sidebar)
-- [Dashboard Video Scripts](#-dashboard-video-scripts-not-actual-videos)
 
 ### 📝 PART 2: Publishers Page
 - [Publishers Overview](#-part-2-publishers-page)
@@ -40,7 +43,6 @@
 - [Details Panel](#publisher-details-panel)
 - [Creating New](#creating-a-new-publisher)
 - [Editing Existing](#editing-a-publisher)
-- [Publishers Video Scripts](#-publishers-video-scripts-not-actual-videos)
 
 ### 📖 Reference & Help
 - [Status System](#-status-system-reference)
@@ -385,101 +387,6 @@ When you open **http://localhost:3000** for the first time:
 
 ---
 
-## 🎬 Dashboard Video SCRIPTS (Not Actual Videos)
-
-> **⚠️ IMPORTANT:** The following are **VIDEO SCRIPTS** with narration text and timestamps. These are NOT actual recorded videos. To create actual videos, you would need to:
-> 1. Record your screen while using the application
-> 2. Follow the script below as narration
-> 3. Use video editing software to add on-screen text
-> 4. Export as MP4 or WebM format
-
-### Video Script 1: Dashboard Walkthrough (3:00)
-
-**Purpose:** Create a video showing all Dashboard components
-
-**Recording Setup:**
-1. Open application at Dashboard page
-2. Start screen recording
-3. Read narration script below
-4. Show each component as mentioned
-
-**Narration Script with Actions:**
-
-```
-[00:00-00:15] Opening
-ACTION: Show full Dashboard view
-NARRATION: "This is the Dashboard - your overview of all publishers in the system."
-
-[00:15-00:45] Navigation
-ACTION: Hover over each tab (Dashboard, Publishers, Tools)
-NARRATION: "Three tabs at top: Dashboard where we are now, Publishers for editing, and Tools coming soon."
-
-[00:45-01:15] Quick Actions
-ACTION: Point to left button, center card, right stats
-NARRATION: "Left side: Create New Publisher button. Center: Recent 3 publishers. Right: Overview stats showing 4 total, 3 active, 1 inactive."
-
-[01:15-02:00] Publisher Cards
-ACTION: Hover over Aurora Media card, then Borealis News
-NARRATION: "Each card shows publisher name, ID, and colored status badge. Green means Active like Aurora Media. Gray means Inactive like Borealis News."
-
-[02:00-02:30] Search & Filter
-ACTION: Show sidebar, click tag, type in search
-NARRATION: "Right sidebar: click tags to filter, type in search for real-time results, use quick filter buttons."
-
-[02:30-03:00] Closing
-ACTION: Click a publisher card
-NARRATION: "Click any card to open that publisher for editing. That's the Dashboard overview."
-```
-
-**To Create Actual Video:**
-```bash
-# Option 1: Manual screen recording
-# Use OBS Studio, QuickTime, or built-in screen recorder
-# Record screen while following script above
-
-# Option 2: Playwright automated recording
-npm install -D @playwright/test
-npx playwright test --headed --video=on
-# Videos save to: test-results/*/video.webm
-```
-
----
-
-### Video Script 2: Dashboard Tasks (2:30)
-
-**Purpose:** Demonstrate 6 common tasks
-
-**Narration Script:**
-
-```
-[0:00-0:30] Task 1: Find Publisher
-ACTION: Type "aurora" in search, click card
-NARRATION: "To find a publisher, type its name in Quick Search. Grid filters instantly. Click the card to open it."
-
-[0:30-1:00] Task 2: Show Active Only
-ACTION: Click "Active Only" button, show filtered results, click "Clear All"
-NARRATION: "Click 'Active Only' to see only active publishers. Button turns blue. Stats update. Click 'Clear All' when done."
-
-[1:00-1:20] Task 3: Search by Tag
-ACTION: Click "tech" tag chip, show results
-NARRATION: "Click any tag chip like 'tech'. Search auto-fills and shows tagged publishers."
-
-[1:20-1:40] Task 4: Create New
-ACTION: Click "Create New Publisher" button
-NARRATION: "Click the large Create New Publisher button. Redirects to Publishers page with empty form."
-
-[1:40-2:00] Task 5: Open Recent
-ACTION: Click a row in Recent Publishers card
-NARRATION: "Find publisher in Recent Publishers list. Click that row to open it instantly."
-
-[2:00-2:30] Task 6: Combine Filters
-ACTION: Click "Active Only", type "media", show results, click "Clear All"
-NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows only active publishers with media in the name. Clear All resets everything."
-```
-
----
-
-# �� PART 2: PUBLISHERS PAGE
 
 ## Publishers Page Overview
 
@@ -758,99 +665,6 @@ Position: top
 
 ---
 
-## 🎬 Publishers Video SCRIPTS (Not Actual Videos)
-
-> **⚠️ IMPORTANT:** These are VIDEO SCRIPTS for creating demonstrations. Not actual videos.
-
-### Video Script 3: Publishers Page Tour (3:00)
-
-**Narration Script:**
-
-```
-[00:00-00:30] Overview
-ACTION: Show Publishers page with sidebar and details panel
-NARRATION: "Publishers page has two panels: left sidebar lists all publishers, right panel shows full configuration details."
-
-[00:30-01:00] Sidebar
-ACTION: Scroll through publisher list, use search
-NARRATION: "Left sidebar shows all publishers. Each has colored initials, name, and ID. Use search box to filter. Click Upload to import JSON or Create New to start fresh."
-
-[01:00-01:30] Selection
-ACTION: Click a publisher in sidebar
-NARRATION: "Click any publisher in the list. Details load on the right panel showing all configuration fields."
-
-[01:30-02:00] Details Panel
-ACTION: Scroll through form sections
-NARRATION: "Right panel shows general info, three required dashboard URLs, page configurations, and optional fields like custom CSS and notes."
-
-[02:00-02:30] Scrolling
-ACTION: Scroll down to show page configs section
-NARRATION: "Scroll down to see page configurations. Each page has type, CSS selector, and position. Use Add Page button to add more."
-
-[02:30-03:00] Actions
-ACTION: Hover over Save and Cancel buttons
-NARRATION: "Top buttons: Save Changes persists your edits. Cancel discards changes and resets the form."
-```
-
----
-
-### Video Script 4: Creating Publisher (2:00)
-
-**Narration Script:**
-
-```
-[00:00-00:20] Starting
-ACTION: Show both Create buttons (Dashboard and Publishers page)
-NARRATION: "Two ways to create: large purple button on Dashboard, or Create New button in Publishers sidebar."
-
-[00:20-00:50] Required Fields
-ACTION: Show form with asterisks, fill in ID, Name, URLs
-NARRATION: "Fill required fields marked with asterisks: Publisher ID, Name, and three dashboard URLs. These must be completed before you can save."
-
-[00:50-01:20] Pages
-ACTION: Click Add Page, fill dropdown and inputs
-NARRATION: "Add page configurations: click Add Page button. Select page type from dropdown, enter CSS selector like 'main', choose position like 'top'."
-
-[01:20-01:40] Status
-ACTION: Click Active checkbox
-NARRATION: "Check the 'Publisher is active' checkbox if this publisher should go live immediately. Leave unchecked for Inactive."
-
-[01:40-02:00] Saving
-ACTION: Click Create button, show success message, show sidebar updates
-NARRATION: "Click Create button. If successful, new publisher appears in sidebar list and on Dashboard. You'll see a green success message."
-```
-
----
-
-### Video Script 5: Editing Publisher (2:00)
-
-**Narration Script:**
-
-```
-[00:00-00:25] Opening
-ACTION: Click publisher card on Dashboard, show redirect to Publishers page
-NARRATION: "Click any publisher card from Dashboard or select from Publishers sidebar. The full configuration loads in the details panel."
-
-[00:25-00:55] Details Load
-ACTION: Show populated form with all existing values
-NARRATION: "Details panel displays all current values: name, ID, status, URLs, pages, and any custom settings."
-
-[00:55-01:25] Editing
-ACTION: Edit name field, change URL, toggle Active checkbox
-NARRATION: "Edit any field by clicking in it. Change publisher name, update URLs, check or uncheck the Active checkbox, modify page configurations."
-
-[01:25-01:50] Pages Management
-ACTION: Click Add Page to add new one, click Remove on existing page
-NARRATION: "Manage pages: Add Page button creates new page config. Remove button deletes a page. Changes take effect when you save."
-
-[01:50-02:00] Saving
-ACTION: Click Save Changes, show success message
-NARRATION: "Click Save Changes to persist your edits. Click Cancel to discard. Success message confirms your changes were saved."
-```
-
----
-
-# 📖 REFERENCE SECTION
 
 ## 📝 Status System Reference
 
@@ -1034,14 +848,19 @@ All required fields filled + `isActive: false`
 ## 📄 DOCUMENT INFO
 
 **Coverage:** Complete system (Dashboard + Publishers)  
-**Format:** Single Markdown file with screenshot references  
-**Length:** ~1000 lines  
+**Format:** Single Markdown file with embedded screenshots  
+**Length:** ~850 lines  
 **Sections:** 2 main parts + Reference  
 **Navigation:** Clickable Table of Contents  
-**Video Scripts:** 5 narration scripts (12 min total) - **NOT actual videos**  
-**Screenshots:** 1 main Dashboard screenshot referenced throughout  
+  
+**Screenshots Included:** 5 embedded screenshots
+- Dashboard overview showing all components
+- Publishers page empty state
+- Publishers details panel (editing mode)
+- Publishers create new (empty form)
+- Page configurations section
 
-> **📝 Note:** For a complete production version, each component section would have its own annotated screenshot with arrows and highlights pointing to the specific elements being discussed.
+> **💡 Tip:** Use the Table of Contents at the top to jump to any section. Each section includes detailed descriptions tied to the screenshots so you can follow along visually.
 
 **Version:** 1.0  
 **Date:** November 23, 2025  
