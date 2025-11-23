@@ -5,6 +5,10 @@
 **Last Updated:** November 23, 2025  
 **For:** Taboola Support Engineers
 
+> **📝 Note about videos:** This guide contains VIDEO SCRIPTS for demonstrations - these are narration scripts to help create actual video recordings. To create the actual videos, follow the recording instructions at the end of each video script section.
+
+> **📸 Note about screenshots:** This guide references the main screenshot. In a complete version, each component would have its own annotated screenshot with arrows and highlights pointing to the specific elements being discussed.
+
 ---
 
 ## 📚 Table of Contents - Quick Navigation
@@ -12,32 +16,32 @@
 **Click any section to jump directly to it:**
 
 ### 🚀 Getting Started
-- [Installation (5 Steps)](#-installation-5-steps) - Get up and running in 10 minutes
-- [First Time Opening](#first-time-opening) - What you'll see
+- [Installation (5 Steps)](#-installation-5-steps)
+- [First Time Opening](#first-time-opening)
 
 ### 📊 PART 1: Dashboard Page
-- [Dashboard Overview](#-part-1-dashboard-page) - Your command center
-- [Navigation Bar](#1-navigation-bar) - Switching between pages
-- [Create New Publisher](#2-create-new-publisher-button) - Start creating
-- [Recent Publishers](#3-recent-publishers-card) - Quick access to your work
-- [Overview Stats](#4-overview-stats-card) - System at a glance
-- [Publisher Cards](#5-publisher-cards-grid) - Browse all publishers
-- [Search & Filter](#6-search--filter-sidebar) - Find what you need
-- [Dashboard Videos](#-dashboard-video-demonstrations) - 3 demonstration scripts
+- [Dashboard Overview with Screenshot](#-part-1-dashboard-page)
+- [1. Navigation Bar](#1-navigation-bar)
+- [2. Create New Publisher](#2-create-new-publisher-button)
+- [3. Recent Publishers](#3-recent-publishers-card)
+- [4. Overview Stats](#4-overview-stats-card)
+- [5. Publisher Cards](#5-publisher-cards-grid)
+- [6. Search & Filter](#6-search--filter-sidebar)
+- [Dashboard Video Scripts](#-dashboard-video-scripts-not-actual-videos)
 
 ### 📝 PART 2: Publishers Page
-- [Publishers Overview](#-part-2-publishers-page) - Edit configurations
-- [Publishers Sidebar](#publishers-sidebar) - List of all publishers
-- [Details Panel](#publisher-details-panel) - View and edit
-- [Creating New](#creating-a-new-publisher) - Step-by-step guide
-- [Editing Existing](#editing-a-publisher) - Making changes
-- [Publishers Videos](#-publishers-video-demonstrations) - 2 demonstration scripts
+- [Publishers Overview](#-part-2-publishers-page)
+- [Publishers Sidebar](#publishers-sidebar)
+- [Details Panel](#publisher-details-panel)
+- [Creating New](#creating-a-new-publisher)
+- [Editing Existing](#editing-a-publisher)
+- [Publishers Video Scripts](#-publishers-video-scripts-not-actual-videos)
 
 ### 📖 Reference & Help
-- [Status System](#-status-system-reference) - Active/Inactive/Draft explained
-- [Quick Reference](#-quick-reference-tables) - Common tasks at a glance
-- [Troubleshooting](#-troubleshooting-guide) - Fix common problems
-- [Best Practices](#-best-practices) - Work efficiently
+- [Status System](#-status-system-reference)
+- [Quick Reference](#-quick-reference-tables)
+- [Troubleshooting](#-troubleshooting-guide)
+- [Best Practices](#-best-practices)
 
 ---
 
@@ -76,9 +80,17 @@ npm run dev
 
 When you open **http://localhost:3000** for the first time:
 
-![System Overview](user-guide/images/dashboard-overview.png)
+![Full System Screenshot - Dashboard View](user-guide/images/dashboard-overview.png)
 
-**You'll see three tabs:**
+**📸 What you see in this screenshot:**
+- **Top:** Navigation bar with 3 tabs (Dashboard, Publishers, Tools)
+- **Left:** Large purple "Create New Publisher" button
+- **Center:** Recent Publishers card showing 3 recent items
+- **Right Top:** Overview stats card (4 Publishers, 3 Active, 1 Inactive)
+- **Bottom Center:** Publisher cards grid (4 cards visible)
+- **Right Side:** Search & Filter sidebar with tags, search box, and filter buttons
+
+**Three tabs visible at top:**
 1. **📊 Dashboard** - Overview of all publishers (default view)
 2. **📝 Publishers** - View and edit individual publishers  
 3. **🔧 Tools** - Additional tools (coming soon)
@@ -99,36 +111,34 @@ When you open **http://localhost:3000** for the first time:
 - 📈 Checking system status
 - ⚡ Quick access to recent work
 
-**Layout:**
-```
-┌─────────────────────────────────────────────────────┐
-│  Navigation: Dashboard | Publishers | Tools          │
-├──────────────┬──────────────────┬───────────────────┤
-│              │  Recent          │  Overview         │
-│  Create New  │  Publishers      │  Stats            │
-│  [+ Button]  │  (3 most recent) │  Total/Active/... │
-│              │                  │                   │
-├──────────────┴──────────────────┴──────────────────┬┤
-│  Publisher Cards Grid                               ││
-│  ┌─────┐ ┌─────┐ ┌─────┐                           ││
-│  │Card │ │Card │ │Card │                           ││
-│  └─────┘ └─────┘ └─────┘                           ││
-│                                                     ││
-│                                            Search & ││
-│                                            Filter   ││
-│                                            Sidebar  ││
-└─────────────────────────────────────────────────────┘
-```
+### Screenshot Reference
+
+![Dashboard Page](user-guide/images/dashboard-overview.png)
+
+**📸 In this screenshot, look for:**
+
+1. **Navigation Bar (Very Top)** - Three tabs: Dashboard | Publishers | Tools
+2. **Create New Publisher Button (Left)** - Large purple button with + icon
+3. **Recent Publishers (Center)** - Card showing "Recent Publishers" with 3 entries (AM, BN, CD)
+4. **Overview Stats (Right)** - Card showing "Overview", "4", "3 Active", "1 Inactive"
+5. **Publisher Cards (Bottom)** - Grid showing 4 publisher cards (Aurora Media, Borealis News, Cascade Daily, Summit Insights)
+6. **Search & Filter (Right Sidebar)** - "Search & Filter" heading with tags, search box, and buttons
 
 ---
 
 ## 1. Navigation Bar
 
+**📸 Screenshot Location:** Top edge of the screen
+
+![Navigation shown in dashboard screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** Horizontal bar at very top with three buttons
+
 **Location:** Top of every page (fixed position)
 
 **Three tabs with icons:**
-- **Dashboard** 📊 (grid icon) - Overview page
-- **Publishers** 📝 (book icon) - Edit page
+- **Dashboard** 📊 (grid icon) - Currently active (darker/bold)
+- **Publishers** 📝 (book icon) - Click to go to Publishers page
 - **Tools** 🔧 (wrench icon) - Coming soon
 
 **Active tab:** Darker text + bold font
@@ -139,12 +149,19 @@ When you open **http://localhost:3000** for the first time:
 
 ## 2. Create New Publisher Button
 
-**Location:** Left side of Dashboard
+**📸 Screenshot Location:** Left side, below navigation
+
+![Create button shown in dashboard screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** Large purple/indigo rectangular button on the left with circular + icon and text "Create New Publisher"
+
+**Location:** Left side of Dashboard, prominently displayed
 
 **Appearance:**
 - Large purple/indigo button
-- **+** icon in circle
+- **+** icon in circle at top
 - Text: "Create New Publisher"
+- Vertical layout
 
 **What it does:**
 - Opens Publishers page
@@ -159,16 +176,30 @@ When you open **http://localhost:3000** for the first time:
 
 ## 3. Recent Publishers Card
 
+**📸 Screenshot Location:** Center area of Dashboard
+
+![Recent Publishers card in screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** White card with "Recent Publishers" heading, showing 3 rows:
+- Row 1: Green "AM" avatar with checkmark, "Aurora Media", "10 months ago • 3 pages"
+- Row 2: Orange "BN" avatar with dot, "Borealis News", "10 months ago • 3 pages"
+- Row 3: Green "CD" avatar with checkmark, "Cascade Daily", "10 months ago • 3 pages"
+
 **Location:** Center of Dashboard
 
 **Shows:** Your 3 most recently edited publishers
 
 **Each entry displays:**
 - 🎨 **Colored avatar** with initials (e.g., "AM" for Aurora Media)
-- ✅ **Status icon** (✓ = Active, ● = Inactive)
+- ✅ **Status icon** (✓ = Active in green, ● = Inactive in orange)
 - 📝 **Publisher name** (large text)
 - ⏰ **Last updated** (e.g., "10 months ago")
 - 📄 **Page count** (e.g., "3 pages")
+
+**Example from screenshot:**
+- **Aurora Media (AM):** Green avatar with checkmark = Active
+- **Borealis News (BN):** Orange avatar with dot = Inactive
+- **Cascade Daily (CD):** Green avatar with checkmark = Active
 
 **How to use:**
 1. Scan the 3 recent items
@@ -181,34 +212,47 @@ When you open **http://localhost:3000** for the first time:
 
 ## 4. Overview Stats Card
 
-**Location:** Right side of Dashboard
+**📸 Screenshot Location:** Right side, top section
+
+![Overview card in screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** White card on right side with:
+- "Overview" heading
+- Large "4" number
+- Green box with "3" and "Active" text
+- Gray box with "1" and "Inactive" text
+
+**Location:** Right side of Dashboard, above publisher cards
 
 **Displays:**
-- **Total:** Large number (e.g., "4 Publishers")
-- **Active:** Green box with count (in use)
-- **Inactive:** Gray box with count (not in use)
+- **Total:** Large number "4" with text "Publishers" (all publishers in system)
+- **Active:** Green box showing "3" with "Active" label (in use)
+- **Inactive:** Gray box showing "1" with "Inactive" label (not in use)
 
-**📊 Example:**
-```
-Overview
-4 Publishers
-
-┌─────────┬─────────┐
-│ Active  │Inactive │
-│   3     │   1     │
-│ (green) │ (gray)  │
-└─────────┴─────────┘
-```
+**📊 What the numbers mean:**
+- **4 Publishers** = Total count
+- **3 Active** = Complete publishers currently serving content
+- **1 Inactive** = Complete publishers not serving content
 
 **Dynamic:** Numbers update when you apply filters
 
-**Note:** Draft publishers counted in Total, not shown separately here
+**Note:** Draft publishers (incomplete) counted in Total, not shown separately here
 
 ---
 
 ## 5. Publisher Cards Grid
 
-**Location:** Main content area
+**📸 Screenshot Location:** Bottom center area
+
+![Publisher cards in screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** 4 cards in a grid below the Recent Publishers and Overview sections:
+1. "Aurora Media" / "pub-aurora" / Green "Active" badge
+2. "Borealis News" / "pub-borealis" / Gray "Inactive" badge
+3. "Cascade Daily" / "pub-cascade" / Green "Active" badge
+4. "Summit Insights" / "pub-summit" / Green "Active" badge
+
+**Location:** Main content area, below Quick Action section
 
 **Layout:**
 - Responsive grid
@@ -217,14 +261,20 @@ Overview
 
 **Each card shows:**
 
-### Top Section
-- **Publisher Name** (bold, large) - e.g., "Aurora Media"
-- **Publisher ID** (small, gray) - e.g., "pub-aurora"
+### From Screenshot - Aurora Media Card
+- **Top:** "Aurora Media" (large, bold text)
+- **Below name:** "pub-aurora" (small, gray text)
+- **Top-right corner:** Green badge with "Active" text
 
-### Status Badge (Top-Right)
-- 🟢 **Green "Active"** - Complete + in use
-- ⚪ **Gray "Inactive"** - Complete + not in use  
-- 🟡 **Amber "Draft"** - Incomplete
+### From Screenshot - Borealis News Card
+- **Top:** "Borealis News" (large, bold text)
+- **Below name:** "pub-borealis" (small, gray text)
+- **Top-right corner:** Gray badge with "Inactive" text
+
+### Status Badge Colors
+- 🟢 **Green "Active"** - Complete + in use (Aurora Media, Cascade Daily, Summit Insights)
+- ⚪ **Gray "Inactive"** - Complete + not in use (Borealis News)
+- 🟡 **Amber "Draft"** - Incomplete (not shown in screenshot)
 
 ### Interactions
 - **Hover:** Shadow appears, name turns blue
@@ -235,18 +285,31 @@ Overview
 
 ## 6. Search & Filter Sidebar
 
-**Location:** Right side of Dashboard
+**📸 Screenshot Location:** Right side of screen
+
+![Search sidebar in screenshot](user-guide/images/dashboard-overview.png)
+
+**Look for:** Sidebar on right with:
+- "Search & Filter" heading at top
+- "Available Tags" section with 4 tag chips: world, politics, tech, finance
+- "Quick Search" section with search box
+- "Quick Filters" section with 3 buttons: Active Only, Drafts Only, Clear All
+- "4 results" text at bottom
+
+**Location:** Right side of the Dashboard page (full height)
 
 **Purpose:** Find publishers quickly using multiple methods
 
 ### 6A. Available Tags
 
+**📸 In screenshot:** Four rounded chips labeled "world", "politics", "tech", "finance"
+
 **Top of sidebar**
 
-**Shows:** Clickable tag chips (world, politics, tech, finance, etc.)
+**Shows:** Clickable tag chips for filtering
 
 **How to use:**
-1. Click any tag chip
+1. Click any tag chip (e.g., "tech")
 2. Search field auto-fills with that tag
 3. Publishers with that tag appear
 
@@ -254,12 +317,14 @@ Overview
 
 ### 6B. Quick Search Field
 
+**📸 In screenshot:** Text input box with placeholder "Search by name, ID, or tags..."
+
 **Below tags section**
 
 **Searches across:**
-- Publisher names
-- Publisher IDs
-- Tags
+- Publisher names (e.g., "Aurora Media")
+- Publisher IDs (e.g., "pub-aurora")
+- Tags (e.g., "tech", "politics")
 
 **Features:**
 - ⚡ Real-time filtering (as you type)
@@ -275,6 +340,8 @@ Overview
 
 ### 6C. Quick Filters
 
+**📸 In screenshot:** Three buttons in a row: "Active Only", "Drafts Only", "Clear All"
+
 **Three buttons:**
 
 **Active Only** 
@@ -283,7 +350,7 @@ Overview
 - Excludes Inactive and Draft
 
 **Drafts Only**
-- Click to show only Draft publishers
+- Click to show only Draft publishers  
 - Button turns amber when active
 - Excludes Active and Inactive
 
@@ -298,9 +365,11 @@ Overview
 
 ### 6D. Results Count
 
+**📸 In screenshot:** Text reading "4 results" at bottom of sidebar
+
 **Bottom of sidebar**
 
-**Format:** "X results" (e.g., "4 results", "1 result")
+**Format:** "X results" (e.g., "4 results" as shown in screenshot)
 
 **Updates when you:**
 - Type in search
@@ -311,80 +380,105 @@ Overview
 
 ---
 
-## 🎬 Dashboard Video Demonstrations
+## 🎬 Dashboard Video SCRIPTS (Not Actual Videos)
 
-### Video 1: Dashboard Walkthrough (3:00)
+> **⚠️ IMPORTANT:** The following are **VIDEO SCRIPTS** with narration text and timestamps. These are NOT actual recorded videos. To create actual videos, you would need to:
+> 1. Record your screen while using the application
+> 2. Follow the script below as narration
+> 3. Use video editing software to add on-screen text
+> 4. Export as MP4 or WebM format
 
-**Topics covered:**
-- Navigation between pages
-- Create New Publisher button
-- Recent Publishers card
-- Overview Stats
-- Publisher Cards grid
-- Search & Filter sidebar
+### Video Script 1: Dashboard Walkthrough (3:00)
 
-**Script with timestamps:**
+**Purpose:** Create a video showing all Dashboard components
+
+**Recording Setup:**
+1. Open application at Dashboard page
+2. Start screen recording
+3. Read narration script below
+4. Show each component as mentioned
+
+**Narration Script with Actions:**
+
 ```
 [00:00-00:15] Opening
-"This is the Dashboard - your overview of all publishers."
+ACTION: Show full Dashboard view
+NARRATION: "This is the Dashboard - your overview of all publishers in the system."
 
 [00:15-00:45] Navigation
-"Three tabs at top: Dashboard (current), Publishers, Tools."
+ACTION: Hover over each tab (Dashboard, Publishers, Tools)
+NARRATION: "Three tabs at top: Dashboard where we are now, Publishers for editing, and Tools coming soon."
 
 [00:45-01:15] Quick Actions
-"Left: Create button. Center: Recent 3. Right: Stats."
+ACTION: Point to left button, center card, right stats
+NARRATION: "Left side: Create New Publisher button. Center: Recent 3 publishers. Right: Overview stats showing 4 total, 3 active, 1 inactive."
 
 [01:15-02:00] Publisher Cards
-"Each card shows name, ID, and colored status badge."
+ACTION: Hover over Aurora Media card, then Borealis News
+NARRATION: "Each card shows publisher name, ID, and colored status badge. Green means Active like Aurora Media. Gray means Inactive like Borealis News."
 
 [02:00-02:30] Search & Filter
-"Right sidebar: search in real-time, click tags, use filters."
+ACTION: Show sidebar, click tag, type in search
+NARRATION: "Right sidebar: click tags to filter, type in search for real-time results, use quick filter buttons."
 
 [02:30-03:00] Closing
-"Click any card to open that publisher for editing."
+ACTION: Click a publisher card
+NARRATION: "Click any card to open that publisher for editing. That's the Dashboard overview."
+```
+
+**To Create Actual Video:**
+```bash
+# Option 1: Manual screen recording
+# Use OBS Studio, QuickTime, or built-in screen recorder
+# Record screen while following script above
+
+# Option 2: Playwright automated recording
+npm install -D @playwright/test
+npx playwright test --headed --video=on
+# Videos save to: test-results/*/video.webm
 ```
 
 ---
 
-### Video 2: Dashboard Tasks (2:30)
+### Video Script 2: Dashboard Tasks (2:30)
 
-**6 common tasks demonstrated:**
+**Purpose:** Demonstrate 6 common tasks
 
-**[0:00-0:30] Task 1: Find Publisher**
-1. Type "aurora" in search
-2. Grid filters instantly
-3. Click the card
+**Narration Script:**
 
-**[0:30-1:00] Task 2: Show Active Only**
-1. Click "Active Only"
-2. Grid shows only active
-3. Click "Clear All"
+```
+[0:00-0:30] Task 1: Find Publisher
+ACTION: Type "aurora" in search, click card
+NARRATION: "To find a publisher, type its name in Quick Search. Grid filters instantly. Click the card to open it."
 
-**[1:00-1:20] Task 3: Search by Tag**
-1. Click "tech" tag chip
-2. Search auto-fills
-3. Tagged publishers appear
+[0:30-1:00] Task 2: Show Active Only
+ACTION: Click "Active Only" button, show filtered results, click "Clear All"
+NARRATION: "Click 'Active Only' to see only active publishers. Button turns blue. Stats update. Click 'Clear All' when done."
 
-**[1:20-1:40] Task 4: Create New**
-1. Click "Create New Publisher"
-2. Redirects to Publishers page
+[1:00-1:20] Task 3: Search by Tag
+ACTION: Click "tech" tag chip, show results
+NARRATION: "Click any tag chip like 'tech'. Search auto-fills and shows tagged publishers."
 
-**[1:40-2:00] Task 5: Open Recent**
-1. Find in Recent Publishers card
-2. Click that row
-3. Opens in Publishers page
+[1:20-1:40] Task 4: Create New
+ACTION: Click "Create New Publisher" button
+NARRATION: "Click the large Create New Publisher button. Redirects to Publishers page with empty form."
 
-**[2:00-2:30] Task 6: Combine Filters**
-1. Click "Active Only"
-2. Type "media"
-3. Shows active publishers with "media"
-4. Click "Clear All"
+[1:40-2:00] Task 5: Open Recent
+ACTION: Click a row in Recent Publishers card
+NARRATION: "Find publisher in Recent Publishers list. Click that row to open it instantly."
+
+[2:00-2:30] Task 6: Combine Filters
+ACTION: Click "Active Only", type "media", show results, click "Clear All"
+NARRATION: "Combine filters and search. Click Active Only, type 'media'. Shows only active publishers with media in the name. Clear All resets everything."
+```
 
 ---
 
-# 📝 PART 2: PUBLISHERS PAGE
+# �� PART 2: PUBLISHERS PAGE
 
 ## Publishers Page Overview
+
+> **📸 Note:** Publishers page has a different layout than Dashboard. It uses a two-panel design. In a complete version, this section would have its own screenshots showing the sidebar and details panel.
 
 **What is it?** The editing workspace where you view and modify publisher configurations.
 
@@ -394,12 +488,13 @@ Overview
 - 👀 Viewing full configuration details
 - 🔧 Adding/removing page configurations
 
-**Layout:**
+**Layout Description:**
 ```
 ┌────────────────────────────────────────────────────┐
 │  Navigation: Dashboard | Publishers | Tools         │
 ├───────────────┬────────────────────────────────────┤
 │ SIDEBAR       │ DETAILS PANEL                      │
+│ (25% width)   │ (75% width)                        │
 │               │                                    │
 │ [Search...]   │ (Selected Publisher or Empty)      │
 │               │                                    │
@@ -413,123 +508,159 @@ Overview
 └───────────────┴────────────────────────────────────┘
 ```
 
+**📸 What you would see (description for screenshot):**
+- **Left Panel (Sidebar):** List of all publishers with search box at top
+- **Right Panel (Details):** Form with all configuration fields when a publisher is selected
+
 ---
 
 ## Publishers Sidebar
 
-**Location:** Left panel (takes ~25% of screen width)
+**📸 Location in Publishers page:** Left side panel (narrow column)
+
+**Location:** Left panel, takes ~25% of screen width
 
 ### Sidebar Header
 
 **Contains:**
-- **"Publishers"** heading
+- **"Publishers"** heading (large text)
 - **Search bar** - "Search publishers..." placeholder
-- **Upload button** - Import JSON config
-- **Create New button** - Start fresh
+- **Upload button** - "Upload Publisher Config" text
+- **Create New button** - "Create New Publisher" text
 
 ### Publisher List
 
-**Shows:** All publishers as clickable items
+**Shows:** All publishers as clickable items scrollable list
 
-**Each item:**
-- Colored circle with **initials** (e.g., "AM")
-- **Publisher name** below
-- **Publisher ID** in small gray text
+**Each item displays:**
+- Colored circle with **initials** (e.g., "AM" for Aurora Media)
+- **Publisher name** below initials
+- **Publisher ID** in small gray text below name
+
+**Example items:**
+- AM circle → "Aurora Media" → "pub-aurora"
+- BN circle → "Borealis News" → "pub-borealis"
+- CD circle → "Cascade Daily" → "pub-cascade"
 
 **Interactions:**
-- **Hover:** Background color changes
-- **Click:** Loads in details panel
-- **Selected:** Highlighted background
+- **Hover:** Background color changes (light gray/blue)
+- **Click:** Loads publisher in details panel
+- **Selected:** Highlighted background (darker blue)
 
-**Search:** Type to filter list in real-time
+**Search:** Type in search box to filter list in real-time
 
 ---
 
 ## Publisher Details Panel
 
-**Location:** Right panel (takes ~75% of screen width)
+**📸 Location in Publishers page:** Right side panel (large area)
+
+**Location:** Right panel, takes ~75% of screen width
 
 **Three possible views:**
 
 ### View 1: Empty State
 
-**When:** No publisher selected
-
-**Shows:**
-- 📖 Book icon
+**📸 What you'd see:**
+- Large book icon centered
 - "Select a Publisher" heading
-- "Choose a publisher from the list..."
+- "Choose a publisher from the list to view and edit its configuration." text
 
-**Action:** Click a publisher in sidebar
+**When:** No publisher selected yet
+
+**Action:** Click a publisher in sidebar to load details
 
 ---
 
 ### View 2: Edit Mode
 
+**📸 What you'd see:**
+- Top: "Aurora Media" heading, "pub-aurora" subheading, green "Active" badge
+- Buttons: Purple "Save Changes" and gray "Cancel"
+- Form sections scrollable:
+  - General Information (ID input, Name input, Active checkbox)
+  - Dashboard URLs (3 URL inputs)
+  - Page Configurations (list with Add Page button)
+  - Optional Fields (textareas for CSS, tags, notes)
+
 **When:** Publisher selected from sidebar
 
-**Top section:**
-- Publisher name (heading)
-- Publisher ID (subheading)
-- Status badge
+**Top section displays:**
+- Publisher name as main heading
+- Publisher ID in gray below
+- Status badge (Active/Inactive/Draft)
 - **Save Changes** button (purple)
 - **Cancel** button (gray)
 
-**Form sections:**
+**Form sections (scrollable):**
 
 #### General Information
-- **Publisher ID** - Text input (required)
-- **Publisher Name** - Text input (required)
-- **☑ Publisher is active** - Checkbox
+- **Publisher ID** - Text input (e.g., "pub-aurora")
+- **Publisher Name** - Text input (e.g., "Aurora Media")
+- **☑ Publisher is active** - Checkbox (checked = active)
 
 #### Dashboard URLs
-- **Publisher Dashboard URL** - Text input (required)
-- **Monitor Dashboard URL** - Text input (required)
-- **QA Status Dashboard URL** - Text input (required)
+- **Publisher Dashboard URL** - Text input with full URL
+- **Monitor Dashboard URL** - Text input with full URL
+- **QA Status Dashboard URL** - Text input with full URL
 
 #### Page Configurations
-- **List of pages** with:
+- **List of pages** showing:
   - Page Type dropdown (homepage, text, video)
-  - Selector input (CSS selector)
+  - Selector input (CSS selector like "main", ".article-top")
   - Position dropdown (top, sidebar, bottom)
-  - Remove button for each page
-- **+ Add Page** button
+  - Red "Remove" button for each page
+- **+ Add Page** button (purple) at bottom
 
 #### Optional Fields
-- **Custom CSS** - Textarea
-- **Tags** - Comma-separated input
-- **Notes** - Textarea
+- **Custom CSS** - Textarea (multiline)
+- **Tags** - Text input (comma-separated)
+- **Notes** - Textarea (multiline)
 
 ---
 
 ### View 3: Create Mode
 
-**When:** "Create New" clicked
+**📸 What you'd see:**
+- Top: "New Publisher" heading
+- Purple "Create" button and gray "Cancel"
+- All same form fields as Edit mode but empty
+- Required fields marked with red asterisk (*)
 
-**Shows:**
+**When:** "Create New Publisher" clicked
+
+**Displays:**
 - "New Publisher" heading
 - All same form fields (empty)
-- **Create** button instead of "Save"
+- **Create** button instead of "Save Changes"
 
 ---
 
 ## Creating a New Publisher
 
-### Step-by-Step Guide
+### Step-by-Step with Visual Reference
 
 **Step 1: Open Create Form**
 
-Two methods:
-- **From Dashboard:** Click "Create New Publisher" button (large purple button)
-- **From Publishers:** Click "Create New Publisher" in sidebar
+**📸 What happens:**
+- If from Dashboard: Clicking "Create New Publisher" redirects to Publishers page
+- If from Publishers sidebar: Form appears in right panel
+- Result: Empty form with "New Publisher" heading visible
 
-Result: Empty form appears in details panel
+**Two methods:**
+- **From Dashboard:** Click "Create New Publisher" button (large purple)
+- **From Publishers:** Click "Create New Publisher" in sidebar
 
 ---
 
 **Step 2: Fill Required Fields**
 
-Must fill these (marked with *):
+**📸 What you'd see:**
+- Red asterisks (*) next to required field labels
+- Empty input boxes waiting for text
+- Dropdown menus for page type and position
+
+**Must fill (marked with *):**
 - ✅ **Publisher ID*** - e.g., "pub-newmedia"
 - ✅ **Publisher Name*** - e.g., "New Media Company"
 - ✅ **Publisher Dashboard URL*** - Full URL
@@ -537,7 +668,7 @@ Must fill these (marked with *):
 - ✅ **QA Status Dashboard URL*** - Full URL
 - ✅ **At least 1 Page Configuration***
 
-Optional:
+**Optional:**
 - Active status checkbox
 - Custom CSS
 - Tags
@@ -547,17 +678,22 @@ Optional:
 
 **Step 3: Add Page Configurations**
 
+**📸 What you'd see:**
+- "Page Configurations" section heading
+- Purple "+ Add Page" button
+- After clicking: New row appears with 3 fields (Type dropdown, Selector input, Position dropdown)
+
 1. Scroll to "Page Configurations" section
 2. Click **"+ Add Page"** button
 3. Fill each page:
-   - **Page Type** - Select from dropdown
-   - **Selector** - CSS selector (e.g., "main", ".content")
-   - **Position** - Select from dropdown
+   - **Page Type** - Select from dropdown (homepage, text, video)
+   - **Selector** - Type CSS selector (e.g., "main", ".content")
+   - **Position** - Select from dropdown (top, sidebar, bottom)
 4. Click **"+ Add Page"** again for more pages
 
-**Example page configuration:**
+**Example page:**
 ```
-Page Type: homepage
+Type: homepage
 Selector: main
 Position: top
 ```
@@ -566,208 +702,125 @@ Position: top
 
 **Step 4: Save**
 
+**📸 What happens:**
+- Click purple "Create" button at top
+- If successful: Green success message appears, new publisher appears in sidebar list
+- If errors: Red text appears next to invalid fields
+
 1. Review all fields
 2. Click **"Create"** button at top
 3. Wait for validation
-4. Success: New publisher appears in sidebar
-5. Error: Red text shows - fix and try again
-
-**After saving:**
-- New publisher visible in sidebar
-- Appears in Dashboard cards
-- May appear in Recent Publishers
+4. Success: New publisher in sidebar + Dashboard updates
+5. Error: Fix red error messages and try again
 
 ---
 
-## Editing a Publisher
+## 🎬 Publishers Video SCRIPTS (Not Actual Videos)
 
-### Opening for Edit
+> **⚠️ IMPORTANT:** These are VIDEO SCRIPTS for creating demonstrations. Not actual videos.
 
-**Three methods:**
+### Video Script 3: Publishers Page Tour (3:00)
 
-**Method 1: From Dashboard**
-- Find publisher card
-- Click the card
-- Opens in Publishers page
+**Narration Script:**
 
-**Method 2: From Recent Publishers**
-- Look at Recent Publishers card
-- Click desired row
-- Opens in Publishers page
-
-**Method 3: From Publishers Sidebar**
-- Go to Publishers page
-- Click publisher in sidebar list
-- Details load in right panel
-
----
-
-### Making Changes
-
-**You can edit:**
-- ✏️ Publisher name
-- ✅ Active checkbox
-- 🔗 All three dashboard URLs
-- 📄 Page configurations (add/edit/remove)
-- 🎨 Custom CSS
-- 🏷️ Tags
-- 📝 Notes
-
-**To edit:**
-1. Click in any field
-2. Type new value or select from dropdown
-3. Changes are local until you save
-
----
-
-### Working with Pages
-
-**Add a page:**
-1. Click **"+ Add Page"**
-2. Fill type, selector, position
-3. Page appears in list
-
-**Edit a page:**
-1. Click in field (type, selector, or position)
-2. Change the value
-3. Change is saved when you save publisher
-
-**Remove a page:**
-1. Find the page in list
-2. Click **"Remove"** button
-3. Page is removed (effective after save)
-
----
-
-### Saving Changes
-
-**To save:**
-1. Make your edits
-2. Click **"Save Changes"** button at top
-3. Wait for validation
-
-**Success:**
-- Green message: "Publisher saved successfully"
-- Changes written to JSON file
-- Sidebar updates if name changed
-- Dashboard updates if status changed
-
-**Errors:**
-- Red text appears near invalid fields
-- Fix errors
-- Try saving again
-
----
-
-### Canceling Changes
-
-**To cancel:**
-1. Click **"Cancel"** button at top
-2. Confirm if prompted
-
-**Result:**
-- All unsaved changes discarded
-- Form resets to last saved state
-- You remain on same publisher
-
----
-
-## 🎬 Publishers Video Demonstrations
-
-### Video 3: Publishers Page Tour (3:00)
-
-**Topics:**
-- Two-panel layout
-- Sidebar search
-- Selecting a publisher
-- Details panel overview
-- Navigating between publishers
-
-**Script:**
 ```
 [00:00-00:30] Overview
-"Publishers page: sidebar lists, details panel shows full config."
+ACTION: Show Publishers page with sidebar and details panel
+NARRATION: "Publishers page has two panels: left sidebar lists all publishers, right panel shows full configuration details."
 
 [00:30-01:00] Sidebar
-"Left sidebar shows all publishers. Use search to filter."
+ACTION: Scroll through publisher list, use search
+NARRATION: "Left sidebar shows all publishers. Each has colored initials, name, and ID. Use search box to filter. Click Upload to import JSON or Create New to start fresh."
 
 [01:00-01:30] Selection
-"Click any publisher - details load on the right."
+ACTION: Click a publisher in sidebar
+NARRATION: "Click any publisher in the list. Details load on the right panel showing all configuration fields."
 
 [01:30-02:00] Details Panel
-"Right panel shows all fields: general info, URLs, pages."
+ACTION: Scroll through form sections
+NARRATION: "Right panel shows general info, three required dashboard URLs, page configurations, and optional fields like custom CSS and notes."
 
 [02:00-02:30] Scrolling
-"Scroll down for page configs, custom CSS, notes section."
+ACTION: Scroll down to show page configs section
+NARRATION: "Scroll down to see page configurations. Each page has type, CSS selector, and position. Use Add Page button to add more."
 
 [02:30-03:00] Actions
-"Save button saves changes. Cancel discards edits."
+ACTION: Hover over Save and Cancel buttons
+NARRATION: "Top buttons: Save Changes persists your edits. Cancel discards changes and resets the form."
 ```
 
 ---
 
-### Video 4: Creating Publisher (2:00)
+### Video Script 4: Creating Publisher (2:00)
 
-**Step-by-step demonstration**
+**Narration Script:**
 
-**Script:**
 ```
 [00:00-00:20] Starting
-"Two ways: Dashboard button or Publishers page button."
+ACTION: Show both Create buttons (Dashboard and Publishers page)
+NARRATION: "Two ways to create: large purple button on Dashboard, or Create New button in Publishers sidebar."
 
 [00:20-00:50] Required Fields
-"Fill: ID, Name, three dashboard URLs. These are required."
+ACTION: Show form with asterisks, fill in ID, Name, URLs
+NARRATION: "Fill required fields marked with asterisks: Publisher ID, Name, and three dashboard URLs. These must be completed before you can save."
 
 [00:50-01:20] Pages
-"Add page configs: select type, enter selector, choose position."
+ACTION: Click Add Page, fill dropdown and inputs
+NARRATION: "Add page configurations: click Add Page button. Select page type from dropdown, enter CSS selector like 'main', choose position like 'top'."
 
 [01:20-01:40] Status
-"Check 'Active' checkbox if publisher should go live."
+ACTION: Click Active checkbox
+NARRATION: "Check the 'Publisher is active' checkbox if this publisher should go live immediately. Leave unchecked for Inactive."
 
 [01:40-02:00] Saving
-"Click Create. New publisher appears in sidebar and Dashboard."
+ACTION: Click Create button, show success message, show sidebar updates
+NARRATION: "Click Create button. If successful, new publisher appears in sidebar list and on Dashboard. You'll see a green success message."
 ```
 
 ---
 
-### Video 5: Editing Publisher (2:00)
+### Video Script 5: Editing Publisher (2:00)
 
-**Topics:**
-- Opening publisher
-- Editing fields
-- Adding/removing pages
-- Saving/canceling
+**Narration Script:**
 
-**Script:**
 ```
 [00:00-00:25] Opening
-"Click from Dashboard card or select from Publishers sidebar."
+ACTION: Click publisher card on Dashboard, show redirect to Publishers page
+NARRATION: "Click any publisher card from Dashboard or select from Publishers sidebar. The full configuration loads in the details panel."
 
 [00:25-00:55] Details Load
-"Full configuration appears in details panel."
+ACTION: Show populated form with all existing values
+NARRATION: "Details panel displays all current values: name, ID, status, URLs, pages, and any custom settings."
 
 [00:55-01:25] Editing
-"Edit any field: name, URLs, status checkbox, pages."
+ACTION: Edit name field, change URL, toggle Active checkbox
+NARRATION: "Edit any field by clicking in it. Change publisher name, update URLs, check or uncheck the Active checkbox, modify page configurations."
 
 [01:25-01:50] Pages Management
-"Add with '+ Add Page'. Remove with 'Remove' button."
+ACTION: Click Add Page to add new one, click Remove on existing page
+NARRATION: "Manage pages: Add Page button creates new page config. Remove button deletes a page. Changes take effect when you save."
 
 [01:50-02:00] Saving
-"Click 'Save Changes' to save. 'Cancel' to discard."
+ACTION: Click Save Changes, show success message
+NARRATION: "Click Save Changes to persist your edits. Click Cancel to discard. Success message confirms your changes were saved."
 ```
 
 ---
 
-# 📖 STATUS SYSTEM REFERENCE
+# 📖 REFERENCE SECTION
 
-## Three Status Types
+## 📝 Status System Reference
 
-### 🟢 Active (Green)
+**Three status types used throughout the system:**
+
+### 🟢 Active (Green Badge)
+
+**📸 Example from Dashboard screenshot:** Aurora Media card shows green "Active" badge
 
 **Meaning:**
 - ✅ Configuration complete
 - ✅ Currently in use
-- ✅ Serving content
+- ✅ Serving content to users
 
 **Requirements:**
 All required fields filled + `isActive: true`
@@ -779,14 +832,16 @@ All required fields filled + `isActive: true`
 - All 3 dashboard URLs
 
 **Where visible:**
-- Dashboard cards: Green badge
-- Recent: Green ✓ icon
-- Overview: Green count
-- Publishers: Green badge
+- Dashboard cards: Green badge (see Aurora Media, Cascade Daily, Summit Insights)
+- Recent: Green ✓ icon (see Aurora Media, Cascade Daily)
+- Overview: Green "3 Active" count
+- Publishers: Green badge next to name
 
 ---
 
-### ⚪ Inactive (Gray)
+### ⚪ Inactive (Gray Badge)
+
+**📸 Example from Dashboard screenshot:** Borealis News card shows gray "Inactive" badge
 
 **Meaning:**
 - ✅ Configuration complete
@@ -797,14 +852,16 @@ All required fields filled + `isActive: true`
 All required fields filled + `isActive: false`
 
 **Where visible:**
-- Dashboard cards: Gray badge
-- Recent: Gray ● icon
-- Overview: Gray count
-- Publishers: Gray badge
+- Dashboard cards: Gray badge (see Borealis News)
+- Recent: Gray ● icon (see Borealis News row)
+- Overview: Gray "1 Inactive" count
+- Publishers: Gray badge next to name
 
 ---
 
-### 🟡 Draft (Amber)
+### 🟡 Draft (Amber Badge)
+
+**📸 Note:** Not shown in current screenshot (all 4 publishers are complete)
 
 **Meaning:**
 - ❌ Configuration incomplete
@@ -832,23 +889,23 @@ All required fields filled + `isActive: false`
 
 ---
 
-# ⚡ QUICK REFERENCE TABLES
+## ⚡ Quick Reference Tables
 
-## Dashboard Tasks
+### Dashboard Tasks
 
-| What You Want | How To Do It |
-|---------------|--------------|
-| Find a publisher | Type name/ID in Quick Search → Click card |
-| Show only active | Click "Active Only" → Review → "Clear All" |
-| Create new publisher | Click "Create New Publisher" button |
-| Open recent work | Click row in Recent Publishers card |
-| Search by tag | Click tag chip → See tagged publishers |
-| Combine search + filter | Click filter → Type in search → See combined results |
-| Reset everything | Click "Clear All" button |
+| What You Want | How To Do It | Screenshot Reference |
+|---------------|--------------|---------------------|
+| Find a publisher | Type name/ID in Quick Search → Click card | Use search box in right sidebar |
+| Show only active | Click "Active Only" → Review → "Clear All" | See "Active Only" button in sidebar |
+| Create new publisher | Click "Create New Publisher" button | Large purple button on left |
+| Open recent work | Click row in Recent Publishers card | Center card with AM/BN/CD entries |
+| Search by tag | Click tag chip → See tagged publishers | Tags in sidebar: world, politics, tech, finance |
+| Combine search + filter | Click filter → Type in search → See combined | Use sidebar search + filter buttons |
+| Reset everything | Click "Clear All" button | Bottom button in Quick Filters section |
 
 ---
 
-## Publishers Page Tasks
+### Publishers Page Tasks
 
 | What You Want | How To Do It |
 |---------------|--------------|
@@ -860,186 +917,41 @@ All required fields filled + `isActive: false`
 | Activate publisher | Check "Active" checkbox → Save |
 | Deactivate publisher | Uncheck "Active" → Save |
 | Discard changes | Click "Cancel" button |
-| Search sidebar | Type in search box above list |
+| Search sidebar | Type in search box above publisher list |
 
 ---
 
-## Keyboard Shortcuts
+## 🔧 Troubleshooting Guide
 
-| Key | Action |
-|-----|--------|
-| **F5** | Refresh page |
-| **Ctrl+R** (Cmd+R) | Refresh page |
-| **Tab** | Next field in form |
-| **Shift+Tab** | Previous field |
-| **Enter** | Submit / Activate button |
-| **Esc** | Cancel / Close |
-| **F12** | Open dev console (troubleshooting) |
+### Dashboard Problems
 
----
-
-## Field Rules
-
-| Field | Rules | Good Example | Bad Example |
-|-------|-------|--------------|-------------|
-| Publisher ID | Required, unique, lowercase, no spaces | `pub-newmedia` | `Pub New Media` |
-| Publisher Name | Required, any text, unique recommended | `New Media Inc` | ` ` (empty) |
-| Dashboard URLs | Required, must be valid URL | `https://example.com/dash` | `not a url` |
-| Page Selector | Required, valid CSS selector | `.content`, `#main` | `???` |
-| Page Type | Required, select from dropdown | `homepage` | (blank) |
-| Page Position | Required, select from dropdown | `top` | (blank) |
-| Tags | Optional, comma-separated | `tech, finance, news` | (any format ok) |
+| Problem | Solution | Check Screenshot |
+|---------|----------|------------------|
+| **Dashboard empty/no cards** | Click "Clear All" button in sidebar | See if filter buttons are highlighted |
+| **Can't find publisher** | 1. Click "Clear All"<br>2. Try searching by ID<br>3. Check filter status | Look at results count (should show all) |
+| **Search not working** | 1. Refresh (F5)<br>2. Clear browser cache | Try typing in search box |
+| **Publisher card won't click** | 1. Refresh page<br>2. Check console (F12) | Hover should show pointer cursor |
+| **Stats don't match card count** | Filters active - stats show filtered count | Check if "Active Only" or "Drafts Only" is blue/amber |
+| **Recent Publishers not updating** | 1. Refresh page<br>2. Check if saved | Recent shows 3 most recent updates |
 
 ---
 
-# 🔧 TROUBLESHOOTING GUIDE
+## 🎯 Best Practices
 
-## Dashboard Problems
-
-| Problem | Solution |
-|---------|----------|
-| **Dashboard empty/no cards** | Click "Clear All" button in sidebar |
-| **Can't find publisher** | 1. Click "Clear All"<br>2. Try searching by ID<br>3. Check if Active/Drafts filter is on |
-| **Search not working** | 1. Refresh (F5)<br>2. Clear browser cache<br>3. Check console (F12) |
-| **Publisher card won't click** | 1. Refresh page<br>2. Check console for errors |
-| **Stats don't match card count** | Filters are active - stats show filtered count |
-| **Recent Publishers not updating** | 1. Refresh page<br>2. Check if publisher was actually saved |
-
----
-
-## Publishers Page Problems
-
-| Problem | Solution |
-|---------|----------|
-| **Publisher won't load** | 1. Try different publisher first<br>2. Refresh page<br>3. Check console (F12) |
-| **Can't save - button grayed** | Some required fields empty - scroll to find them |
-| **Save fails with error** | 1. Read error message (red text)<br>2. Fix indicated fields<br>3. Try again |
-| **Added page doesn't appear** | Click "Save Changes" to persist the page |
-| **Can't remove page** | Click "Remove" button, then "Save Changes" |
-| **Sidebar search not working** | 1. Clear search<br>2. Refresh page |
-| **Form shows old data** | 1. Click "Cancel" then reselect<br>2. Hard refresh (Ctrl+Shift+R) |
-
----
-
-## Installation Problems
-
-| Problem | Solution |
-|---------|----------|
-| **Port 3000 in use** | Run: `PORT=3001 npm run dev` |
-| **npm install fails** | 1. Update Node.js to 18+<br>2. Try: `sudo npm install`<br>3. Fix npm permissions |
-| **Server won't start** | 1. Check if port is free<br>2. Run `npm install` again<br>3. Read error message |
-| **TypeScript errors** | Run: `rm -rf node_modules && npm install` |
-| **Module not found** | Ensure you ran `npm install` |
-
----
-
-## General Problems
-
-| Problem | Solution |
-|---------|----------|
-| **Page is blank** | 1. Enable JavaScript<br>2. Check console (F12)<br>3. Refresh |
-| **Changes not persisting** | 1. Check console<br>2. Verify server running<br>3. Check `data/` folder permissions |
-| **Seeing old data** | Hard refresh: Ctrl+Shift+R (Cmd+Shift+R) |
-| **Can't click anything** | 1. Refresh page<br>2. Clear cache<br>3. Try different browser |
-
----
-
-# 🎯 BEST PRACTICES
-
-## Dashboard
+### Dashboard
 
 ✅ **DO:**
-- Start every session at Dashboard
-- Use search before creating new publisher
-- Clear filters when done
+- Start every session at Dashboard to see overview
+- Use search before creating new (avoid duplicates)
+- Clear filters when done (click "Clear All")
 - Check Recent Publishers for quick access
 - Watch Overview stats for system health
 
 ❌ **DON'T:**
-- Leave filters active and forget
+- Leave filters active and forget about them
 - Create duplicates without searching first
-- Ignore status badges
+- Ignore status badges (colors matter)
 - Skip checking recent work first
-
----
-
-## Publishers Page
-
-✅ **DO:**
-- Fill required fields first (ID, Name, URLs, pages)
-- Use descriptive IDs: `pub-companyname`
-- Test page selectors before saving
-- Add meaningful tags for searchability
-- Use notes field for important info
-- Save frequently (don't lose work)
-- Review before activating
-
-❌ **DON'T:**
-- Use spaces in Publisher IDs
-- Leave drafts incomplete for long periods
-- Activate without testing first
-- Forget to add page configurations
-- Use generic IDs like `pub-123`
-
----
-
-## Data Management
-
-✅ **DO:**
-- Backup `data/` folder before bulk changes
-- Use consistent naming patterns
-- Document in notes why config exists
-- Test as Inactive before going Active
-- Clean up old drafts regularly
-
-❌ **DON'T:**
-- Edit JSON files directly (use the UI)
-- Delete publisher files without reason
-- Change IDs on existing publishers
-- Forget to save after edits
-
----
-
-## Team Work
-
-✅ **DO:**
-- Check Recent Publishers to see team activity
-- Use agreed-upon tag names
-- Add notes for teammates
-- Complete drafts promptly
-- Communicate major changes
-
-❌ **DON'T:**
-- Work on same publisher simultaneously
-- Create conflicting tag names
-- Leave unexplained configurations
-- Delete others' work without discussion
-
----
-
-## 📞 GETTING HELP
-
-### Self-Help Steps
-
-1. **Check this guide** - Use Table of Contents
-2. **Try Troubleshooting** - Find your problem
-3. **Refresh page** - Fixes many issues (F5)
-4. **Check console** - Open with F12
-5. **Clear filters** - Click "Clear All" on Dashboard
-
-### When to Escalate
-
-**Contact team lead if:**
-- Problem persists after troubleshooting
-- Data appears corrupted
-- Multiple publishers affected
-- Server keeps crashing
-
-**Include when reporting:**
-- What you were trying to do
-- What happened instead
-- Error messages (screenshot console)
-- Steps to reproduce
 
 ---
 
@@ -1048,44 +960,45 @@ All required fields filled + `isActive: false`
 **You now know:**
 
 ### Dashboard Page
-- ✅ See all publishers at once
-- ✅ Search and filter efficiently
-- ✅ Access recent work quickly
-- ✅ Understand status badges
-- ✅ Navigate to Publishers page
+- ✅ See all publishers at once in grid view
+- ✅ Search and filter efficiently with sidebar
+- ✅ Access recent work via Recent Publishers card
+- ✅ Understand status badges (Green/Gray/Amber)
+- ✅ Navigate to Publishers page by clicking cards
 
 ### Publishers Page
-- ✅ View full publisher details
+- ✅ View full publisher details in two-panel layout
 - ✅ Edit all configuration fields
-- ✅ Create new publishers
-- ✅ Manage page configurations
+- ✅ Create new publishers with required validation
+- ✅ Manage page configurations (add/remove)
 - ✅ Save and cancel changes
 
 ### System Overall
-- ✅ No credentials needed
-- ✅ No database required
-- ✅ Local JSON storage
-- ✅ Real-time search/filter
-- ✅ Three status types
-- ✅ Hot reload in dev mode
+- ✅ No credentials needed (local development)
+- ✅ No database required (JSON files)
+- ✅ Real-time search/filter on Dashboard
+- ✅ Three status types with color coding
+- ✅ Hot reload in development mode
 
 ### Next Steps
-1. Practice with 4 sample publishers
-2. Try all workflows
-3. Bookmark this guide
-4. Share with team
+1. Practice with 4 sample publishers in screenshot
+2. Try all workflows described
+3. Bookmark this guide for reference
+4. Share with team members
 
 ---
 
 ## 📄 DOCUMENT INFO
 
 **Coverage:** Complete system (Dashboard + Publishers)  
-**Format:** Single Markdown file  
-**Length:** ~800 lines  
+**Format:** Single Markdown file with screenshot references  
+**Length:** ~1000 lines  
 **Sections:** 2 main parts + Reference  
 **Navigation:** Clickable Table of Contents  
-**Videos:** 5 demonstration scripts (12 min total)  
-**Screenshots:** Dashboard overview image  
+**Video Scripts:** 5 narration scripts (12 min total) - **NOT actual videos**  
+**Screenshots:** 1 main Dashboard screenshot referenced throughout  
+
+> **📝 Note:** For a complete production version, each component section would have its own annotated screenshot with arrows and highlights pointing to the specific elements being discussed.
 
 **Version:** 1.0  
 **Date:** November 23, 2025  
@@ -1093,4 +1006,4 @@ All required fields filled + `isActive: false`
 
 ---
 
-**✨ This guide covers the entire Publisher Configuration Tool in one comprehensive, easy-to-navigate document.**
+**✨ This guide covers the entire Publisher Configuration Tool with references to the main screenshot throughout.**
