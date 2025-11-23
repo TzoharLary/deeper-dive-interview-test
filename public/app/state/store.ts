@@ -1,5 +1,5 @@
-import { validatePublisher } from "../utils/validator";
-import type { Publisher, IStore, StoreSnapshot, Page } from "../types";
+import { validatePublisher } from "../utils/validator.js";
+import type { Publisher, IStore, StoreSnapshot, Page } from "../types/index.js";
 
 type Listener = (snapshot: StoreSnapshot) => void;
 

@@ -1,4 +1,4 @@
-import { validatePublisher } from "../utils/validator";
+import { validatePublisher } from "../utils/validator.js";
 
 function assert(cond: boolean, msg: string) {
   if (!cond) throw new Error(msg);

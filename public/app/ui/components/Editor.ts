@@ -1,8 +1,8 @@
-import { Component } from "../core/Component";
-import { IStore } from "../../types";
-import { GeneralInfo } from "./GeneralInfo";
-import { PageList } from "./PageList";
-import { SaveBar } from "./SaveBar";
+import { Component } from "../core/Component.js";
+import { IStore } from "../../types/index.js";
+import { GeneralInfo } from "./GeneralInfo.js";
+import { PageList } from "./PageList.js";
+import { SaveBar } from "./SaveBar.js";
 
 interface EditorProps {
   store: IStore;

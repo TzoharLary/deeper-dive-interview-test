@@ -186,13 +186,16 @@ function renderSidebar(sidebar: HTMLElement, publishers: PublisherData[], detail
       const info = document.createElement("div");
       info.className = "publisher-info";
       
+      const displayName = (publisher.alias || publisher.aliasName || publisher.publisherId || publisher.id) || "Untitled";
+      const displayId = publisher.id || publisher.publisherId || "";
+
       const name = document.createElement("div");
       name.className = "publisher-name";
-      name.textContent = publisher.aliasName || publisher.publisherId || "Untitled";
-      
+      name.textContent = displayName;
+
       const id = document.createElement("div");
       id.className = "publisher-id";
-      id.textContent = publisher.publisherId || "";
+      id.textContent = displayId;
       
       const status = document.createElement("div");
       status.className = `status-indicator ${publisher.isActive ? "active" : "inactive"}`;

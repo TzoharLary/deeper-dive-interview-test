@@ -61,6 +61,12 @@
 
     <div id="app" class="app"></div>
     <script type="module" src="/app/main.js"></script>
+    <script>
+        // Connect to the server's update channel and reload on message
+        new EventSource('/api/events').onmessage = () => {
+            console.log('Source changed, reloading...');
+            location.reload();
+        };
+    </script>
   </body>
 </html>
-

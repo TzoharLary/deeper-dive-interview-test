@@ -1,5 +1,5 @@
-import { createElement, renderList } from "./renderers";
-import type { Publisher } from "../types";
+import { createElement, renderList } from "./renderers.js";
+import type { Publisher } from "../types/index.js";
 import { fetchPublisher, fetchPublishers } from "../data/api.js";
 
 export async function renderSidebar(container: HTMLElement, store: any) {

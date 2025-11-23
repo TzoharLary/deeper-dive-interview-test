@@ -1,5 +1,5 @@
-import { Component } from "../core/Component";
-import { IStore, StoreSnapshot } from "../../types";
+import { Component } from "../core/Component.js";
+import { IStore, StoreSnapshot } from "../../types/index.js";
 
 interface SaveBarProps {
   store: IStore;

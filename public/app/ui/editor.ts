@@ -1,4 +1,4 @@
-import { createElement, updateInputValue, renderList } from "./renderers";
+import { createElement, updateInputValue, renderList } from "./renderers.js";
 
 export function renderEditor(container: HTMLElement, store: any) {
   container.innerHTML = "";

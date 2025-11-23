@@ -1,4 +1,4 @@
-import PublisherStore from "../state/store";
+import PublisherStore from "../state/store.js";
 
 function assert(cond: boolean, msg: string) {
   if (!cond) throw new Error(msg);
