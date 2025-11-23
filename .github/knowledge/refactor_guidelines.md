@@ -4,7 +4,7 @@ summary: Consolidated principles from Awesome Copilot collections for Vanilla Ty
 ---
 
 Purpose
-- Provide concise, actionable guidance for the Engineer and Prototyper when converting Base44 exports into a clean, maintainable Vanilla TypeScript codebase and when automating generation/export with Playwright.
+- Provide concise, actionable guidance for the Engineer and Prototyper when converting prototype exports into a clean, maintainable Vanilla TypeScript codebase and when automating generation/export with Playwright.
 
 Vanilla TypeScript Patterns (key principles)
 - Prefer small, single-responsibility modules with explicit TypeScript interfaces and types.
@@ -27,12 +27,13 @@ React → Vanilla Migration (conversion strategy)
 Playwright Automation Best Practices (for Prototyper)
 - Use resilient selectors: prefer `role`, `data-testid`, or ARIA attributes over brittle class names or deep DOM paths.
 - Add explicit waits for network or meaningful UI state (e.g., wait for an element to be visible or a network route to complete) instead of fixed sleeps.
-- Centralize authentication stubs/mocks when running automation against Base44 to avoid flaky logins; prefer environment-driven credentials when unavoidable.
-- Capture artifacts for audit: screenshots, DOM snapshots, and console logs at each major step (generation, preview verification, export completion).
-- Implement retry/backoff and idempotent operations for export/commit steps; ensure file writes are validated (checksums or basic file presence) before committing.
+-- Centralize authentication stubs/mocks when running automation against prototype previews to avoid flaky logins; prefer environment-driven credentials when unavoidable.
+-- Capture artifacts for audit: screenshots, DOM snapshots, and console logs at each major step (generation, preview verification, export completion).
+-- Implement retry/backoff and idempotent operations for export/commit steps; ensure file writes are validated (checksums or basic file presence) before committing.
 - Log clearly and produce machine-readable exit codes for automation scripts so downstream tooling can react deterministically.
 
 Operational Notes
+
 - Prefer playbooks from `awesome_copilot` over ad-hoc patterns, but always audit playbook recommendations against `MASTER_PLAN.md` (no framework installs, Vanilla TS rule is authoritative).
 - Document any edge-case decisions in `ARCHITECTURE.hybrid.md` and link to this guideline.
 
@@ -41,4 +42,4 @@ Quick Checklist (Engineer)
 - [ ] Implement `public/data/api.ts` with typed fetch/save functions.
 - [ ] Add a small Pub/Sub `Store` under `/public/state/` and atomic renderers in `/public/ui/`.
 - [ ] Implement Mini‑Zod validators and unit tests.
-- [ ] Sanitize Base44 exports and add Playwright snapshots under `/scratch/base44-hybrid-insights/`.
+- [ ] Sanitize prototype exports and add Playwright snapshots under an approved `scratch/` insights directory (avoid `base` in paths). Ensure all chosen scratch paths are approved before creation.

@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 import { validatePublisher } from "../utils/validator.js";
-import { savePublisher, updatePublishersList, deletePublisher, PublisherData } from "../data/api.js";
+import { sanitizePublisherDraft } from "../utils/sanitize.js";
+import { savePublisher, updatePublishersList, deletePublisher, PublisherData, ensurePublisherIdAvailable } from "../data/api.js";
 import type { Publisher, IStore, StoreSnapshot, Page } from "../types/index.js";
 import {
-  ALLOWED_PAGE_POSITIONS,
-  ALLOWED_PAGE_SELECTORS,
-  ALLOWED_PAGE_TYPES,
   DEFAULT_PAGE_POSITION,
   DEFAULT_PAGE_SELECTOR,
   DEFAULT_PAGE_TYPE,
@@ -210,7 +208,8 @@ export class PublisherStore implements IStore {
   }
 
   prepareForSave() {
-    return { ...(this.currentData || {}), ...this.unknownKeys } as Publisher;
+    const base = sanitizePublisherDraft((this.currentData || {}) as Publisher);
+    return { ...base, ...this.unknownKeys } as Publisher;
   }
 
   async save(payload: Publisher) {
@@ -222,6 +221,10 @@ export class PublisherStore implements IStore {
         }
 
         const filename = `publisher-${id}.json`;
+
+        if (this.mode === "create") {
+          await ensurePublisherIdAvailable(id);
+        }
 
         const sanitizedPages = (payload.pages || []).map((page) => sanitizePageEntry(page));
         // Save the publisher file using shared API helpers

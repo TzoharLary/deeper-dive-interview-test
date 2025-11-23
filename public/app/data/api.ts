@@ -139,6 +139,18 @@ export async function deletePublisher(id: string): Promise<void> {
   }
 }
 
+export async function publisherIdExists(id: string): Promise<boolean> {
+  const publishers = await fetchPublishers();
+  return publishers.some((p) => p.id === id);
+}
+
+export async function ensurePublisherIdAvailable(id: string): Promise<void> {
+  const exists = await publisherIdExists(id);
+  if (exists) {
+    throw new Error(`Publisher with id '${id}' already exists`);
+  }
+}
+
 // Upload JSON file and create publisher
 export async function uploadPublisherFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

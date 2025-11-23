@@ -5,6 +5,14 @@ import {
   ALLOWED_PAGE_SELECTORS,
   ALLOWED_PAGE_TYPES
 } from "../constants/pageRules.js";
+import {
+  SAFE_PUBLISHER_ID_REGEX,
+  TEXT_LIMITS,
+  URL_PROTOCOL_REGEX,
+  hasBalancedCssBraces,
+  hasDuplicateStrings,
+  sanitizePublisherDraft
+} from "./sanitize.js";
 
 // Mini-Zod: Lightweight chainable runtime validator
 export type ValidationError = { path: string; message: string };
@@ -116,19 +124,59 @@ export const PageSchema = TypeSchema.object<Page>({
   })
 });
 
-type ValidatedPublisher = Pick<Publisher, "publisherId" | "aliasName" | "isActive" | "tags" | "allowedDomains" | "pages">;
+type ValidatedPublisher = Pick<Publisher,
+"publisherId" | "aliasName" | "isActive" | "tags" | "allowedDomains" | "pages" |
+"customCss" | "notes" | "publisherDashboard" | "monitorDashboard" | "qaStatusDashboard"
+>;
+
+const nonEmptyField = (field: string) => (value: string) => (value.trim() ? null : `${field} cannot be empty`);
+const maxLength = (field: string, limit: number) => (value: string) => (value.length <= limit ? null : `${field} cannot exceed ${limit} characters`);
+const requireSafeUrl = (field: string) => (value: string) => {
+  if (!value) return null;
+  return URL_PROTOCOL_REGEX.test(value) ? null : `${field} must start with http:// or https://`;
+};
+
 export const PublisherSchema = TypeSchema.object<ValidatedPublisher>({
-  publisherId: TypeSchema.string().refine(s => (s.trim() ? null : "publisherId cannot be empty")),
-  aliasName: TypeSchema.string().refine(s => (s.trim() ? null : "aliasName cannot be empty")),
+  publisherId: TypeSchema.string()
+    .refine(nonEmptyField("publisherId"))
+    .refine((s) => SAFE_PUBLISHER_ID_REGEX.test(s) ? null : "publisherId can contain only letters, numbers, '-' or '_'")
+    .refine(maxLength("publisherId", TEXT_LIMITS.publisherId)),
+  aliasName: TypeSchema.string()
+    .refine(nonEmptyField("aliasName"))
+    .refine(maxLength("aliasName", TEXT_LIMITS.aliasName)),
   isActive: TypeSchema.boolean(),
-  tags: TypeSchema.array(TypeSchema.string()),
-  allowedDomains: TypeSchema.optional(TypeSchema.array(TypeSchema.string())),
-  pages: TypeSchema.array(PageSchema)
+  tags: TypeSchema.array(
+    TypeSchema.string()
+      .refine(maxLength("tags", TEXT_LIMITS.tag))
+  ).refine((values) => hasDuplicateStrings(values) ? "Duplicate tags detected" : null),
+  allowedDomains: TypeSchema.optional(TypeSchema.array(
+    TypeSchema.string()
+      .refine(maxLength("allowedDomains", TEXT_LIMITS.domain))
+  )).refine((values) => {
+    if (!values) return null;
+    return hasDuplicateStrings(values) ? "Duplicate allowed domains detected" : null;
+  }),
+  pages: TypeSchema.array(PageSchema),
+  customCss: TypeSchema.optional(TypeSchema.string()
+    .refine(maxLength("customCss", TEXT_LIMITS.customCss))
+    .refine((css) => hasBalancedCssBraces(css) ? null : "customCss has unbalanced braces")),
+  notes: TypeSchema.optional(TypeSchema.string()
+    .refine(maxLength("notes", TEXT_LIMITS.notes))),
+  publisherDashboard: TypeSchema.optional(TypeSchema.string()
+    .refine(maxLength("publisherDashboard", TEXT_LIMITS.url))
+    .refine(requireSafeUrl("publisherDashboard"))),
+  monitorDashboard: TypeSchema.optional(TypeSchema.string()
+    .refine(maxLength("monitorDashboard", TEXT_LIMITS.url))
+    .refine(requireSafeUrl("monitorDashboard"))),
+  qaStatusDashboard: TypeSchema.optional(TypeSchema.string()
+    .refine(maxLength("qaStatusDashboard", TEXT_LIMITS.url))
+    .refine(requireSafeUrl("qaStatusDashboard")))
 });
 
 export function validatePublisher(p: unknown) {
   // Allow extra fields; validation only covers a strict subset
-  const res = PublisherSchema.parse(p as Record<string, unknown>);
+  const sanitized = sanitizePublisherDraft((p || {}) as Publisher);
+  const res = PublisherSchema.parse(sanitized as Record<string, unknown>);
   if (res.success) return { isValid: true, errors: {} };
   const errMap: Record<string, string> = {};
   for (const e of res.errors) {

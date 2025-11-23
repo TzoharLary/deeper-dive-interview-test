@@ -39,6 +39,33 @@ You have access to:
     *   Ensure tests are independent (clean up their own data).
 *   **Execute:** Run the tests using `npx playwright test`.
 
+### Unit tests (local runner)
+* The repository includes lightweight TypeScript test scripts under `public/app/tests/*.ts` that are intended to be executed as standalone Node scripts (they call `process.exit()` with appropriate status codes).
+* To run a single unit test file locally use `tsx` (already included as a dev dependency):
+
+```bash
+npx tsx public/app/tests/validator.test.ts
+```
+
+* To run all unit tests in the folder sequentially (stop on first failure):
+
+```bash
+for f in public/app/tests/*.ts; do
+    npx tsx "$f" || break
+done
+```
+
+* Recommended `package.json` script to make CI and local runs easier (add under `scripts`):
+
+```json
+"test:unit": "for f in public/app/tests/*.ts; do tsx $f || exit 1; done"
+```
+
+* Notes for the QA agent:
+    - Each test returns an exit code (0 success, non-zero failure) so CI can detect failures.
+    - Tests are simple Node scripts (not Playwright); do not assume a test runner like Jest is present unless explicitly added.
+    - If you need integration with Playwright or browser-based flows, use the E2E section above and prefer `npx playwright test`.
+
 ## 4. VERIFY (Deep Check)
 *   **UI Verification:** Did the test pass?
 *   **Data Verification:** Use `read_file` to check the actual JSON content on disk.

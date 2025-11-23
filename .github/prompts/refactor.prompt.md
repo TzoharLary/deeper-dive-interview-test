@@ -31,15 +31,15 @@ Deliverables:
 Example (filled inputs):
 ```
 Inputs:
-  files: scratch/base44-clean-mvp/src/components/PublisherList.tsx, scratch/base44-clean-mvp/src/pages/Editor.tsx
-  goal: Convert PublisherList + Editor from React to Vanilla TypeScript; add Mini‑Zod schemas for the edited shapes; provide diffs, rationale and test plan.
+  files: scratch/prototype-clean-mvp/src/components/PublisherList.ts, scratch/prototype-clean-mvp/src/pages/Editor.ts
+  goal: Convert PublisherList + Editor from framework-specific code to Vanilla TypeScript; add Mini‑Zod schemas for the edited shapes; provide diffs, rationale and test plan.
 
 Template expanded:
-  Goal: Convert PublisherList + Editor from React to Vanilla TypeScript; add Mini‑Zod schemas for the edited shapes; provide diffs, rationale and test plan.
-  Files: scratch/base44-clean-mvp/src/components/PublisherList.tsx, scratch/base44-clean-mvp/src/pages/Editor.tsx
+  Goal: Convert PublisherList + Editor from framework-specific code to Vanilla TypeScript; add Mini‑Zod schemas for the edited shapes; provide diffs, rationale and test plan.
+  Files: scratch/prototype-clean-mvp/src/components/PublisherList.ts, scratch/prototype-clean-mvp/src/pages/Editor.ts
   Constraints:
     - Vanilla TypeScript only.
-    - Any heavy analysis (>3 files) via `runSubagent` and store summaries in `/scratch/base44-hybrid-insights/`.
+    - Any heavy analysis (>3 files) via `runSubagent` and store summaries in an approved `scratch/` insights directory.
     - No direct writes to `main` without `requires_approval`.
   Deliverables:
     - apply_patch-ready diffs for converted files.
@@ -54,6 +54,6 @@ Expected agent behavior on submission:
 - Provide clear artifact paths for screenshots, summaries, diffs and tests.
 
 Notes / Guidelines:
-- Keep all artifacts in `scratch/` until a PR is created.
+- Keep all artifacts in `scratch/` until a PR is created. Avoid creating paths that include the substring `base` unless explicitly approved.
 - Commit messages should use the format: `Phase <n> — <short description>` and reference artifact locations.
 - If new dependencies are strictly necessary, stop and request approval (do not auto-add to `package.json`).

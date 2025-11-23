@@ -1,7 +1,7 @@
 ---
 name: generate-ui
-description: "Prototyper prompt template to generate UI flow prompts (Base44)."
-agent: "Base44Prototyper"
+description: "Prototyper prompt template to generate UI flow prompts."
+agent: "Prototyper"
 tools:
   - awesome-copilot/*
   - runSubagent
@@ -16,7 +16,7 @@ Inputs:
 
 Template:
 ```
-Goal: Create a Base44 prompt for UI flow `${input:flow_name}`
+Goal: Create a prototype prompt for UI flow `${input:flow_name}`
 UserStory: ${input:user_story}
 Constraints: (accessibility, responsiveness, Vanilla TS where applicable)
 Examples: (provide 2 short examples)

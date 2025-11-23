@@ -1,0 +1,19 @@
+{
+  "publisherId": "pub-qa-auto",
+  "aliasName": "QA Automation Test",
+  "pages": [
+    {
+      "pageType": "homepage",
+      "selector": "#root main",
+      "position": "top"
+    }
+  ],
+  "publisherDashboard": "",
+  "monitorDashboard": "",
+  "qaStatusDashboard": "",
+  "isActive": true,
+  "customCss": "",
+  "tags": [],
+  "allowedDomains": [],
+  "notes": ""
+}

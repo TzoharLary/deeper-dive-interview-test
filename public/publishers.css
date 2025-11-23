@@ -871,6 +871,150 @@
   opacity: 0.6;
 }
 
+.review-btn {
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.review-btn:hover:not(:disabled) {
+  background-color: #dfe4ff;
+}
+
+.review-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.diff-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  z-index: 1500;
+}
+
+.diff-panel {
+  width: min(760px, calc(100% - 32px));
+  max-height: 90vh;
+  background: var(--color-bg-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.diff-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.diff-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+
+.diff-close-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.diff-body {
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  max-height: calc(90vh - 160px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.diff-row {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.diff-row.diff-added {
+  border-color: var(--color-success);
+}
+
+.diff-row.diff-removed {
+  border-color: var(--color-error);
+}
+
+.diff-row.diff-changed {
+  border-color: var(--color-warning);
+}
+
+.diff-path {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.diff-values {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.diff-value {
+  flex: 1;
+  min-width: 220px;
+  background: var(--color-bg-page);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm);
+}
+
+.diff-value-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.diff-value pre {
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.diff-empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+}
+
+.diff-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--color-border-light);
+}
+
 /* Toast Notifications */
 .toast-container {
   position: fixed;
