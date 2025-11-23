@@ -1,63 +1,118 @@
-## Support Console
+# Publisher Configuration Tool
 
-Lightweight Vanilla TypeScript tool to browse and edit publisher configuration JSON files safely.
+Web-based tool for Taboola Support Engineers to manage publisher configurations.
 
-### Features (Implemented)
-- Publisher list browsing & selection
-- Editor for general info (publisherId, aliasName, tags)
-- Page configurations (type, selector, position) with add/remove/reorder
-- Real-time validation badges (required fields) and dirty state tracking
-- Atomic save to server (`PUT /api/publisher/:filename`) with basic publisherId validation
+---
 
-### Tech Stack
-- HTML + CSS + Vanilla TypeScript (no frameworks)
-- Express server for static assets + JSON API
-- Pub/Sub store (`PublisherStore`) for state and dirty tracking
-- Lightweight validator (mini schema system)
+## 📖 Complete System Guide
 
-### Getting Started
+**Everything in one document:** [📱 Complete System User Guide](docs/COMPLETE_SYSTEM_GUIDE.md)
+
+### Covers Both Pages:
+- ✅ **Dashboard** - Overview, search, filtering
+- ✅ **Publishers** - Create, view, edit configurations
+
+### Also Includes:
+- 5-step installation guide (10 minutes)
+- **5 embedded screenshots** showing all UI states
+- Component-by-component visual explanations
+- Quick reference tables for common tasks
+- Comprehensive troubleshooting guide
+- Best practices for efficient workflow
+
+**Easy navigation with clickable Table of Contents** - Jump to any section instantly.
+
+---
+
+## 🚀 Quick Start
+
 ```bash
+# 1. Clone & Install
+git clone https://github.com/TzoharLary/deeper-dive-interview-test.git
+cd deeper-dive-interview-test
 npm install
+
+# 2. Run
 npm run dev
-# open http://localhost:3000
+
+# 3. Open browser
+# http://localhost:3000
 ```
 
-### Project Structure
-```
-public/
-	index.html         # Entry HTML
-	app/
-		ui/              # UI orchestrators & components
-		state/store.ts    # PublisherStore (pub/sub state)
-		data/api.ts       # Fetch/save helpers
-		utils/validator.ts# Validation logic
-src/
-	server.ts          # Express server
-	routes.ts          # API routes
-data/                # JSON source files
-```
+**Prerequisites:** Node.js 18+, Git  
+**No credentials needed** ✅ **No database needed** ✅
 
-### Data Flow
-Fetch publisher → normalize → load into Store → UI subscribes & renders → user edits fields → Store updates & emits snapshot → validation badges update → Save button enables if dirty & no errors → save() persists via API.
+---
 
-### Testing
-Simple smoke/unit tests under `public/app/tests/` (store operations, validator, basic component dirty state).
+## 📱 System Screenshots
 
-Run (manual):
+### Dashboard Overview
+![Dashboard Page](docs/user-guide/images/dashboard-overview.png)
+*Dashboard with search, filters, and publisher cards*
+
+### Publishers Page - Empty State
+![Publishers Empty](docs/user-guide/images/publishers-empty-state.png)
+*Publishers page showing sidebar with publisher list*
+
+### Publishers Page - Editing Configuration
+![Publishers Details](docs/user-guide/images/publishers-details-panel.png)
+*Edit publisher configuration with all fields*
+
+### Publishers Page - Create New
+![Publishers Create](docs/user-guide/images/publishers-create-new.png)
+*Create new publisher with empty form*
+
+### Page Configurations Section
+![Page Configs](docs/user-guide/images/publishers-page-configs.png)
+*Page configurations with add buttons*
+
+---
+
+## ✨ Features
+
+### Dashboard Page
+- Overview of all publishers
+- Real-time search and filtering
+- Status badges (Active/Inactive/Draft)
+- Recent publishers quick access
+- One-click navigation to edit
+
+### Publishers Page
+- Two-panel layout (list + details)
+- Full configuration editing
+- Create new publishers
+- Add/remove page configurations
+- Save/cancel changes
+
+---
+
+## 🛠️ Development
+
 ```bash
-node public/app/tests/store.test.ts
-node public/app/tests/validator.test.ts
-node public/app/tests/components.test.ts
+npm run dev      # Start with hot reload
+npm run build    # Build for production
+npm run lint     # Check code quality
 ```
 
-### Future Enhancements (Roadmap)
-- Change diff panel and undo/redo
-- Chip editors for tags & allowedDomains
-- Drag & drop page reordering
-- Extended validation (semantic checks, warnings)
+---
 
-### Contributing
-Keep patches minimal and type-safe. Avoid introducing frameworks. Prefer extending existing component patterns. Run `npm run lint` before submitting.
+## 📊 Sample Data
 
-### License
-Internal tooling – no external distribution license specified.
+Includes 4 pre-configured publishers for testing:
+- Aurora Media (Active, 3 pages)
+- Borealis News (Inactive, 3 pages)
+- Cascade Daily (Active, 3 pages)
+- Summit Insights (Active, 3 pages)
+
+---
+
+## 📞 Support
+
+1. Check [Complete System Guide](docs/COMPLETE_SYSTEM_GUIDE.md)
+2. Review Troubleshooting section
+3. Contact your team lead
+
+---
+
+**Version:** 1.0 - Complete System Documentation  
+**Last Updated:** November 23, 2025
