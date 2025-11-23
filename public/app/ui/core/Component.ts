@@ -65,7 +65,7 @@ export abstract class Component<P = {}, S = {}> {
     if (this.isMounted) {
       this.onUnmount();
       this.isMounted = false;
-      this.container.innerHTML = '';
+      this.container.innerHTML = "";
     }
   }
 

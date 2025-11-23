@@ -72,13 +72,14 @@ Icon\r
 EXECUTION_LOG.md
 
 # Additional project files to ignore (if not already listed above)
-Task.he.md
+TASK.he.md
 frontend.instructions.md
 MASTER_PLAN.md
-Tool_catalog.md
+Tool_catalog.json
 stagewise.json
-playwright-mcp/
+.playwright-mcp/
 
-
+.gitignore
+DOCS.md
 
 

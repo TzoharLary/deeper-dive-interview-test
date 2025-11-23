@@ -1,5 +1,5 @@
 export interface Page {
-  pageType: 'article' | 'homepage' | 'section';
+  pageType: "article" | "homepage" | "section";
   selector: string;
   position: number;
 }

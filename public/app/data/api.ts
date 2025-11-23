@@ -28,14 +28,14 @@ export interface PublisherData {
 // Get list of all publishers
 export async function fetchPublishers(): Promise<PublisherListItem[]> {
   try {
-    const response = await fetch('/api/publishers');
+    const response = await fetch("/api/publishers");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
     return data.publishers || [];
   } catch (error) {
-    console.error('Error fetching publishers:', error);
+    console.error("Error fetching publishers:", error);
     throw error;
   }
 }
@@ -49,7 +49,7 @@ export async function fetchPublisher(filename: string): Promise<PublisherData> {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching publisher:', error);
+    console.error("Error fetching publisher:", error);
     throw error;
   }
 }
@@ -58,9 +58,9 @@ export async function fetchPublisher(filename: string): Promise<PublisherData> {
 export async function savePublisher(filename: string, data: PublisherData): Promise<void> {
   try {
     const response = await fetch(`/api/publisher/${filename}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data, null, 2)
     });
@@ -69,7 +69,7 @@ export async function savePublisher(filename: string, data: PublisherData): Prom
       throw new Error(`HTTP error! status: ${response.status}`);
     }
   } catch (error) {
-    console.error('Error saving publisher:', error);
+    console.error("Error saving publisher:", error);
     throw error;
   }
 }
@@ -103,10 +103,10 @@ export async function updatePublishersList(id: string, alias: string, filename: 
     }
     
     // Save updated list
-    const response = await fetch('/api/publisher/publishers.json', {
-      method: 'PUT',
+    const response = await fetch("/api/publisher/publishers.json", {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ publishers }, null, 2)
     });
@@ -115,22 +115,22 @@ export async function updatePublishersList(id: string, alias: string, filename: 
       throw new Error(`HTTP error! status: ${response.status}`);
     }
   } catch (error) {
-    console.error('Error updating publishers list:', error);
+    console.error("Error updating publishers list:", error);
     throw error;
   }
 }
 
 // Delete publisher
-export async function deletePublisher(id: string, filename: string): Promise<void> {
+export async function deletePublisher(id: string): Promise<void> {
   try {
     // Remove from publishers list
     const publishers = await fetchPublishers();
     const filteredPublishers = publishers.filter(p => p.id !== id);
     
-    await fetch('/api/publisher/publishers.json', {
-      method: 'PUT',
+    await fetch("/api/publisher/publishers.json", {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ publishers: filteredPublishers }, null, 2)
     });
@@ -139,7 +139,7 @@ export async function deletePublisher(id: string, filename: string): Promise<voi
     // The file will remain in the data folder but won't be listed
     
   } catch (error) {
-    console.error('Error deleting publisher:', error);
+    console.error("Error deleting publisher:", error);
     throw error;
   }
 }
@@ -156,11 +156,10 @@ export async function uploadPublisherFile(file: File): Promise<string> {
         
         // Validate that it's a publisher file
         if (!data.publisherId && !data.id) {
-          throw new Error('Invalid publisher file: missing publisherId or id field');
+          throw new Error("Invalid publisher file: missing publisherId or id field");
         }
         
-        const publisherId = data.publisherId || data.id;
-        const filename = `publisher-${publisherId}.json`;
+          const publisherId = data.publisherId || data.id;
         
         // Normalize the data to match our expected format
         const normalizedData: PublisherData = {
@@ -187,7 +186,7 @@ export async function uploadPublisherFile(file: File): Promise<string> {
       }
     };
     
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsText(file);
   });
 }

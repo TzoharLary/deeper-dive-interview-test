@@ -9,7 +9,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
   if (attributes) {
     Object.keys(attributes).forEach((k) => {
       const v = attributes[k];
-      if (k === 'textContent') el.textContent = v;
+      if (k === "textContent") el.textContent = v;
       else el.setAttribute(k, v);
     });
   }
@@ -35,7 +35,7 @@ export function renderList<T>(
   // Simple reconciliation by key: reuse existing nodes when keys match
   const existingMap = new Map<string, HTMLElement>();
   Array.from(container.children).forEach((child) => {
-    const k = child.getAttribute('data-key');
+    const k = child.getAttribute("data-key");
     if (k) existingMap.set(k, child as HTMLElement);
   });
 
@@ -44,7 +44,7 @@ export function renderList<T>(
     const key = keyFn(it);
     const existing = existingMap.get(key);
     const node = renderItem(it, existing);
-    node.setAttribute('data-key', key);
+    node.setAttribute("data-key", key);
     newChildren.push(node);
     existingMap.delete(key);
   });

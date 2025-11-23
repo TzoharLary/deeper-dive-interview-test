@@ -1,24 +1,42 @@
-import { fetchPublishers } from '../data/api.js';
-import { createStore } from '../state/store.js';
-import type { Publisher } from '../types/index.js';
+import { fetchPublishers } from "../data/api.js";
+import { createStore } from "../state/store.js";
+import type { Publisher, IStore } from "../types/index.js";
+import { fetchPublisher, PublisherListItem, PublisherData } from "../data/api.js";
 
-let currentStore: any = null;
+
+let currentStore: IStore | null = null;
+
+async function loadPublisherForEditing(publisherItem: PublisherListItem, detailsPanel: HTMLElement) {
+  try {
+    const fullData = await fetchPublisher(publisherItem.file);
+    const store = createStore(fullData, 'edit');
+    renderPublisherEditor(detailsPanel, store);
+  } catch (error) {
+    console.error("Error loading publisher for editing:", error);
+    detailsPanel.innerHTML = `
+      <div style="padding: 2rem; text-align: center; color: #ef4444;">
+        <h3>Error loading publisher</h3>
+        <p>${error}</p>
+      </div>
+    `;
+  }
+}
 
 export async function renderPublishersPage(container: HTMLElement) {
-  container.innerHTML = '';
-  container.className = 'publishers-page';
+  container.innerHTML = "";
+  container.className = "publishers-page";
 
   // Create the main layout
-  const layout = document.createElement('div');
-  layout.className = 'publishers-layout';
+  const layout = document.createElement("div");
+  layout.className = "publishers-layout";
 
   // Left sidebar for publishers list
-  const sidebar = document.createElement('div');
-  sidebar.className = 'publishers-sidebar';
+  const sidebar = document.createElement("div");
+  sidebar.className = "publishers-sidebar";
 
   // Right panel for publisher details/editor
-  const detailsPanel = document.createElement('div');
-  detailsPanel.className = 'publisher-details';
+  const detailsPanel = document.createElement("div");
+  detailsPanel.className = "publisher-details";
 
   layout.appendChild(sidebar);
   layout.appendChild(detailsPanel);
@@ -33,7 +51,7 @@ export async function renderPublishersPage(container: HTMLElement) {
       if (Array.isArray(data)) publishers = data as any;
       else publishers = (data && (data.publishers || [])) as any;
   } catch (error) {
-    console.error('Error loading publishers:', error);
+    console.error("Error loading publishers:", error);
     publishers = [];
   }
 
@@ -49,10 +67,10 @@ export async function renderPublishersPage(container: HTMLElement) {
         else publishers = (data && (data.publishers || [])) as any;
       renderSidebar(sidebar, publishers, detailsPanel);
     } catch (err) {
-      console.error('Failed to refresh publishers after save:', err);
+      console.error("Failed to refresh publishers after save:", err);
     }
   };
-  window.addEventListener('publisher:saved', onSaved as EventListener);
+  window.addEventListener("publisher:saved", onSaved as EventListener);
 
   // If the container is removed/unmounted, it's good hygiene to remove the listener.
   // We can't reliably detect unmount here, but attach a WeakRef-based guard would be overkill.
@@ -62,22 +80,22 @@ export async function renderPublishersPage(container: HTMLElement) {
   showEmptyState(detailsPanel);
 }
 
-function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPanel: HTMLElement) {
-  sidebar.innerHTML = '';
+function renderSidebar(sidebar: HTMLElement, publishers: PublisherData[], detailsPanel: HTMLElement) {
+  sidebar.innerHTML = "";
 
   // Header with title and create button
-  const header = document.createElement('div');
-  header.className = 'publishers-header';
+  const header = document.createElement("div");
+  header.className = "publishers-header";
   
-  const title = document.createElement('h1');
-  title.textContent = 'Publishers';
+  const title = document.createElement("h1");
+  title.textContent = "Publishers";
   
-  const headerActions = document.createElement('div');
-  headerActions.className = 'header-actions';
+  const headerActions = document.createElement("div");
+  headerActions.className = "header-actions";
   
   // Upload button
-  const uploadBtn = document.createElement('button');
-  uploadBtn.className = 'upload-btn';
+  const uploadBtn = document.createElement("button");
+  uploadBtn.className = "upload-btn";
   uploadBtn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -85,36 +103,36 @@ function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPan
       <line x1="12" y1="15" x2="12" y2="3"></line>
     </svg>
   `;
-  uploadBtn.title = 'Upload Publisher Config';
+  uploadBtn.title = "Upload Publisher Config";
   
-  const createBtn = document.createElement('button');
-  createBtn.className = 'create-btn';
+  const createBtn = document.createElement("button");
+  createBtn.className = "create-btn";
   createBtn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="12" y1="5" x2="12" y2="19"></line>
       <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
   `;
-  createBtn.title = 'Create New Publisher';
+  createBtn.title = "Create New Publisher";
   
-  createBtn.addEventListener('click', () => {
+  createBtn.addEventListener("click", () => {
     // Create new publisher
     const newPublisher: Publisher = {
-      publisherId: '',
-      aliasName: '',
+      publisherId: "",
+      aliasName: "",
       isActive: true,
       tags: [],
-      publisherDashboard: '',
-      monitorDashboard: '',
-      qaStatusDashboard: '',
+      publisherDashboard: "",
+      monitorDashboard: "",
+      qaStatusDashboard: "",
       allowedDomains: [],
-      customCss: '',
-      notes: '',
+      customCss: "",
+      notes: "",
       pages: []
     };
     
-    currentStore = createStore(newPublisher, 'create');
-    renderPublisherEditor(detailsPanel, currentStore);
+    currentStore = createStore(newPublisher, "create");
+    renderPublisherEditor(detailsPanel, currentStore as IStore);
   });
   
   headerActions.appendChild(uploadBtn);
@@ -123,11 +141,11 @@ function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPan
   header.appendChild(headerActions);
   
   // Search wrapper
-  const searchWrapper = document.createElement('div');
-  searchWrapper.className = 'search-wrapper';
+  const searchWrapper = document.createElement("div");
+  searchWrapper.className = "search-wrapper";
   
-  const searchIcon = document.createElement('div');
-  searchIcon.className = 'search-icon';
+  const searchIcon = document.createElement("div");
+  searchIcon.className = "search-icon";
   searchIcon.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="11" cy="11" r="8"></circle>
@@ -135,67 +153,67 @@ function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPan
     </svg>
   `;
   
-  const searchInput = document.createElement('input');
-  searchInput.className = 'search-input';
-  searchInput.type = 'text';
-  searchInput.placeholder = 'Search publishers...';
+  const searchInput = document.createElement("input");
+  searchInput.className = "search-input";
+  searchInput.type = "text";
+  searchInput.placeholder = "Search publishers...";
   
   searchWrapper.appendChild(searchIcon);
   searchWrapper.appendChild(searchInput);
   
   // Publishers list
-  const publishersList = document.createElement('div');
-  publishersList.className = 'publishers-list';
+  const publishersList = document.createElement("div");
+  publishersList.className = "publishers-list";
   
   // Filter and render publishers
   let filteredPublishers = publishers;
   
   function renderPublishersList() {
-    publishersList.innerHTML = '';
+    publishersList.innerHTML = "";
     
     if (filteredPublishers.length === 0) {
-      const emptyState = document.createElement('div');
-      emptyState.className = 'empty-state';
-      emptyState.textContent = searchInput.value ? 'No matching publishers found' : 'No publishers found';
+      const emptyState = document.createElement("div");
+      emptyState.className = "empty-state";
+      emptyState.textContent = searchInput.value ? "No matching publishers found" : "No publishers found";
       publishersList.appendChild(emptyState);
       return;
     }
     
     filteredPublishers.forEach(publisher => {
-      const item = document.createElement('button');
-      item.className = 'publisher-item';
+      const item = document.createElement("button");
+      item.className = "publisher-item";
       
-      const info = document.createElement('div');
-      info.className = 'publisher-info';
+      const info = document.createElement("div");
+      info.className = "publisher-info";
       
-      const name = document.createElement('div');
-      name.className = 'publisher-name';
-      name.textContent = publisher.aliasName || publisher.publisherId || 'Untitled';
+      const name = document.createElement("div");
+      name.className = "publisher-name";
+      name.textContent = publisher.aliasName || publisher.publisherId || "Untitled";
       
-      const id = document.createElement('div');
-      id.className = 'publisher-id';
-      id.textContent = publisher.publisherId || '';
+      const id = document.createElement("div");
+      id.className = "publisher-id";
+      id.textContent = publisher.publisherId || "";
       
-      const status = document.createElement('div');
-      status.className = `status-indicator ${publisher.isActive ? 'active' : 'inactive'}`;
+      const status = document.createElement("div");
+      status.className = `status-indicator ${publisher.isActive ? "active" : "inactive"}`;
       
       info.appendChild(name);
       info.appendChild(id);
       item.appendChild(info);
       item.appendChild(status);
       
-      item.addEventListener('click', () => {
+      item.addEventListener("click", () => {
         // Remove selected class from all items
-        publishersList.querySelectorAll('.publisher-item').forEach(el => {
-          el.classList.remove('selected');
+        publishersList.querySelectorAll(".publisher-item").forEach(el => {
+          el.classList.remove("selected");
         });
         
         // Add selected class to clicked item
-        item.classList.add('selected');
+        item.classList.add("selected");
         
         // Load publisher in store and render editor
-        currentStore = createStore(publisher, 'edit');
-        renderPublisherEditor(detailsPanel, currentStore);
+        currentStore = createStore(publisher, "edit");
+        renderPublisherEditor(detailsPanel, currentStore as IStore);
       });
       
       publishersList.appendChild(item);
@@ -203,11 +221,11 @@ function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPan
   }
   
   // Search functionality
-  searchInput.addEventListener('input', (e) => {
+  searchInput.addEventListener("input", (e) => {
     const query = (e.target as HTMLInputElement).value.toLowerCase();
     filteredPublishers = publishers.filter(pub => 
-      (pub.aliasName || '').toLowerCase().includes(query) ||
-      (pub.publisherId || '').toLowerCase().includes(query) ||
+      (pub.aliasName || "").toLowerCase().includes(query) ||
+      (pub.publisherId || "").toLowerCase().includes(query) ||
       (pub.tags || []).some((tag: string) => tag.toLowerCase().includes(query))
     );
     renderPublishersList();
@@ -222,21 +240,21 @@ function renderSidebar(sidebar: HTMLElement, publishers: Publisher[], detailsPan
   renderPublishersList();
 }
 
-function renderPublisherEditor(detailsPanel: HTMLElement, store: any) {
-  detailsPanel.innerHTML = '';
+function renderPublisherEditor(detailsPanel: HTMLElement, store: IStore) {
+  detailsPanel.innerHTML = "";
   
-  const content = document.createElement('div');
-  content.className = 'details-content';
+  const content = document.createElement("div");
+  content.className = "details-content";
   
   // Page header with editing indicator
-  const pageHeader = document.createElement('div');
-  pageHeader.className = 'page-header';
+  const pageHeader = document.createElement("div");
+  pageHeader.className = "page-header";
   
-  const h1 = document.createElement('h1');
-  h1.textContent = 'Publisher Configuration';
+  const h1 = document.createElement("h1");
+  h1.textContent = "Publisher Configuration";
   
-  const editingIndicator = document.createElement('div');
-  editingIndicator.className = 'editing-indicator';
+  const editingIndicator = document.createElement("div");
+  editingIndicator.className = "editing-indicator";
   editingIndicator.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -250,79 +268,79 @@ function renderPublisherEditor(detailsPanel: HTMLElement, store: any) {
   content.appendChild(pageHeader);
   
   // Three column layout
-  const threeColumnLayout = document.createElement('div');
-  threeColumnLayout.className = 'three-column-layout';
+  const threeColumnLayout = document.createElement("div");
+  threeColumnLayout.className = "three-column-layout";
   
   // Left column
-  const leftColumn = document.createElement('div');
-  leftColumn.className = 'left-column';
+  const leftColumn = document.createElement("div");
+  leftColumn.className = "left-column";
   
   // General Info section
-  const generalSection = createFieldset('General Info');
+  const generalSection = createFieldset("General Info");
   
   // Publisher ID
-  const publisherIdRow = document.createElement('div');
-  publisherIdRow.className = 'form-row';
-  const publisherIdGroup = createFormGroup('Publisher ID', 'publisherId', 'text', store);
+  const publisherIdRow = document.createElement("div");
+  publisherIdRow.className = "form-row";
+  const publisherIdGroup = createFormGroup("Publisher ID", "publisherId", "text", store);
   publisherIdRow.appendChild(publisherIdGroup);
   generalSection.appendChild(publisherIdRow);
   
   // Alias Name
-  const aliasNameRow = document.createElement('div');
-  aliasNameRow.className = 'form-row';
-  const aliasNameGroup = createFormGroup('Alias Name', 'aliasName', 'text', store);
+  const aliasNameRow = document.createElement("div");
+  aliasNameRow.className = "form-row";
+  const aliasNameGroup = createFormGroup("Alias Name", "aliasName", "text", store);
   aliasNameRow.appendChild(aliasNameGroup);
   generalSection.appendChild(aliasNameRow);
   
   // Tags
-  const tagsRow = document.createElement('div');
-  tagsRow.className = 'form-row';
+  const tagsRow = document.createElement("div");
+  tagsRow.className = "form-row";
   const tagsGroup = createTagsGroup(store);
   tagsRow.appendChild(tagsGroup);
   generalSection.appendChild(tagsRow);
   
   // Active Status Toggle
-  const statusRow = document.createElement('div');
-  statusRow.className = 'form-row';
-  const statusGroup = createToggleGroup('Active Status', 'isActive', 'Enable/Disable publisher', store);
+  const statusRow = document.createElement("div");
+  statusRow.className = "form-row";
+  const statusGroup = createToggleGroup("Active Status", "isActive", "Enable/Disable publisher", store);
   statusRow.appendChild(statusGroup);
   generalSection.appendChild(statusRow);
   
   leftColumn.appendChild(generalSection);
   
   // Right column
-  const rightColumn = document.createElement('div');
-  rightColumn.className = 'right-column';
+  const rightColumn = document.createElement("div");
+  rightColumn.className = "right-column";
   
   // Links & Resources section
-  const linksSection = createFieldset('Links & Resources');
+  const linksSection = createFieldset("Links & Resources");
   
   // Publisher Dashboard
-  const pubDashRow = document.createElement('div');
-  pubDashRow.className = 'form-row';
-  const pubDashGroup = createFormGroup('Publisher Dashboard', 'publisherDashboard', 'url', store);
+  const pubDashRow = document.createElement("div");
+  pubDashRow.className = "form-row";
+  const pubDashGroup = createFormGroup("Publisher Dashboard", "publisherDashboard", "url", store);
   pubDashRow.appendChild(pubDashGroup);
   linksSection.appendChild(pubDashRow);
   
   // Monitor Dashboard
-  const monitorDashRow = document.createElement('div');
-  monitorDashRow.className = 'form-row';
-  const monitorDashGroup = createFormGroup('Monitor Dashboard', 'monitorDashboard', 'url', store);
+  const monitorDashRow = document.createElement("div");
+  monitorDashRow.className = "form-row";
+  const monitorDashGroup = createFormGroup("Monitor Dashboard", "monitorDashboard", "url", store);
   monitorDashRow.appendChild(monitorDashGroup);
   linksSection.appendChild(monitorDashRow);
   
   // QA Status Dashboard
-  const qaDashRow = document.createElement('div');
-  qaDashRow.className = 'form-row';
-  const qaDashGroup = createFormGroup('QA Status Dashboard', 'qaStatusDashboard', 'url', store);
+  const qaDashRow = document.createElement("div");
+  qaDashRow.className = "form-row";
+  const qaDashGroup = createFormGroup("QA Status Dashboard", "qaStatusDashboard", "url", store);
   qaDashRow.appendChild(qaDashGroup);
   linksSection.appendChild(qaDashRow);
   
   rightColumn.appendChild(linksSection);
   
   // Missing fields column (third column)
-  const missingFieldsColumn = document.createElement('div');
-  missingFieldsColumn.className = 'missing-fields-column';
+  const missingFieldsColumn = document.createElement("div");
+  missingFieldsColumn.className = "missing-fields-column";
   
   const missingFieldsSection = createMissingFieldsSection(store);
   missingFieldsColumn.appendChild(missingFieldsSection);
@@ -347,7 +365,7 @@ function renderPublisherEditor(detailsPanel: HTMLElement, store: any) {
   detailsPanel.appendChild(saveBar);
   
   // Subscribe to store updates
-  const unsubscribe = store.subscribe((snapshot: any) => {
+  const _unsubscribe = store.subscribe((snapshot: any) => {
     updateFormFromStore(content, snapshot);
     updateSaveBar(saveBar, snapshot);
   });
@@ -360,36 +378,36 @@ function renderPublisherEditor(detailsPanel: HTMLElement, store: any) {
   }, 0);
 }
 
-function createFieldset(legend: string, className = '') {
-  const fieldset = document.createElement('fieldset');
+function createFieldset(legend: string, className = "") {
+  const fieldset = document.createElement("fieldset");
   fieldset.className = `section-fieldset ${className}`;
   
-  const legendEl = document.createElement('legend');
+  const legendEl = document.createElement("legend");
   legendEl.textContent = legend;
   fieldset.appendChild(legendEl);
   
   return fieldset;
 }
 
-function createFormGroup(label: string, fieldName: string, type: string, store: any) {
-  const group = document.createElement('div');
-  group.className = 'form-group';
+function createFormGroup(label: string, fieldName: string, type: string, store: IStore) {
+  const group = document.createElement("div");
+  group.className = "form-group";
   
-  const labelEl = document.createElement('label');
+  const labelEl = document.createElement("label");
   labelEl.textContent = label;
   group.appendChild(labelEl);
   
-  const input = document.createElement('input');
+  const input = document.createElement("input");
   input.type = type;
   input.name = fieldName;
   
   // Set initial value from store
-  const currentData = store.getSnapshot().currentData;
+  const currentData = store.getSnapshot().currentData as unknown as Record<string, unknown>;
   if (currentData && currentData[fieldName] !== undefined) {
-    input.value = currentData[fieldName] || '';
+    input.value = String(currentData[fieldName] || "");
   }
   
-  input.addEventListener('input', (e) => {
+  input.addEventListener("input", (e) => {
     store.markTouched(fieldName);
     store.updateField(fieldName, (e.target as HTMLInputElement).value);
   });
@@ -398,51 +416,51 @@ function createFormGroup(label: string, fieldName: string, type: string, store: 
   return group;
 }
 
-function createTagsGroup(store: any) {
-  const group = document.createElement('div');
-  group.className = 'form-group';
+function createTagsGroup(store: IStore) {
+  const group = document.createElement("div");
+  group.className = "form-group";
   
-  const label = document.createElement('label');
-  label.textContent = 'Tags';
+  const label = document.createElement("label");
+  label.textContent = "Tags";
   group.appendChild(label);
   
-  const wrapper = document.createElement('div');
-  wrapper.className = 'tags-input-wrapper';
+  const wrapper = document.createElement("div");
+  wrapper.className = "tags-input-wrapper";
   
-  const container = document.createElement('div');
-  container.className = 'tags-container';
+  const container = document.createElement("div");
+  container.className = "tags-container";
   
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.placeholder = 'Add tags...';
-  input.name = 'tags';
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Add tags...";
+  input.name = "tags";
   
   // Render initial tags
   function renderTags() {
-    const currentData = store.getSnapshot().currentData;
-    const tags = currentData?.tags || [];
-    container.innerHTML = '';
+    const currentData = store.getSnapshot().currentData as unknown as Record<string, unknown>;
+    const tags = (currentData?.tags as unknown as string[]) || [];
+    container.innerHTML = "";
     tags.forEach((tag: string, index: number) => {
-      const tagEl = document.createElement('span');
-      tagEl.className = 'tag';
+      const tagEl = document.createElement("span");
+      tagEl.className = "tag";
       tagEl.innerHTML = `${tag} <span class="tag-close">×</span>`;
-      const closeBtn = tagEl.querySelector('.tag-close');
-      closeBtn?.addEventListener('click', () => {
+      const closeBtn = tagEl.querySelector(".tag-close");
+      closeBtn?.addEventListener("click", () => {
         const newTags = tags.filter((_: string, i: number) => i !== index);
-        store.updateField('tags', newTags);
+        store.updateField("tags", newTags);
       });
       container.appendChild(tagEl);
     });
   }
   
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
       const value = input.value.trim();
       if (value) {
         const currentTags = store.getSnapshot().currentData?.tags || [];
-        store.updateField('tags', [...currentTags, value]);
-        input.value = '';
+        store.updateField("tags", [...currentTags, value]);
+        input.value = "";
       }
     }
   });
@@ -462,32 +480,32 @@ function createTagsGroup(store: any) {
   return group;
 }
 
-function createToggleGroup(label: string, fieldName: string, description: string, store: any) {
-  const group = document.createElement('div');
-  group.className = 'form-group';
+function createToggleGroup(label: string, fieldName: string, description: string, store: IStore) {
+  const group = document.createElement("div");
+  group.className = "form-group";
   
-  const toggleSwitch = document.createElement('label');
-  toggleSwitch.className = 'toggle-switch';
+  const toggleSwitch = document.createElement("label");
+  toggleSwitch.className = "toggle-switch";
   
-  const input = document.createElement('input');
-  input.type = 'checkbox';
+  const input = document.createElement("input");
+  input.type = "checkbox";
   input.name = fieldName;
   
   // Set initial value from store
-  const currentData = store.getSnapshot().currentData;
+  const currentData = store.getSnapshot().currentData as unknown as Record<string, unknown>;
   if (currentData && currentData[fieldName] !== undefined) {
     input.checked = Boolean(currentData[fieldName]);
   }
   
-  input.addEventListener('change', (e) => {
+  input.addEventListener("change", (e) => {
     store.updateField(fieldName, (e.target as HTMLInputElement).checked);
   });
   
-  const slider = document.createElement('span');
-  slider.className = 'toggle-slider';
+  const slider = document.createElement("span");
+  slider.className = "toggle-slider";
   
-  const text = document.createElement('span');
-  text.className = 'toggle-text';
+  const text = document.createElement("span");
+  text.className = "toggle-text";
   text.textContent = description;
   
   toggleSwitch.appendChild(input);
@@ -498,24 +516,24 @@ function createToggleGroup(label: string, fieldName: string, description: string
   return group;
 }
 
-function createMissingFieldsSection(store: any) {
-  const section = createFieldset('Missing Fields', 'missing-fields-section');
+function createMissingFieldsSection(store: IStore) {
+  const section = createFieldset("Missing Fields", "missing-fields-section");
   
-  const content = document.createElement('div');
-  content.className = 'missing-fields-content';
+  const content = document.createElement("div");
+  content.className = "missing-fields-content";
   
   section.appendChild(content);
   return section;
 }
 
-function createPageConfigsSection(store: any) {
-  const section = createFieldset('Page Configurations');
+function createPageConfigsSection(store: IStore) {
+  const section = createFieldset("Page Configurations");
   
-  const actions = document.createElement('div');
-  actions.className = 'section-actions';
+  const actions = document.createElement("div");
+  actions.className = "section-actions";
   
-  const addArticleBtn = document.createElement('button');
-  addArticleBtn.className = 'add-btn';
+  const addArticleBtn = document.createElement("button");
+  addArticleBtn.className = "add-btn";
   addArticleBtn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -523,10 +541,10 @@ function createPageConfigsSection(store: any) {
     </svg>
     Add Article Page
   `;
-  addArticleBtn.addEventListener('click', () => store.addPage('article'));
+  addArticleBtn.addEventListener("click", () => store.addPage("article"));
   
-  const addHomeBtn = document.createElement('button');
-  addHomeBtn.className = 'add-btn';
+  const addHomeBtn = document.createElement("button");
+  addHomeBtn.className = "add-btn";
   addHomeBtn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -534,24 +552,24 @@ function createPageConfigsSection(store: any) {
     </svg>
     Add Home Page
   `;
-  addHomeBtn.addEventListener('click', () => store.addPage('homepage'));
+  addHomeBtn.addEventListener("click", () => store.addPage("homepage"));
   
   actions.appendChild(addArticleBtn);
   actions.appendChild(addHomeBtn);
   section.appendChild(actions);
   
-  const configs = document.createElement('div');
-  configs.className = 'page-configs';
+  const configs = document.createElement("div");
+  configs.className = "page-configs";
   section.appendChild(configs);
   
   return section;
 }
 
-function createAdvancedSection(store: any) {
-  const section = createFieldset('Advanced Settings', 'collapsible');
+function createAdvancedSection(store: IStore) {
+  const section = createFieldset("Advanced Settings", "collapsible");
   
-  const header = document.createElement('div');
-  header.className = 'collapsible-header';
+  const header = document.createElement("div");
+  header.className = "collapsible-header";
   header.innerHTML = `
     <span>Advanced Settings</span>
     <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -559,51 +577,51 @@ function createAdvancedSection(store: any) {
     </svg>
   `;
   
-  const content = document.createElement('div');
-  content.className = 'collapsible-content';
+  const content = document.createElement("div");
+  content.className = "collapsible-content";
   
   // Allowed Domains
-  const domainsGroup = createFormGroup('Allowed Domains', 'allowedDomains', 'text', store);
+  const domainsGroup = createFormGroup("Allowed Domains", "allowedDomains", "text", store);
   content.appendChild(domainsGroup);
   
   // Custom CSS
-  const cssGroup = document.createElement('div');
-  cssGroup.className = 'form-group';
-  const cssLabel = document.createElement('label');
-  cssLabel.textContent = 'Custom CSS';
-  const cssTextarea = document.createElement('textarea');
-  cssTextarea.name = 'customCss';
+  const cssGroup = document.createElement("div");
+  cssGroup.className = "form-group";
+  const cssLabel = document.createElement("label");
+  cssLabel.textContent = "Custom CSS";
+  const cssTextarea = document.createElement("textarea");
+  cssTextarea.name = "customCss";
   cssTextarea.rows = 5;
   
   // Set initial value
-  const currentData = store.getSnapshot().currentData;
-  if (currentData && currentData.customCss !== undefined) {
-    cssTextarea.value = currentData.customCss || '';
+  const currentData = store.getSnapshot().currentData as unknown as Record<string, unknown>;
+  if (currentData && (currentData["customCss"] as unknown as string | undefined) !== undefined) {
+    cssTextarea.value = (currentData["customCss"] as unknown as string) || "";
   }
   
-  cssTextarea.addEventListener('input', (e) => {
-    store.updateField('customCss', (e.target as HTMLTextAreaElement).value);
+  cssTextarea.addEventListener("input", (e) => {
+    store.updateField("customCss", (e.target as HTMLTextAreaElement).value);
   });
   cssGroup.appendChild(cssLabel);
   cssGroup.appendChild(cssTextarea);
   content.appendChild(cssGroup);
   
   // Notes
-  const notesGroup = document.createElement('div');
-  notesGroup.className = 'form-group';
-  const notesLabel = document.createElement('label');
-  notesLabel.textContent = 'Notes';
-  const notesTextarea = document.createElement('textarea');
-  notesTextarea.name = 'notes';
+  const notesGroup = document.createElement("div");
+  notesGroup.className = "form-group";
+  const notesLabel = document.createElement("label");
+  notesLabel.textContent = "Notes";
+  const notesTextarea = document.createElement("textarea");
+  notesTextarea.name = "notes";
   notesTextarea.rows = 3;
   
   // Set initial value
-  if (currentData && currentData.notes !== undefined) {
-    notesTextarea.value = currentData.notes || '';
+  if (currentData && (currentData["notes"] as unknown as string | undefined) !== undefined) {
+    notesTextarea.value = (currentData["notes"] as unknown as string) || "";
   }
   
-  notesTextarea.addEventListener('input', (e) => {
-    store.updateField('notes', (e.target as HTMLTextAreaElement).value);
+  notesTextarea.addEventListener("input", (e) => {
+    store.updateField("notes", (e.target as HTMLTextAreaElement).value);
   });
   notesGroup.appendChild(notesLabel);
   notesGroup.appendChild(notesTextarea);
@@ -613,40 +631,40 @@ function createAdvancedSection(store: any) {
   section.appendChild(content);
   
   // Toggle functionality
-  header.addEventListener('click', () => {
-    section.classList.toggle('expanded');
+  header.addEventListener("click", () => {
+    section.classList.toggle("expanded");
   });
   
   return section;
 }
 
-function createSaveBar(store: any) {
-  const saveBar = document.createElement('div');
-  saveBar.className = 'save-bar';
+function createSaveBar(store: IStore) {
+  const saveBar = document.createElement("div");
+  saveBar.className = "save-bar";
   
-  const content = document.createElement('div');
-  content.className = 'save-bar-content';
+  const content = document.createElement("div");
+  content.className = "save-bar-content";
   
-  const text = document.createElement('div');
-  text.className = 'save-bar-text';
-  text.textContent = 'Ready';
+  const text = document.createElement("div");
+  text.className = "save-bar-text";
+  text.textContent = "Ready";
   
-  const actions = document.createElement('div');
-  actions.className = 'save-bar-actions';
+  const actions = document.createElement("div");
+  actions.className = "save-bar-actions";
   
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'cancel-btn';
-  cancelBtn.textContent = 'Cancel';
+  const cancelBtn = document.createElement("button");
+  cancelBtn.className = "cancel-btn";
+  cancelBtn.textContent = "Cancel";
   
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'save-btn';
-  saveBtn.textContent = 'Save Changes';
-  saveBtn.addEventListener('click', async () => {
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "save-btn";
+  saveBtn.textContent = "Save Changes";
+  saveBtn.addEventListener("click", async () => {
     try {
       const payload = store.prepareForSave();
       await store.save(payload);
     } catch (error) {
-      console.error('Save failed:', error);
+      console.error("Save failed:", error);
     }
   });
   
@@ -663,12 +681,12 @@ function updateFormFromStore(content: HTMLElement, snapshot: any) {
   const data = snapshot.currentData || {};
   
   // Update form fields
-  const inputs = content.querySelectorAll('input, textarea, select');
+  const inputs = content.querySelectorAll("input, textarea, select");
   inputs.forEach((input: any) => {
     if (input.name && data.hasOwnProperty(input.name)) {
-      if (input.type === 'checkbox') {
+      if (input.type === "checkbox") {
         input.checked = Boolean(data[input.name]);
-      } else if (input.name === 'tags') {
+      } else if (input.name === "tags") {
         // Tags are handled separately
       } else {
         const value = data[input.name];
@@ -679,14 +697,14 @@ function updateFormFromStore(content: HTMLElement, snapshot: any) {
         try {
           if (document.activeElement !== input) {
             if (input.value !== value) {
-              input.value = value || '';
+              input.value = value || "";
             }
           }
         } catch (e) {
           // Defensive: in rare sandboxed contexts accessing document.activeElement
           // might throw; fall back to safe update.
           if (input.value !== value) {
-            input.value = value || '';
+            input.value = value || "";
           }
         }
       }
@@ -694,21 +712,21 @@ function updateFormFromStore(content: HTMLElement, snapshot: any) {
   });
   
   // Update tags
-  const tagsContainer = content.querySelector('.tags-container');
+  const tagsContainer = content.querySelector(".tags-container");
   if (tagsContainer) {
-    tagsContainer.innerHTML = '';
+    tagsContainer.innerHTML = "";
     (data.tags || []).forEach((tag: string) => {
-      const tagEl = document.createElement('span');
-      tagEl.className = 'tag';
+      const tagEl = document.createElement("span");
+      tagEl.className = "tag";
       tagEl.innerHTML = `${tag} <span class="tag-close" onclick="this.parentElement.remove()">×</span>`;
       tagsContainer.appendChild(tagEl);
     });
   }
   
   // Update page configurations
-  const pageConfigs = content.querySelector('.page-configs');
+  const pageConfigs = content.querySelector(".page-configs");
   if (pageConfigs) {
-    pageConfigs.innerHTML = '';
+    pageConfigs.innerHTML = "";
     (data.pages || []).forEach((page: any, index: number) => {
       const row = createPageConfigRow(page, index, currentStore);
       pageConfigs.appendChild(row);
@@ -716,79 +734,79 @@ function updateFormFromStore(content: HTMLElement, snapshot: any) {
   }
 }
 
-function createPageConfigRow(page: any, index: number, store: any) {
-  const row = document.createElement('div');
-  row.className = 'config-row';
+function createPageConfigRow(page: any, index: number, store: IStore | null) {
+  const row = document.createElement("div");
+  row.className = "config-row";
   
   // Drag handle
-  const handle = document.createElement('div');
-  handle.className = 'drag-handle';
-  handle.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>`;
+  const handle = document.createElement("div");
+  handle.className = "drag-handle";
+  handle.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"9\" cy=\"12\" r=\"1\"></circle><circle cx=\"9\" cy=\"5\" r=\"1\"></circle><circle cx=\"9\" cy=\"19\" r=\"1\"></circle><circle cx=\"15\" cy=\"12\" r=\"1\"></circle><circle cx=\"15\" cy=\"5\" r=\"1\"></circle><circle cx=\"15\" cy=\"19\" r=\"1\"></circle></svg>";
   
   // Position
-  const positionField = document.createElement('div');
-  positionField.className = 'config-field position';
-  const positionLabel = document.createElement('label');
-  positionLabel.textContent = 'Position';
-  const positionInput = document.createElement('input');
-  positionInput.type = 'number';
+  const positionField = document.createElement("div");
+  positionField.className = "config-field position";
+  const positionLabel = document.createElement("label");
+  positionLabel.textContent = "Position";
+  const positionInput = document.createElement("input");
+  positionInput.type = "number";
   positionInput.value = String(page.position || index + 1);
-  positionInput.addEventListener('change', () => {
-    const newPages = [...(store.getSnapshot().currentData?.pages || [])];
+  positionInput.addEventListener("change", () => {
+    const newPages = [...(store!.getSnapshot().currentData?.pages || [])];
     if (newPages[index]) {
       newPages[index] = { ...newPages[index], position: parseInt(positionInput.value) || 1 };
-      store.updateField('pages', newPages);
+      store!.updateField("pages", newPages);
     }
   });
   positionField.appendChild(positionLabel);
   positionField.appendChild(positionInput);
   
   // Type
-  const typeField = document.createElement('div');
-  typeField.className = 'config-field';
-  const typeLabel = document.createElement('label');
-  typeLabel.textContent = 'Type';
-  const typeSelect = document.createElement('select');
-  ['article', 'homepage', 'section'].forEach(opt => {
-    const option = document.createElement('option');
+  const typeField = document.createElement("div");
+  typeField.className = "config-field";
+  const typeLabel = document.createElement("label");
+  typeLabel.textContent = "Type";
+  const typeSelect = document.createElement("select");
+  ["article", "homepage", "section"].forEach(opt => {
+    const option = document.createElement("option");
     option.value = opt;
     option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
     if (opt === page.pageType) option.selected = true;
     typeSelect.appendChild(option);
   });
-  typeSelect.addEventListener('change', () => {
-    const newPages = [...(store.getSnapshot().currentData?.pages || [])];
+  typeSelect.addEventListener("change", () => {
+    const newPages = [...(store!.getSnapshot().currentData?.pages || [])];
     if (newPages[index]) {
-      newPages[index] = { ...newPages[index], pageType: typeSelect.value };
-      store.updateField('pages', newPages);
+      newPages[index] = { ...newPages[index], pageType: typeSelect.value as "article" | "homepage" | "section" };
+      store!.updateField("pages", newPages);
     }
   });
   typeField.appendChild(typeLabel);
   typeField.appendChild(typeSelect);
   
   // Selector
-  const selectorField = document.createElement('div');
-  selectorField.className = 'config-field';
-  const selectorLabel = document.createElement('label');
-  selectorLabel.textContent = 'Selector';
-  const selectorInput = document.createElement('input');
-  selectorInput.type = 'text';
-  selectorInput.value = page.selector || '';
-  selectorInput.addEventListener('input', () => {
-    const newPages = [...(store.getSnapshot().currentData?.pages || [])];
+  const selectorField = document.createElement("div");
+  selectorField.className = "config-field";
+  const selectorLabel = document.createElement("label");
+  selectorLabel.textContent = "Selector";
+  const selectorInput = document.createElement("input");
+  selectorInput.type = "text";
+  selectorInput.value = page.selector || "";
+  selectorInput.addEventListener("input", () => {
+    const newPages = [...(store!.getSnapshot().currentData?.pages || [])];
     if (newPages[index]) {
       newPages[index] = { ...newPages[index], selector: selectorInput.value };
-      store.updateField('pages', newPages);
+      store!.updateField("pages", newPages);
     }
   });
   selectorField.appendChild(selectorLabel);
   selectorField.appendChild(selectorInput);
   
   // Delete button
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'delete-btn';
-  deleteBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>`;
-  deleteBtn.addEventListener('click', () => store.removePage(index));
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 6h18\"></path><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"></path><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"></path></svg>";
+  deleteBtn.addEventListener("click", () => store!.removePage(index));
   
   row.appendChild(handle);
   row.appendChild(positionField);
@@ -800,22 +818,22 @@ function createPageConfigRow(page: any, index: number, store: any) {
 }
 
 function updateSaveBar(saveBar: HTMLElement, snapshot: any) {
-  const saveBtn = saveBar.querySelector('.save-btn') as HTMLButtonElement;
-  const text = saveBar.querySelector('.save-bar-text') as HTMLElement;
+  const saveBtn = saveBar.querySelector(".save-btn") as HTMLButtonElement;
+  const text = saveBar.querySelector(".save-bar-text") as HTMLElement;
   
   const isDirty = snapshot.isDirty;
   const hasErrors = Object.keys(snapshot.validation.errors).length > 0;
   
   if (isDirty) {
     if (hasErrors) {
-      text.textContent = 'Please fix validation errors';
+      text.textContent = "Please fix validation errors";
       saveBtn.disabled = true;
     } else {
-      text.textContent = 'Unsaved changes';
+      text.textContent = "Unsaved changes";
       saveBtn.disabled = false;
     }
   } else {
-    text.textContent = 'All changes saved';
+    text.textContent = "All changes saved";
     saveBtn.disabled = true;
   }
 }

@@ -1,4 +1,4 @@
-import { Publisher, Page } from '../../types';
+import { Publisher, Page } from "../../types";
 
 // Mini-Zod: Lightweight chainable runtime validator
 export type ValidationError = { path: string; message: string };
@@ -16,11 +16,11 @@ export class TypeSchema<T> {
       const errors: ValidationError[] = [];
       this.checks.forEach((ck) => {
         const msg = ck(value);
-        if (msg) errors.push({ path: '', message: msg });
+        if (msg) errors.push({ path: "", message: msg });
       });
       return errors.length ? { success: false, errors } : { success: true, data: value };
     } catch (e: any) {
-      return { success: false, errors: [{ path: '', message: e?.message || String(e) }] };
+      return { success: false, errors: [{ path: "", message: e?.message || String(e) }] };
     }
   }
 
@@ -32,28 +32,28 @@ export class TypeSchema<T> {
   // build helpers
   static string(): TypeSchema<string> {
     return new TypeSchema<string>((v) => {
-      if (typeof v !== 'string') throw new Error('Expected string');
+      if (typeof v !== "string") throw new Error("Expected string");
       return v;
     });
   }
 
   static boolean(): TypeSchema<boolean> {
     return new TypeSchema<boolean>((v) => {
-      if (typeof v !== 'boolean') throw new Error('Expected boolean');
+      if (typeof v !== "boolean") throw new Error("Expected boolean");
       return v;
     });
   }
 
   static number(): TypeSchema<number> {
     return new TypeSchema<number>((v) => {
-      if (typeof v !== 'number') throw new Error('Expected number');
+      if (typeof v !== "number") throw new Error("Expected number");
       return v;
     });
   }
 
   static array<U>(itemSchema?: TypeSchema<U>): TypeSchema<any[]> {
     return new TypeSchema<any[]>((v) => {
-      if (!Array.isArray(v)) throw new Error('Expected array');
+      if (!Array.isArray(v)) throw new Error("Expected array");
       return v;
     }).refine((arr) => {
       if (itemSchema) {
@@ -68,7 +68,7 @@ export class TypeSchema<T> {
 
   static object<U extends Record<string, any>>(shape: { [K in keyof U]: TypeSchema<U[K]> }): TypeSchema<U> {
     return new TypeSchema<U>((v) => {
-      if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new Error('Expected object');
+      if (typeof v !== "object" || v === null || Array.isArray(v)) throw new Error("Expected object");
       return v as U;
     }).refine((obj) => {
       for (const key of Object.keys(shape)) {
@@ -82,14 +82,14 @@ export class TypeSchema<T> {
 }
 
 export const PageSchema = TypeSchema.object<Page>({
-  pageType: TypeSchema.string().refine(s => ['article', 'homepage', 'section'].includes(s) ? null : 'Invalid page type') as any,
+  pageType: TypeSchema.string().refine(s => ["article", "homepage", "section"].includes(s) ? null : "Invalid page type") as any,
   selector: TypeSchema.string(),
   position: TypeSchema.number()
 });
 
 export const PublisherSchema = TypeSchema.object<Publisher>({
-  publisherId: TypeSchema.string().refine(s => (s.trim() ? null : 'publisherId cannot be empty')),
-  aliasName: TypeSchema.string().refine(s => (s.trim() ? null : 'aliasName cannot be empty')),
+  publisherId: TypeSchema.string().refine(s => (s.trim() ? null : "publisherId cannot be empty")),
+  aliasName: TypeSchema.string().refine(s => (s.trim() ? null : "aliasName cannot be empty")),
   isActive: TypeSchema.boolean(),
   tags: TypeSchema.array(TypeSchema.string()),
   allowedDomains: TypeSchema.array(TypeSchema.string()),
@@ -101,6 +101,6 @@ export function validatePublisher(p: any) {
   const res = PublisherSchema.parse(p);
   if (res.success) return { isValid: true, errors: {} };
   const errMap: Record<string, string> = {};
-  res.errors.forEach(e => { errMap[e.path || '_'] = e.message; });
+  res.errors.forEach(e => { errMap[e.path || "_"] = e.message; });
   return { isValid: false, errors: errMap };
 }

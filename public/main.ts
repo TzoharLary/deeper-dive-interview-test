@@ -1,63 +1,63 @@
-import { renderDashboard } from './app/ui/dashboard.js';
-import { renderPublishersPage } from './app/ui/publishers.js';
-import { createStore } from './app/state/store.js';
+import { renderDashboard } from "./app/ui/dashboard.js";
+import { renderPublishersPage } from "./app/ui/publishers.js";
+import { createStore } from "./app/state/store.js";
 
 async function bootstrap() {
-  const root = document.getElementById('app') as HTMLElement;
-  if (!root) throw new Error('#app not found');
+  const root = document.getElementById("app") as HTMLElement;
+  if (!root) throw new Error("#app not found");
 
   // Initialize store
   const store = createStore();
 
   // Simple client-side router
-  async function navigateTo(view: 'dashboard' | 'publishers' | 'tools') {
-    root.innerHTML = '';
-    if (view === 'dashboard') {
+  async function navigateTo(view: "dashboard" | "publishers" | "tools") {
+    root.innerHTML = "";
+    if (view === "dashboard") {
       // Render the actual dashboard
       await renderDashboard(root, store, navigateTo);
-      setActiveNav('nav-dashboard');
-    } else if (view === 'publishers') {
+      setActiveNav("nav-dashboard");
+    } else if (view === "publishers") {
       // New publishers page
       renderPublishersPage(root);
-      setActiveNav('nav-publishers');
-    } else if (view === 'tools') {
-      root.innerHTML = '<div style="padding: 2rem; text-align: center; color: #64748b;">Tools coming soon...</div>';
-      setActiveNav('nav-tools');
+      setActiveNav("nav-publishers");
+    } else if (view === "tools") {
+      root.innerHTML = "<div style=\"padding: 2rem; text-align: center; color: #64748b;\">Tools coming soon...</div>";
+      setActiveNav("nav-tools");
     }
   }
 
   function setActiveNav(id: string) {
-    const ids = ['nav-dashboard', 'nav-publishers', 'nav-tools'];
+    const ids = ["nav-dashboard", "nav-publishers", "nav-tools"];
     ids.forEach(i => {
       const el = document.getElementById(i);
       if (!el) return;
       if (i === id) {
-        el.classList.remove('text-slate-500');
-        el.classList.add('text-slate-700', 'font-semibold');
+        el.classList.remove("text-slate-500");
+        el.classList.add("text-slate-700", "font-semibold");
       } else {
-        el.classList.remove('text-slate-700', 'font-semibold');
-        el.classList.add('text-slate-500');
+        el.classList.remove("text-slate-700", "font-semibold");
+        el.classList.add("text-slate-500");
       }
     });
   }
 
   // Wire nav clicks
-  const navDashboard = document.getElementById('nav-dashboard');
-  const navPublishers = document.getElementById('nav-publishers');
-  const navTools = document.getElementById('nav-tools');
-  if (navDashboard) navDashboard.addEventListener('click', (e) => { e.preventDefault(); navigateTo('dashboard'); });
-  if (navPublishers) navPublishers.addEventListener('click', (e) => { e.preventDefault(); navigateTo('publishers'); });
-  if (navTools) navTools.addEventListener('click', (e) => { e.preventDefault(); navigateTo('tools'); });
+  const navDashboard = document.getElementById("nav-dashboard");
+  const navPublishers = document.getElementById("nav-publishers");
+  const navTools = document.getElementById("nav-tools");
+  if (navDashboard) navDashboard.addEventListener("click", (e) => { e.preventDefault(); navigateTo("dashboard"); });
+  if (navPublishers) navPublishers.addEventListener("click", (e) => { e.preventDefault(); navigateTo("publishers"); });
+  if (navTools) navTools.addEventListener("click", (e) => { e.preventDefault(); navigateTo("tools"); });
 
   // Default route
-  await navigateTo('publishers');
+  await navigateTo("publishers");
 }
 
 bootstrap().catch((err) => {
-  console.error('Bootstrap failed', err);
+  console.error("Bootstrap failed", err);
   
   // Show error message to user
-  const root = document.getElementById('app') as HTMLElement;
+  const root = document.getElementById("app") as HTMLElement;
   if (root) {
     root.innerHTML = `
       <div style="padding: 2rem; text-align: center; color: #ef4444;">

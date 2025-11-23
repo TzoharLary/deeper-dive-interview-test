@@ -1,5 +1,5 @@
-import { validatePublisher } from '../utils/validator';
-import type { Publisher, IStore, StoreSnapshot } from '../../types';
+import { validatePublisher } from "../utils/validator";
+import type { Publisher, IStore, StoreSnapshot } from "../../types";
 
 type Listener = (snapshot: StoreSnapshot) => void;
 
@@ -9,12 +9,12 @@ export class PublisherStore implements IStore {
   private touchedFields: Record<string, boolean> = {};
   private unknownKeys: Record<string, any> = {};
   private listeners = new Set<Listener>();
-  private mode: 'create' | 'edit' = 'edit';
+  private mode: "create" | "edit" = "edit";
 
-  constructor(initial?: Publisher | null, mode: 'create' | 'edit' = 'edit') {
+  constructor(initial?: Publisher | null, mode: "create" | "edit" = "edit") {
     this.mode = mode;
     if (initial) this.load(initial);
-    else if (mode === 'create') this.initializeEmpty();
+    else if (mode === "create") this.initializeEmpty();
   }
 
   subscribe(fn: Listener) {
@@ -28,7 +28,7 @@ export class PublisherStore implements IStore {
   }
 
   load(data: Publisher | null) {
-    if (!data && this.mode === 'create') {
+    if (!data && this.mode === "create") {
       this.initializeEmpty();
       this.notify();
       return;
@@ -43,10 +43,10 @@ export class PublisherStore implements IStore {
     }
 
     const knownKeys = [
-      'id','created_date','updated_date','created_by',
-      'publisherId','aliasName','isActive','tags',
-      'publisherDashboard','monitorDashboard','qaStatusDashboard',
-      'allowedDomains','customCss','notes','pages'
+      "id","created_date","updated_date","created_by",
+      "publisherId","aliasName","isActive","tags",
+      "publisherDashboard","monitorDashboard","qaStatusDashboard",
+      "allowedDomains","customCss","notes","pages"
     ];
 
     const known: any = {};
@@ -69,9 +69,9 @@ export class PublisherStore implements IStore {
 
   initializeEmpty() {
     const empty: Publisher = {
-      publisherId: '', aliasName: '', isActive: true, tags: [],
-      publisherDashboard: '', monitorDashboard: '', qaStatusDashboard: '',
-      allowedDomains: [], customCss: '', notes: '', pages: []
+      publisherId: "", aliasName: "", isActive: true, tags: [],
+      publisherDashboard: "", monitorDashboard: "", qaStatusDashboard: "",
+      allowedDomains: [], customCss: "", notes: "", pages: []
     };
     this.currentData = JSON.parse(JSON.stringify(empty));
     this.originalData = JSON.parse(JSON.stringify(empty));
@@ -82,12 +82,12 @@ export class PublisherStore implements IStore {
   updateField(path: string, value: any) {
     if (!this.currentData) return;
     const next: any = { ...this.currentData };
-    if (path.includes('.')) {
+    if (path.includes(".")) {
       const parts = path.split(/[.\[\]]/).filter(Boolean);
       let cur: any = next;
       for (let i = 0; i < parts.length - 1; i++) {
         const key = parts[i].match(/^\d+$/) ? parseInt(parts[i]) : parts[i];
-        if (cur[key] == null) cur[key] = typeof parts[i+1] === 'number' ? [] : {};
+        if (cur[key] == null) cur[key] = typeof parts[i+1] === "number" ? [] : {};
         cur = cur[key];
       }
       const last = parts[parts.length - 1];
@@ -105,12 +105,12 @@ export class PublisherStore implements IStore {
     this.notify();
   }
 
-  addPage(type: string = 'article') {
+  addPage(type: string = "article") {
     if (!this.currentData) return;
-    const selector = type === 'article' ? '.main-content' : type === 'homepage' ? 'main' : '';
+    const selector = type === "article" ? ".main-content" : type === "homepage" ? "main" : "";
     const newPage = { pageType: type, selector, position: (this.currentData.pages?.length || 0) + 1 };
     const pages = [...(this.currentData.pages || []), newPage];
-    this.updateField('pages', pages);
+    this.updateField("pages", pages);
   }
 
   movePage(from: number, to: number) {
@@ -119,14 +119,14 @@ export class PublisherStore implements IStore {
     const [item] = arr.splice(from, 1);
     arr.splice(to, 0, item);
     const updated = arr.map((p, i) => ({ ...p, position: i + 1 }));
-    this.updateField('pages', updated);
+    this.updateField("pages", updated);
   }
 
   removePage(index: number) {
     if (!this.currentData?.pages) return;
     const arr = this.currentData.pages.slice();
     arr.splice(index, 1);
-    this.updateField('pages', arr.map((p, i) => ({ ...p, position: i + 1 })));
+    this.updateField("pages", arr.map((p, i) => ({ ...p, position: i + 1 })));
   }
 
   checkDirty() {
@@ -136,7 +136,7 @@ export class PublisherStore implements IStore {
   isFieldModified(path: string) {
     if (!this.originalData || !this.currentData) return false;
     const getVal = (obj: any, p: string) => {
-      if (p.includes('.')) {
+      if (p.includes(".")) {
         const parts = p.split(/[.\[\]]/).filter(Boolean);
         let curr: any = obj;
         for (const k of parts) {
@@ -159,22 +159,22 @@ export class PublisherStore implements IStore {
       // Persist publisher file to server under data/publisher-<id>.json
       try {
         const id = (payload as any).publisherId || (payload as any).id;
-        if (!id || typeof id !== 'string' || !id.trim()) {
-          throw new Error('Cannot save publisher without a publisherId');
+        if (!id || typeof id !== "string" || !id.trim()) {
+          throw new Error("Cannot save publisher without a publisherId");
         }
 
         const filename = `publisher-${id}.json`;
 
         // Save the publisher file
         await fetch(`/api/publisher/${filename}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload, null, 2)
         });
 
         // Update the publishers list (publishers.json) to include this publisher
         try {
-          const listResp = await fetch('/api/publishers');
+          const listResp = await fetch("/api/publishers");
           if (listResp.ok) {
             const listData = await listResp.json();
             const publishers: any[] = Array.isArray(listData.publishers) ? listData.publishers.slice() : [];
@@ -184,20 +184,20 @@ export class PublisherStore implements IStore {
             if (existingIndex !== -1) publishers[existingIndex] = entry;
             else publishers.push(entry);
 
-            await fetch('/api/publisher/publishers.json', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
+            await fetch("/api/publisher/publishers.json", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ publishers }, null, 2)
             });
           }
         } catch (e) {
           // Non-fatal: publisher file was saved, but updating the list failed
-          console.warn('Failed to update publishers list:', e);
+          console.warn("Failed to update publishers list:", e);
         }
 
         // Notify other parts of the UI that a publisher was saved so they can refresh lists
         try {
-          const ev = new CustomEvent('publisher:saved', { detail: { id } });
+          const ev = new CustomEvent("publisher:saved", { detail: { id } });
           window.dispatchEvent(ev as Event);
         } catch (e) {
           // ignore
@@ -221,7 +221,7 @@ export class PublisherStore implements IStore {
   }
 }
 
-export function createStore(initial?: Publisher | null, mode: 'create' | 'edit' = 'edit') {
+export function createStore(initial?: Publisher | null, mode: "create" | "edit" = "edit") {
   return new PublisherStore(initial, mode);
 }
 

@@ -1,5 +1,5 @@
 export interface Page {
-  pageType: 'article' | 'homepage' | 'section';
+  pageType: "article" | "homepage" | "section";
   selector: string;
   position: number;
 }
@@ -50,3 +50,5 @@ export interface IStore {
   prepareForSave(): Publisher;
   isFieldModified(path: string): boolean;
 }
+
+export type Navigate = (view: "dashboard" | "publishers" | "tools") => void;

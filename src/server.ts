@@ -47,11 +47,11 @@ app.get(/^\/app\/?(.*)$/, async (req, res, next) => {
 });
 
 // On-the-fly transpile for root main.ts -> main.js or main.ts
-app.get(['/main.js', '/main.ts'], async (req, res, next) => {
-  const tsFullPath = path.join(publicDir, 'main.ts');
-  if (!tsFullPath.startsWith(publicDir)) return res.status(400).json({ error: 'Invalid module path' });
+app.get(["/main.js", "/main.ts"], async (req, res, next) => {
+  const tsFullPath = path.join(publicDir, "main.ts");
+  if (!tsFullPath.startsWith(publicDir)) return res.status(400).json({ error: "Invalid module path" });
   try {
-    const source = await fs.readFile(tsFullPath, 'utf-8');
+    const source = await fs.readFile(tsFullPath, "utf-8");
     const transpiled = ts.transpileModule(source, {
       compilerOptions: {
         module: ts.ModuleKind.ES2020,
@@ -62,8 +62,8 @@ app.get(['/main.js', '/main.ts'], async (req, res, next) => {
       fileName: tsFullPath
     });
 
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader("Content-Type", "application/javascript");
+    res.setHeader("Cache-Control", "no-store");
     return res.send(transpiled.outputText);
   } catch (error) {
     return next();
