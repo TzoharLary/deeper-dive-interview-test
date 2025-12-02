@@ -84,4 +84,5 @@ PROJECT_CODE_MAP.md
 .gitignore
 DOCS.md
 PROJECT_STRUCTURE_AND_STAGES.md
+/notebookLM/
 

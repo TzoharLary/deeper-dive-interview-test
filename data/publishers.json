@@ -2,28 +2,23 @@
   "publishers": [
     {
       "id": "pub-aurora",
-      "alias": "Aurora Media",
+      "alias": "Aurora Media Group",
       "file": "publisher-pub-aurora.json"
     },
     {
       "id": "pub-borealis",
       "alias": "Borealis News",
-      "file": "publisher-pub-borealis.json"
+      "file": "publisher-borealis.json"
     },
     {
       "id": "pub-cascade",
       "alias": "Cascade Daily",
-      "file": "publisher-pub-cascade.json"
+      "file": "publisher-cascade.json"
     },
     {
       "id": "pub-summit",
       "alias": "Summit Insights",
       "file": "publisher-summit.json"
-    },
-    {
-      "id": "pub-qa-auto",
-      "alias": "QA Automation Test",
-      "file": "publisher-pub-qa-auto.json"
     }
   ]
 }
